@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { Button, Card, Badge, Link } from '$lib/components/ui';
+	import { PostPreviewCard } from '$lib/components';
 
 	const { data } = $props();
 
-	let activeTag = $state<string | null>(null);
+	let activeTag = $state<string | undefined>(undefined);
 
 	function toggleTag(tag: string) {
-		activeTag = activeTag === tag ? null : tag;
+		activeTag = activeTag === tag ? undefined : tag;
 	}
 
 	function getAllTags() {
@@ -43,7 +44,7 @@
 				</Badge>
 			{/each}
 			{#if activeTag}
-				<Button size="small" intent="secondary" onclick={() => (activeTag = null)}>
+				<Button size="small" intent="secondary" onclick={() => (activeTag = undefined)}>
 					Clear filter
 				</Button>
 			{/if}
@@ -54,36 +55,14 @@
 		{#if filteredPosts.length === 0}
 			<div class="no-results">
 				<p>No posts found matching the selected filter.</p>
-				<Button size="small" intent="secondary" onclick={() => (activeTag = null)}>
+				<Button size="small" intent="secondary" onclick={() => (activeTag = undefined)}>
 					Clear filter
 				</Button>
 			</div>
 		{:else}
 			<div class="posts-grid">
 				{#each filteredPosts as post}
-					<a href={`/blog/${post.slug}`} class="post-card-link">
-						<Card variant="elevated">
-							<div class="post-date">{post.date}</div>
-							<h2 class="post-title">{post.title}</h2>
-							<p class="post-excerpt">{post.preview}</p>
-
-							<div class="post-tags">
-								{#each post.tags as tag}
-									<Badge
-										variant={activeTag === tag ? 'active' : 'subtle'}
-										size="small"
-										interactive={true}
-										onclick={(e) => {
-											e.preventDefault();
-											toggleTag(tag);
-										}}
-									>
-										{tag}
-									</Badge>
-								{/each}
-							</div>
-						</Card>
-					</a>
+					<PostPreviewCard {...post} {activeTag} onTagClick={toggleTag} />
 				{/each}
 			</div>
 		{/if}
@@ -93,9 +72,12 @@
 <style>
 	.blog-page {
 		padding-bottom: var(--gap-large);
+		display: flex;
+		flex-direction: column;
 	}
 
 	.blog-header {
+		margin: 0 auto;
 		text-align: center;
 		margin-bottom: var(--gap-large);
 	}
@@ -145,37 +127,6 @@
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 		gap: var(--gap);
-	}
-
-	.post-card-link {
-		text-decoration: none;
-		display: block;
-		height: 100%;
-	}
-
-	.post-date {
-		font-size: var(--font-size-0);
-		color: var(--accent);
-		margin-bottom: var(--gap-small);
-	}
-
-	.post-title {
-		font-size: var(--font-size-3);
-		margin: 0;
-		margin-bottom: var(--gap-small);
-		color: var(--text-1);
-	}
-
-	.post-excerpt {
-		color: var(--text-2);
-		margin-bottom: var(--gap);
-	}
-
-	.post-tags {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
-		margin-top: auto;
 	}
 
 	@media (--lg-n-above) {

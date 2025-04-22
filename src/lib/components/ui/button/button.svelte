@@ -20,10 +20,6 @@
 				medium: 'medium',
 				large: 'large'
 			},
-			elevated: {
-				true: 'elevated',
-				false: ''
-			},
 			fullWidth: {
 				true: 'full-width',
 				false: ''
@@ -36,7 +32,6 @@
 	const {
 		intent = 'primary',
 		size = 'medium',
-		elevated = false,
 		fullWidth = false,
 		href,
 		type = 'button',
@@ -45,7 +40,7 @@
 		onclick
 	}: Props = $props();
 
-	const buttonClasses = $derived(button({ intent, size, elevated, fullWidth, class: className }));
+	const buttonClasses = $derived(button({ intent, size, fullWidth, class: className }));
 </script>
 
 {#if href}
@@ -64,13 +59,14 @@
 		display: inline-block;
 		transition: all var(--transition-fast);
 		cursor: pointer;
+		text-decoration: none;
 		border: none;
 		font-family: var(--font-system-ui);
 	}
 
 	.primary {
 		background-color: var(--brand);
-		color: var(--text-1);
+		color: var(--brand-foreground);
 	}
 
 	.primary:hover {
@@ -86,12 +82,6 @@
 	.secondary:hover {
 		background-color: color-mix(in srgb, var(--brand) 10%, transparent);
 		color: var(--text-1);
-	}
-
-	.elevated:hover {
-		box-shadow: var(--shadow-3);
-		transform: translateY(calc(var(--size-1) * -0.5));
-		transition: all var(--transition-slow);
 	}
 
 	.small {

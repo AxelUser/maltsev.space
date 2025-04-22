@@ -10,7 +10,7 @@
 	</header>
 
 	<div class="about-content">
-		<section class="intro-section">
+		<section class="section intro-section">
 			<div class="avatar-container">
 				<div class="avatar"></div>
 				<div class="avatar-ring"></div>
@@ -26,13 +26,13 @@
 			</div>
 		</section>
 
-		<section class="bio-section">
+		<section>
 			<h2 class="space-heading">My Journey</h2>
 			<div class="timeline">
 				<div class="timeline-item">
 					<div class="timeline-dot"></div>
 					<div class="timeline-content">
-						<h3>Current Position</h3>
+						<h3 class="section-title">Current Position</h3>
 						<p>
 							I'm currently working as a Senior Software Engineer at
 							<Link href="https://github.com/infobip" external={true}>Infobip</Link>, where I
@@ -44,7 +44,7 @@
 				<div class="timeline-item">
 					<div class="timeline-dot"></div>
 					<div class="timeline-content">
-						<h3>Previous Experience</h3>
+						<h3 class="section-title">Previous Experience</h3>
 						<p>
 							I've previously worked at
 							<Link href="https://www.veeam.com/" external={true}>Veeam</Link>
@@ -58,7 +58,7 @@
 				<div class="timeline-item">
 					<div class="timeline-dot"></div>
 					<div class="timeline-content">
-						<h3>Projects</h3>
+						<h3 class="section-title">Projects</h3>
 						<p>
 							I'm the developer of
 							<Link href="https://carryon.fit/" external={true}>CarryFit</Link>, an online carry-on
@@ -73,7 +73,7 @@
 				<div class="timeline-item">
 					<div class="timeline-dot"></div>
 					<div class="timeline-content">
-						<h3>Tech Blogging</h3>
+						<h3 class="section-title">Tech Blogging</h3>
 						<p>
 							I maintain a tech blog at
 							<Link href="https://www.maltsev.space/" external={true}>maltsev.space</Link>
@@ -84,13 +84,13 @@
 			</div>
 		</section>
 
-		<section class="skills-section">
+		<section>
 			<h2 class="space-heading">Professional Interests</h2>
 
-			<div class="skills-categories">
+			<div class="card-grid">
 				<Card variant="default">
-					<h3>Technical Focus</h3>
-					<ul class="skill-list">
+					<h3 class="section-title">Technical Focus</h3>
+					<ul class="feature-list">
 						<li>Distributed Systems</li>
 						<li>Highload Applications</li>
 						<li>Database Internals</li>
@@ -102,8 +102,8 @@
 				</Card>
 
 				<Card variant="default">
-					<h3>Programming</h3>
-					<ul class="skill-list">
+					<h3 class="section-title">Programming</h3>
+					<ul class="feature-list">
 						<li>Backend Development</li>
 						<li>Data Engineering</li>
 						<li>Cloud Infrastructure</li>
@@ -115,8 +115,8 @@
 				</Card>
 
 				<Card variant="default">
-					<h3>Practices</h3>
-					<ul class="skill-list">
+					<h3 class="section-title">Practices</h3>
+					<ul class="feature-list">
 						<li>System Reliability</li>
 						<li>Continuous Integration</li>
 						<li>Test-Driven Development</li>
@@ -129,13 +129,13 @@
 			</div>
 		</section>
 
-		<section class="interests-section">
+		<section>
 			<h2 class="space-heading">Hobbies & Interests</h2>
 
-			<div class="interests-container">
+			<div class="card-grid">
 				<Card variant="elevated">
 					<div class="interest-icon books"></div>
-					<h3>Reading</h3>
+					<h3 class="section-title">Reading</h3>
 					<p>
 						I'm an avid reader, always looking to expand my knowledge and perspectives through books
 						on technology, science, and other topics.
@@ -144,7 +144,7 @@
 
 				<Card variant="elevated">
 					<div class="interest-icon climbing"></div>
-					<h3>Rock Climbing</h3>
+					<h3 class="section-title">Rock Climbing</h3>
 					<p>
 						Rock climbing is one of my favorite physical activities, challenging both body and mind
 						while connecting with nature.
@@ -153,7 +153,7 @@
 
 				<Card variant="elevated">
 					<div class="interest-icon skiing"></div>
-					<h3>Mountain Skiing</h3>
+					<h3 class="section-title">Mountain Skiing</h3>
 					<p>
 						I enjoy mountain skiing as a winter activity, combining the thrill of speed with
 						beautiful mountain landscapes.
@@ -162,18 +162,18 @@
 			</div>
 		</section>
 
-		<section class="projects-section">
+		<section>
 			<h2 class="space-heading">Programming Challenges</h2>
 			<p>
 				I enjoy participating in coding challenges to sharpen my skills and explore new programming
 				concepts.
 			</p>
 
-			<div class="projects-grid">
+			<div class="card-grid">
 				<Card variant="default">
-					<h3>Advent of Code</h3>
+					<h3 class="section-title">Advent of Code</h3>
 					<p>I've completed multiple years of Advent of Code challenges:</p>
-					<div class="project-links">
+					<div class="badge-container">
 						<Badge interactive={true}>
 							<Link href="https://github.com/AxelUser/aoc-2023-kt" external={true}>2023</Link>
 						</Badge>
@@ -195,12 +195,12 @@
 				</Card>
 
 				<Card variant="default">
-					<h3>LeetCode</h3>
+					<h3 class="section-title">LeetCode</h3>
 					<p>
 						I practice algorithmic problem solving on LeetCode to improve my coding efficiency and
 						understanding of data structures.
 					</p>
-					<div class="project-links">
+					<div class="badge-container">
 						<Badge interactive={true}>
 							<Link href="https://github.com/AxelUser/leetcode-kt" external={true}
 								>View Solutions</Link
@@ -215,7 +215,7 @@
 			<h2 class="space-heading">Contact</h2>
 			<p>Interested in collaborating or just want to say hello? Feel free to reach out.</p>
 
-			<div class="contact-links">
+			<div class="button-group">
 				<Button href="mailto:contact@maltsev.space">Email</Button>
 				<Button
 					href="https://github.com/AxelUser"
@@ -245,6 +245,23 @@
 		padding-bottom: var(--gap-large);
 	}
 
+	.about-content {
+		display: flex;
+		flex-direction: column;
+		gap: var(--gap-large);
+	}
+
+	section {
+		margin-top: var(--gap);
+	}
+
+	.section-title {
+		margin-top: var(--gap-small);
+		margin-bottom: var(--gap-small);
+		color: var(--text-1);
+		font-size: var(--font-size-3);
+	}
+
 	.about-header {
 		height: 250px;
 		display: flex;
@@ -257,18 +274,58 @@
 
 	.about-header .space-title {
 		font-size: var(--font-size-8);
-		color: var(--space-text);
-		text-shadow: 0 0 10px var(--space-primary);
+		color: var(--text-1);
+		text-shadow: 0 0 10px var(--brand);
 		z-index: 1;
 	}
 
-	.about-content {
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap-large);
+	.card-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		gap: var(--gap);
+		margin-top: var(--gap);
 	}
 
-	/* Intro section */
+	.button-group {
+		display: flex;
+		justify-content: center;
+		gap: var(--gap);
+		margin-top: var(--gap);
+		flex-wrap: wrap;
+	}
+
+	.badge-container {
+		display: flex;
+		gap: var(--gap-small);
+		flex-wrap: wrap;
+	}
+
+	/* Lists */
+	.feature-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.feature-list li {
+		position: relative;
+		padding-left: 1.5rem;
+		margin-bottom: var(--gap-small);
+		color: var(--text-2);
+	}
+
+	.feature-list li:before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0.5em;
+		width: 0.5rem;
+		height: 0.5rem;
+		background-color: var(--accent);
+		border-radius: 50%;
+	}
+
+	/* Avatar Styles */
 	.intro-section {
 		display: flex;
 		gap: var(--gap-large);
@@ -333,11 +390,6 @@
 		margin-bottom: var(--gap);
 	}
 
-	/* Bio section */
-	.bio-section {
-		position: relative;
-	}
-
 	.timeline {
 		margin-top: var(--gap-large);
 		position: relative;
@@ -361,7 +413,7 @@
 
 	.timeline-dot {
 		position: absolute;
-		left: -34px;
+		left: -37px;
 		top: 5px;
 		width: 16px;
 		height: 16px;
@@ -370,91 +422,9 @@
 		border: 3px solid var(--surface-1);
 	}
 
-	.timeline-content h3 {
-		margin: 0 0 var(--gap-small) 0;
-		color: var(--text-1);
-		font-size: var(--font-size-3);
-	}
-
 	.timeline-content p {
 		margin: 0;
 		color: var(--text-2);
-	}
-
-	.timeline-content a {
-		color: var(--link);
-		text-decoration: none;
-		transition: color var(--transition-fast);
-	}
-
-	.timeline-content a:hover {
-		color: var(--accent);
-		text-decoration: underline;
-	}
-
-	/* Skills Section */
-	.skills-section {
-		margin-top: var(--gap-large);
-	}
-
-	.skills-categories {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-		gap: var(--gap-large);
-		margin-top: var(--gap);
-	}
-
-	.skills-categories h3 {
-		margin-top: 0;
-		margin-bottom: var(--gap);
-		color: var(--text-1);
-		font-size: var(--font-size-3);
-		padding-bottom: var(--gap-small);
-		border-bottom: 1px solid color-mix(in srgb, var(--brand) 30%, transparent);
-	}
-
-	.skill-list {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-	}
-
-	.skill-list li {
-		position: relative;
-		padding-left: 1.5rem;
-		margin-bottom: var(--gap-small);
-		color: var(--text-2);
-	}
-
-	.skill-list li:before {
-		content: '';
-		position: absolute;
-		left: 0;
-		top: 0.5em;
-		width: 0.5rem;
-		height: 0.5rem;
-		background-color: var(--accent);
-		border-radius: 50%;
-	}
-
-	/* Interests Section */
-	.interests-container {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-		gap: var(--gap);
-		margin-top: var(--gap);
-	}
-
-	.interests-container h3 {
-		margin-top: var(--gap);
-		margin-bottom: var(--gap-small);
-		color: var(--text-1);
-		font-size: var(--font-size-3);
-	}
-
-	.interests-container p {
-		color: var(--text-2);
-		margin: 0;
 	}
 
 	.interest-icon {
@@ -469,51 +439,10 @@
 		font-size: var(--font-size-5);
 	}
 
-	/* Projects Section */
-	.projects-section {
-		padding: var(--space-gap) 0;
-	}
-
-	.projects-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-		gap: var(--gap);
-		margin-top: var(--gap);
-	}
-
-	.projects-grid h3 {
-		margin-top: 0;
-		margin-bottom: var(--gap-small);
-		color: var(--text-1);
-		font-size: var(--font-size-3);
-	}
-
-	.projects-grid p {
-		margin: 0 0 var(--gap) 0;
-		color: var(--text-2);
-	}
-
-	.project-links {
-		display: flex;
-		gap: var(--gap-small);
-		flex-wrap: wrap;
-	}
-
-	/* Contact Section */
 	.contact-section {
-		margin-top: var(--gap-large);
 		text-align: center;
 	}
 
-	.contact-links {
-		display: flex;
-		justify-content: center;
-		gap: var(--gap);
-		margin-top: var(--gap);
-		flex-wrap: wrap;
-	}
-
-	/* Responsive */
 	@media (--lg-n-below) {
 		.intro-section {
 			flex-direction: column;
@@ -557,7 +486,7 @@
 			left: -20px;
 		}
 
-		.contact-links {
+		.button-group {
 			flex-direction: column;
 			align-items: center;
 		}

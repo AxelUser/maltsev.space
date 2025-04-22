@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Button, Card, Link, Badge } from '$lib/components/ui';
+	import { Button, Link, Badge } from '$lib/components/ui';
+	import { PostPreviewCard } from '$lib/components';
 
 	let isVisible = $state(false);
 
@@ -28,8 +29,8 @@
 		</div>
 
 		<div class="cta-buttons">
-			<Button href="/blog" elevated>Read Blog</Button>
-			<Button href="/about" intent="secondary" elevated>About Me</Button>
+			<Button href="/blog">Read Blog</Button>
+			<Button href="/about" intent="secondary">About Me</Button>
 		</div>
 	</div>
 </div>
@@ -39,13 +40,7 @@
 
 	<div class="posts-grid">
 		{#each data.posts as post}
-			<a href={`/blog/${post.slug}`} class="card-link">
-				<Card variant="elevated">
-					<span class="post-date">{post.date}</span>
-					<h3>{post.title}</h3>
-					<p>{post.preview}</p>
-				</Card>
-			</a>
+			<PostPreviewCard {...post} />
 		{/each}
 
 		<div class="view-all">
@@ -203,15 +198,6 @@
 		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 		gap: var(--gap);
 		margin-top: var(--gap);
-	}
-
-	.card-link {
-		text-decoration: none;
-	}
-
-	.post-date {
-		font-size: var(--font-size-0);
-		color: var(--accent);
 	}
 
 	.view-all {

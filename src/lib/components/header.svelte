@@ -15,8 +15,8 @@
 	header {
 		height: var(--header-height);
 		backdrop-filter: blur(5px);
-		background-color: color-mix(in srgb, var(--surface-1) 90%, transparent);
-		border-bottom: 1px solid color-mix(in srgb, var(--brand) 30%, transparent);
+		background-color: color-mix(in srgb, var(--surface-1) 85%, transparent);
+		border-bottom: 1px solid color-mix(in srgb, var(--brand) 20%, transparent);
 		position: sticky;
 		top: 0;
 		z-index: 10;
@@ -30,12 +30,12 @@
 	}
 
 	.logo a {
-		font-size: var(--font-size-4);
-		font-weight: var(--font-weight-9);
+		font-size: var(--font-size-3);
+		font-weight: var(--font-weight-7);
 		color: var(--brand);
 		text-decoration: none;
 		letter-spacing: 0.1em;
-		text-shadow: 0 0 5px var(--brand);
+		text-shadow: 0 0 3px var(--brand);
 		transition: color var(--transition-fast);
 	}
 
@@ -54,9 +54,9 @@
 	.nav-links a {
 		color: var(--text-2);
 		text-decoration: none;
-		font-size: var(--font-size-2);
-		font-weight: var(--font-weight-5);
-		padding: var(--gap-small);
+		font-size: var(--font-size-1);
+		font-weight: var(--font-weight-4);
+		padding: var(--gap-small) var(--gap-small);
 		border-radius: var(--radius-sm);
 		transition:
 			color var(--transition-fast),
@@ -65,7 +65,7 @@
 
 	.nav-links a:hover {
 		color: var(--text-1);
-		background-color: color-mix(in srgb, var(--brand) 20%, transparent);
+		background-color: color-mix(in srgb, var(--brand) 15%, transparent);
 	}
 
 	@media (--md-n-below) {
@@ -83,6 +83,7 @@
 
 		header {
 			height: auto;
+			min-height: var(--header-height);
 		}
 
 		.nav-links {
