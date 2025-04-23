@@ -1,6 +1,3 @@
-@import 'open-props/style';
-@import 'open-props/normalize';
-@import 'open-props/media';
 @import '@fontsource/atkinson-hyperlegible';
 @import '@fontsource/jetbrains-mono';
 
@@ -163,7 +160,6 @@ html {
 	--shadow-strength: var(--shadow-strength-light);
 }
 
-/* Typography classes */
 .space-title {
 	font-size: var(--font-size-7);
 	font-weight: var(--font-weight-9);
@@ -185,39 +181,12 @@ html {
 	margin-block: var(--gap);
 }
 
-.space-text {
-	font-size: var(--font-size-2);
-	line-height: var(--font-lineheight-3);
-	color: var(--text-1);
-}
-
-.space-text-small {
-	font-size: var(--font-size-1);
-	line-height: var(--font-lineheight-3);
-	color: var(--text-2);
-}
-
-/* Custom utility classes */
-.space-card {
-	background-color: var(--surface-2);
-	border-radius: var(--radius-3);
-	padding: var(--gap);
-	box-shadow: var(--shadow-3);
-	transition: transform var(--transition-fast);
-}
-
-.space-card:hover {
-	transform: translateY(-3px);
-	box-shadow: var(--shadow-5);
-}
-
 .space-container {
 	max-width: var(--content-width);
 	margin-inline: auto;
 	padding-inline: var(--gap);
 }
 
-/* Responsive adaptations */
 @media (--xl-n-below) {
 	.space-container {
 		max-width: min(90%, 1000px);

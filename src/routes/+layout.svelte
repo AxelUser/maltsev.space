@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { Header, Footer, TwinklingStars } from '$lib/components';
+	import 'open-props/style';
+	import 'open-props/normalize';
 	import '../app.css';
 
 	const { children } = $props();
