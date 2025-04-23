@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Button, Link, Badge } from '$lib/components/ui';
-	import { PostPreviewCard } from '$lib/components';
+	import { Button, Link } from '$lib/components/ui';
+	import { PostPreviewCard, TagCloud } from '$lib/components';
+	import { bio } from '$lib/bio';
 
 	let isVisible = $state(false);
 
@@ -16,7 +17,7 @@
 
 <div class="hero" class:visible={isVisible}>
 	<div class="hero-content">
-		<h1 class="space-title">Howdy, I'm Aleksey</h1>
+		<h1 class="space-title">Howdy, I'm {bio.firstName}</h1>
 		<p class="space-subtitle">Exploring Code, Ideas, and the Digital Universe</p>
 
 		<div class="planet-container">
@@ -62,16 +63,7 @@
 		</div>
 		<div class="skills-container">
 			<h3>Professional Interests:</h3>
-			<div class="skills-grid">
-				<Badge>Distributed Systems</Badge>
-				<Badge>Highload Apps</Badge>
-				<Badge>Database Internals</Badge>
-				<Badge>System Design</Badge>
-				<Badge>Performance</Badge>
-				<Badge>Microservices</Badge>
-				<Badge>NoSQL</Badge>
-				<Badge>Cloud</Badge>
-			</div>
+			<TagCloud tags={bio.interests} />
 		</div>
 	</div>
 </section>
@@ -236,12 +228,6 @@
 		margin-bottom: var(--gap);
 		font-size: var(--font-size-2);
 		color: var(--text-2);
-	}
-
-	.skills-grid {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--gap-small);
 	}
 
 	/* Responsive design */

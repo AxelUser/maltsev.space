@@ -1,6 +1,8 @@
 <script lang="ts">
 	import FloatingStars from '$lib/components/floating-stars.svelte';
+	import { Timeline, TimelineItem, TagCloud } from '$lib/components';
 	import { Card, Badge, Link, Button } from '$lib/components/ui';
+	import { bio } from '$lib/bio';
 </script>
 
 <div class="about-page">
@@ -17,7 +19,7 @@
 			</div>
 
 			<div class="intro-text">
-				<h2 class="space-heading">Hello, I'm Alex Maltsev</h2>
+				<h2 class="space-heading">Hello, I'm {bio.fullName}</h2>
 				<p class="tagline">Senior Software Engineer</p>
 				<p>
 					I've been programming for fun and profit since 2014, focusing on distributed systems,
@@ -28,105 +30,96 @@
 
 		<section>
 			<h2 class="space-heading">My Journey</h2>
-			<div class="timeline">
-				<div class="timeline-item">
-					<div class="timeline-dot"></div>
-					<div class="timeline-content">
-						<h3 class="section-title">Current Position</h3>
-						<p>
-							I'm currently working as a Senior Software Engineer at
-							<Link href="https://github.com/infobip" external={true}>Infobip</Link>, where I
-							continue to develop my expertise in distributed systems and high-load applications.
-						</p>
-					</div>
-				</div>
+			<Timeline>
+				<TimelineItem date="2020–present">
+					<h3 class="section-title">Infobip</h3>
+					<p>
+						As part of a distributed team, I developed and maintained over a dozen event-driven
+						microservices that power real-time user segmentation. I was involved in migrating
+						services and data from a MongoDB replica set to a sharded cluster, which improved
+						performance significantly without any downtime. I also designed algorithms to balance
+						workloads across services and independently created automation tools in Go and C# to
+						support daily operations. Additionally, I contributed to documentation and led
+						development on multiple data-related epics.
+					</p>
+				</TimelineItem>
 
-				<div class="timeline-item">
-					<div class="timeline-dot"></div>
-					<div class="timeline-content">
-						<h3 class="section-title">Previous Experience</h3>
-						<p>
-							I've previously worked at
-							<Link href="https://www.veeam.com/" external={true}>Veeam</Link>
-							and
-							<Link href="https://github.com/skbkontur" external={true}>SkbKontur</Link>, where I
-							gained valuable experience in software development and engineering practices.
-						</p>
-					</div>
-				</div>
+				<TimelineItem date="2019–2020">
+					<h3 class="section-title">Veeam</h3>
+					<p>
+						At Veeam, I worked on a RESTful integration between their Azure and Backup platforms,
+						ensuring real-time synchronization of entities. I developed notification systems to
+						provide progress tracking for long-running operations in the UI. I also led initiatives
+						to improve engineering workflows, including a migration from TFS to Git and better code
+						review tooling.
+					</p>
+				</TimelineItem>
 
-				<div class="timeline-item">
-					<div class="timeline-dot"></div>
-					<div class="timeline-content">
-						<h3 class="section-title">Projects</h3>
-						<p>
-							I'm the developer of
-							<Link href="https://carryon.fit/" external={true}>CarryFit</Link>, an online carry-on
-							luggage compliance checker, and
+				<TimelineItem date="2017–2019">
+					<h3 class="section-title">SKB Kontur</h3>
+					<p>
+						I contributed to enhancing a flagship accounting product by implementing
+						high-performance bulk operations that greatly reduced user wait times. I also built
+						Chrome-based daemons via the DevTools protocol to power browser automation for key
+						customers, expanding the product's capabilities.
+					</p>
+				</TimelineItem>
+
+				<TimelineItem date="2018">
+					<h3 class="section-title">Freelancer @ Upwork</h3>
+					<p>
+						During my time as a freelancer, I improved a Xamarin-based language learning app by
+						optimizing UI rendering and implementing MVVM architecture. My changes significantly
+						boosted app responsiveness and doubled daily active users. I also integrated robust
+						local storage with SQLite and Realm
+					</p>
+				</TimelineItem>
+
+				<TimelineItem date="2015–2017">
+					<h3 class="section-title">Pro IT</h3>
+					<p>
+						I worked on .NET-based enterprise software, optimizing LINQ and SQL queries to double
+						request throughput in edge cases. I developed admin dashboards to streamline operations
+						and created an internal framework for automated Excel report generation, which
+						accelerated future development efforts.
+					</p>
+				</TimelineItem>
+
+				<TimelineItem date="2014–2015">
+					<h3 class="section-title">KAI Development</h3>
+					<p>
+						My early work involved building internal dashboards to improve SEO workflows. I migrated
+						performance-heavy logic to stored procedures in Transact-SQL, resulting in notable speed
+						improvements for data-intensive processes.
+					</p>
+				</TimelineItem>
+
+				<TimelineItem>
+					<h3 class="section-title">Personal Projects</h3>
+					<ul class="projects-list">
+						<li>
+							<Link href="https://carryon.fit/" external={true}>CarryFit</Link> – Carry-on luggage size
+							checker.
+						</li>
+						<li>
 							<Link href="https://github.com/AxelUser/MongoTransit" external={true}
 								>MongoTransit</Link
-							>, a tool for transferring data between MongoDB clusters.
-						</p>
-					</div>
-				</div>
-
-				<div class="timeline-item">
-					<div class="timeline-dot"></div>
-					<div class="timeline-content">
-						<h3 class="section-title">Tech Blogging</h3>
-						<p>
-							I maintain a tech blog at
-							<Link href="https://www.maltsev.space/" external={true}>maltsev.space</Link>
-							where I share insights and experiences from my work in software development.
-						</p>
-					</div>
-				</div>
-			</div>
+							> – Data transfer tool for MongoDB clusters.
+						</li>
+						<li>
+							<Link href="https://www.maltsev.space/" external={true}>Blog</Link> – Occasional posts
+							on distributed systems and more.
+						</li>
+					</ul>
+				</TimelineItem>
+			</Timeline>
 		</section>
 
 		<section>
 			<h2 class="space-heading">Professional Interests</h2>
-
-			<div class="card-grid">
-				<Card variant="default">
-					<h3 class="section-title">Technical Focus</h3>
-					<ul class="feature-list">
-						<li>Distributed Systems</li>
-						<li>Highload Applications</li>
-						<li>Database Internals</li>
-						<li>Software Architecture</li>
-						<li>System Design</li>
-						<li>Performance Optimization</li>
-						<li>Scalability Solutions</li>
-					</ul>
-				</Card>
-
-				<Card variant="default">
-					<h3 class="section-title">Programming</h3>
-					<ul class="feature-list">
-						<li>Backend Development</li>
-						<li>Data Engineering</li>
-						<li>Cloud Infrastructure</li>
-						<li>RESTful APIs</li>
-						<li>Microservices</li>
-						<li>NoSQL Databases</li>
-						<li>Containerization</li>
-					</ul>
-				</Card>
-
-				<Card variant="default">
-					<h3 class="section-title">Practices</h3>
-					<ul class="feature-list">
-						<li>System Reliability</li>
-						<li>Continuous Integration</li>
-						<li>Test-Driven Development</li>
-						<li>Code Quality</li>
-						<li>Technical Documentation</li>
-						<li>Performance Monitoring</li>
-						<li>DevOps Culture</li>
-					</ul>
-				</Card>
-			</div>
+			<Card variant="default">
+				<TagCloud tags={bio.interests} />
+			</Card>
 		</section>
 
 		<section>
@@ -299,33 +292,6 @@
 		gap: var(--gap-small);
 		flex-wrap: wrap;
 	}
-
-	/* Lists */
-	.feature-list {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-	}
-
-	.feature-list li {
-		position: relative;
-		padding-left: 1.5rem;
-		margin-bottom: var(--gap-small);
-		color: var(--text-2);
-	}
-
-	.feature-list li:before {
-		content: '';
-		position: absolute;
-		left: 0;
-		top: 0.5em;
-		width: 0.5rem;
-		height: 0.5rem;
-		background-color: var(--accent);
-		border-radius: 50%;
-	}
-
-	/* Avatar Styles */
 	.intro-section {
 		display: flex;
 		gap: var(--gap-large);
@@ -390,43 +356,6 @@
 		margin-bottom: var(--gap);
 	}
 
-	.timeline {
-		margin-top: var(--gap-large);
-		position: relative;
-		padding-left: 30px;
-	}
-
-	.timeline:before {
-		content: '';
-		position: absolute;
-		left: 0;
-		top: 0;
-		bottom: 0;
-		width: 2px;
-		background: linear-gradient(to bottom, var(--brand), var(--accent));
-	}
-
-	.timeline-item {
-		position: relative;
-		margin-bottom: var(--gap-large);
-	}
-
-	.timeline-dot {
-		position: absolute;
-		left: -37px;
-		top: 5px;
-		width: 16px;
-		height: 16px;
-		border-radius: 50%;
-		background-color: var(--accent);
-		border: 3px solid var(--surface-1);
-	}
-
-	.timeline-content p {
-		margin: 0;
-		color: var(--text-2);
-	}
-
 	.interest-icon {
 		width: 50px;
 		height: 50px;
@@ -455,14 +384,6 @@
 		.about-header {
 			height: 200px;
 		}
-
-		.timeline {
-			padding-left: 20px;
-		}
-
-		.timeline-dot {
-			left: -24px;
-		}
 	}
 
 	@media (--sm-n-below) {
@@ -480,15 +401,19 @@
 			height: 130px;
 		}
 
-		.timeline-dot {
-			width: 12px;
-			height: 12px;
-			left: -20px;
-		}
-
 		.button-group {
 			flex-direction: column;
 			align-items: center;
 		}
+	}
+
+	.projects-list {
+		padding-left: 1.5rem;
+		margin: 0;
+		color: var(--text-2);
+	}
+
+	.projects-list li {
+		margin-bottom: var(--gap-small);
 	}
 </style>

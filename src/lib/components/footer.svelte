@@ -1,7 +1,11 @@
+<script>
+	import { bio } from '$lib/bio';
+</script>
+
 <footer>
 	<div class="space-container">
 		<p class="space-text-small">
-			© {new Date().getFullYear()} | Aleksey Maltsev
+			© {new Date().getFullYear()} | {bio.fullName}
 		</p>
 	</div>
 </footer>
