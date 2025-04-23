@@ -30,24 +30,24 @@ html {
 	--shadow-strength-dark: 25%;
 
 	/* light */
-	--brand-light: var(--indigo-7);
-	--text-1-light: var(--gray-10);
-	--text-2-light: var(--gray-7);
-	--surface-1-light: var(--gray-0);
-	--surface-2-light: var(--gray-1);
-	--surface-3-light: var(--gray-2);
-	--surface-4-light: var(--gray-3);
+	--brand-light: var(--indigo-5);
+	--text-1-light: var(--gray-0);
+	--text-2-light: var(--gray-3);
+	--surface-1-light: var(--gray-8);
+	--surface-2-light: var(--gray-7);
+	--surface-3-light: var(--gray-6);
+	--surface-4-light: var(--gray-5);
 
-	--link-light: var(--indigo-9);
-	--link-visited-light: var(--purple-9);
-	--accent-light: var(--cyan-7);
+	--link-light: var(--indigo-3);
+	--link-visited-light: var(--purple-3);
+	--accent-light: var(--cyan-4);
 
-	--star-light: var(--yellow-7);
-	--planet-light: var(--cyan-10);
-	--nebula-light: var(--purple-8);
+	--star-light: var(--yellow-3);
+	--planet-light: var(--cyan-5);
+	--nebula-light: var(--purple-4);
 
-	--shadow-color-light: 220 3% 15%;
-	--shadow-strength-light: 1%;
+	--shadow-color-light: 220 40% 2%;
+	--shadow-strength-light: 15%;
 }
 
 /* Dark theme (default) */

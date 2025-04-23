@@ -5,7 +5,7 @@ import slug from 'rehype-slug';
 import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
-const lightTheme = 'github-light';
+const lightTheme = 'material-theme-palenight';
 const darkTheme = 'github-dark';
 
 const highlighter = await createHighlighter({
