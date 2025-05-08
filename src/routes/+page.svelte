@@ -19,7 +19,7 @@
 
 <div class="hero" class:visible={isVisible}>
 	<h1>Howdy, I'm {bio.firstName}</h1>
-	<p>Exploring Code, Ideas, and the Digital Universe</p>
+	<p class="slogan">Space is dangerous — use tabs</p>
 
 	<HeroPlanet />
 
@@ -173,5 +173,17 @@
 			width: 100%;
 			max-width: 200px;
 		}
+	}
+
+	.slogan {
+		font-size: var(--font-size-4);
+		font-weight: 600;
+		color: var(--accent);
+		text-shadow: 0 0 15px rgba(76, 170, 255, 0.4);
+		letter-spacing: 0.02em;
+		padding: 0.5em;
+		border: 2px solid var(--accent);
+		border-radius: var(--radius-base);
+		background: color-mix(in srgb, var(--accent) 10%, transparent);
 	}
 </style>
