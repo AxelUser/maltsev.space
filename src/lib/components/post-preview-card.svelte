@@ -55,6 +55,7 @@
 		display: flex;
 		flex-direction: column;
 		height: 100%;
+		min-height: 300px;
 	}
 
 	.post-date {
@@ -64,29 +65,26 @@
 	}
 
 	.post-title {
-		font-size: var(--font-size-3);
+		font-size: var(--font-size-4);
 		margin: 0;
 		margin-bottom: var(--gap-small);
 		color: var(--text-1);
-		/* Ensure consistent height for titles */
-		min-height: 2.5em;
-		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		line-clamp: 2;
-		-webkit-box-orient: vertical;
+		min-height: 4em;
+		display: block;
 		overflow: hidden;
+		text-overflow: ellipsis;
+		max-height: 2.8em;
 	}
 
 	.post-excerpt {
 		color: var(--text-2);
 		margin-bottom: var(--gap);
 		flex-grow: 1;
-		/* Ensure consistent height for excerpts */
-		display: -webkit-box;
-		-webkit-line-clamp: 3;
-		line-clamp: 3;
-		-webkit-box-orient: vertical;
 		overflow: hidden;
+		text-overflow: ellipsis;
+		display: block;
+		min-height: 6em;
+		max-height: 9em;
 	}
 
 	.post-tags {
@@ -94,5 +92,6 @@
 		flex-wrap: wrap;
 		gap: 0.5rem;
 		margin-top: auto;
+		padding-top: var(--gap-small);
 	}
 </style>
