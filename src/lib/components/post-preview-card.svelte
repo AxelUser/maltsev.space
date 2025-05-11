@@ -15,7 +15,7 @@
 </script>
 
 <a href={`/blog/${slug}`} class="post-card-link">
-	<Card variant="elevated" class="post-card">
+	<Card variant="glassmorphism" class="post-card">
 		<div class="post-content">
 			<span class="post-date">{date}</span>
 			<h3 class="post-title">{title}</h3>
