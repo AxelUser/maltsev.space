@@ -1,5 +1,6 @@
 @import '@fontsource/atkinson-hyperlegible';
 @import '@fontsource/jetbrains-mono';
+@import 'open-props/media';
 
 html {
 	/* font */
@@ -45,6 +46,11 @@ html {
 
 	--shadow-color-light: 220 40% 2%;
 	--shadow-strength-light: 15%;
+
+	/* Mobile text scaling */
+	--font-scale-xs: 0.85;
+	--font-scale-sm: 0.9;
+	--font-scale-md: 0.95;
 }
 
 /* Dark theme (default) */
@@ -219,6 +225,38 @@ html {
 
 	.space-heading {
 		font-size: var(--font-size-3);
+	}
+}
+
+/* Add extra small device breakpoint */
+@media (--xs-n-below) {
+	.space-title {
+		font-size: var(--font-size-4);
+	}
+
+	.space-subtitle {
+		font-size: var(--font-size-2);
+	}
+
+	.space-heading {
+		font-size: var(--font-size-2);
+	}
+
+	.prose {
+		font-size: calc(var(--font-size-2) * var(--font-scale-xs));
+		line-height: var(--font-lineheight-2);
+	}
+
+	.prose h1 {
+		font-size: var(--font-size-3);
+	}
+
+	.prose h2 {
+		font-size: var(--font-size-2);
+	}
+
+	.prose :is(h3, h4, h5, h6) {
+		font-size: calc(var(--font-size-2) * 1.1);
 	}
 }
 

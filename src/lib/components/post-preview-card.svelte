@@ -94,4 +94,36 @@
 		margin-top: auto;
 		padding-top: var(--gap-small);
 	}
+
+	@media (--sm-n-below) {
+		.post-content {
+			min-height: 250px;
+		}
+
+		.post-title {
+			font-size: var(--font-size-3);
+			min-height: 3em;
+		}
+
+		.post-excerpt {
+			font-size: calc(var(--font-size-2) * var(--font-scale-sm));
+			min-height: 4em;
+		}
+	}
+
+	@media (--xs-n-below) {
+		.post-content {
+			min-height: 220px;
+		}
+
+		.post-title {
+			font-size: var(--font-size-2);
+			min-height: 2.5em;
+		}
+
+		.post-excerpt {
+			font-size: calc(var(--font-size-1) * var(--font-scale-xs));
+			min-height: 3em;
+		}
+	}
 </style>

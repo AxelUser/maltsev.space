@@ -121,6 +121,10 @@
 		.nav-links {
 			gap: var(--gap-small);
 		}
+
+		.logo a {
+			font-size: var(--font-size-2);
+		}
 	}
 
 	@media (--sm-n-below) {
@@ -135,6 +139,11 @@
 		nav {
 			flex-direction: row;
 			padding-block: var(--gap-small);
+		}
+
+		.logo a {
+			font-size: var(--font-size-2);
+			letter-spacing: 0.05em;
 		}
 
 		.nav-container {
@@ -171,6 +180,19 @@
 			width: 100%;
 			text-align: center;
 			padding: var(--gap-small) 0;
+			font-size: calc(var(--font-size-1) * 1.2);
+		}
+	}
+
+	@media (--xs-n-below) {
+		.logo a {
+			font-size: var(--font-size-1);
+			letter-spacing: 0;
+		}
+
+		.mobile-menu-toggle {
+			width: 24px;
+			height: 20px;
 		}
 	}
 </style>

@@ -173,6 +173,23 @@
 			width: 100%;
 			max-width: 200px;
 		}
+
+		.slogan {
+			font-size: var(--font-size-3);
+			padding: 0.4em;
+		}
+	}
+
+	@media (--xs-n-below) {
+		.slogan {
+			font-size: var(--font-size-2);
+			border-width: 1px;
+			padding: 0.3em;
+		}
+
+		.hero h1 {
+			font-size: var(--font-size-5);
+		}
 	}
 
 	.slogan {

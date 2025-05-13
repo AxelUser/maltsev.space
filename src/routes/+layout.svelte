@@ -43,4 +43,16 @@
 		flex: 1;
 		padding-block: var(--gap-large);
 	}
+
+	@media (--sm-n-below) {
+		main {
+			padding-block: var(--gap);
+		}
+	}
+
+	@media (--xs-n-below) {
+		main {
+			padding-block: var(--gap-small);
+		}
+	}
 </style>
