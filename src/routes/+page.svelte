@@ -51,7 +51,6 @@
 				Senior Software Engineer at Infobip with focus on distributed systems and highload
 				applications. Programming since 2014, previously at Veeam and SkbKontur.
 			</p>
-			<p>Creator of CarryFit and MongoTransit. Tech blogger and coding challenges enthusiast.</p>
 			<Link href="/about" hasArrow={true}>Learn more about me</Link>
 		</div>
 		<div class="skills-container">
