@@ -6,7 +6,7 @@
 		variants: {
 			variant: {
 				default: 'default',
-				glassmorphism: 'glassmorphism'
+				neon: 'neon'
 			},
 			clickable: {
 				true: 'clickable',
@@ -30,8 +30,8 @@
 
 <div class={cardClasses} {...rest}>
 	{@render children?.()}
-	{#if variant === 'glassmorphism'}
-		<div class="shine"></div>
+	{#if variant === 'neon'}
+		<div class="neon-border"></div>
 	{/if}
 </div>
 
@@ -40,8 +40,8 @@
 		display: block;
 		color: var(--text-1);
 		text-decoration: none;
-		background-color: var(--surface-1);
-		border: 1px solid var(--surface-2);
+		background-color: var(--surface-2);
+		border: 1px solid var(--surface-3);
 		padding: var(--gap);
 		border-radius: var(--radius-3);
 		transition: all var(--animation-fade);
@@ -54,44 +54,78 @@
 	}
 
 	.default:hover {
-		background-color: var(--surface-2);
+		background-color: var(--surface-3);
 		box-shadow: var(--shadow-4);
+		border-color: var(--surface-4);
 	}
 
-	.glassmorphism {
-		background: rgba(255, 255, 255, 0.05);
-		backdrop-filter: blur(10px);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+	.neon {
+		border: none;
+		position: relative;
+		z-index: 1;
 	}
 
-	.glassmorphism:hover {
-		border: 1px solid rgba(255, 255, 255, 0.2);
-		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-		transform: translateY(-0.125rem);
+	.neon:hover {
+		background-color: var(--surface-3);
 	}
 
-	.shine {
+	.neon-border {
 		position: absolute;
-		bottom: -200%;
-		left: -200%;
-		width: 150%;
-		height: 150%;
-		background: linear-gradient(
-			135deg,
-			rgba(255, 255, 255, 0) 0%,
-			rgba(255, 255, 255, 0.2) 50%,
-			rgba(255, 255, 255, 0) 100%
-		);
-		transform: rotate(45deg);
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		border-radius: var(--radius-3);
+		opacity: 0;
+		transition: opacity 0.3s ease;
 		pointer-events: none;
-		transition: all 0.7s ease-in-out;
+		z-index: -1;
 	}
 
-	.glassmorphism:hover .shine {
-		bottom: 100%;
-		left: 100%;
-		transition: all 0.7s ease-in-out;
+	.neon-border::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		border-radius: var(--radius-3);
+		padding: 2px;
+		background: linear-gradient(45deg, var(--accent), var(--star), var(--nebula), var(--accent));
+		background-size: 400% 400%;
+		z-index: -1;
+	}
+
+	.neon-border::after {
+		content: '';
+		position: absolute;
+		top: 2px;
+		left: 2px;
+		right: 2px;
+		bottom: 2px;
+		background-color: var(--surface-3);
+		border-radius: calc(var(--radius-3) - 2px);
+		z-index: 1;
+	}
+
+	.neon:hover .neon-border {
+		opacity: 1;
+	}
+
+	.neon:hover .neon-border::before {
+		animation: rotate 3s linear infinite;
+	}
+
+	@keyframes rotate {
+		0% {
+			background-position: 0% 50%;
+		}
+		50% {
+			background-position: 100% 50%;
+		}
+		100% {
+			background-position: 0% 50%;
+		}
 	}
 
 	.clickable {
