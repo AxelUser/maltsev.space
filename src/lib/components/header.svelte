@@ -1,13 +1,20 @@
+<script>
+	import { ThemeSwitch } from '$lib/components';
+</script>
+
 <header>
 	<nav class="space-container">
 		<div class="logo">
 			<a href="/">MALTSEV.SPACE</a>
 		</div>
-		<ul class="nav-links">
-			<li><a href="/">Home</a></li>
-			<li><a href="/about">About</a></li>
-			<li><a href="/blog">Blog</a></li>
-		</ul>
+		<div class="nav-container">
+			<ul class="nav-links">
+				<li><a href="/">Home</a></li>
+				<li><a href="/about">About</a></li>
+				<li><a href="/blog">Blog</a></li>
+			</ul>
+			<ThemeSwitch />
+		</div>
 	</nav>
 </header>
 
@@ -27,6 +34,12 @@
 		justify-content: space-between;
 		align-items: center;
 		height: 100%;
+	}
+
+	.nav-container {
+		display: flex;
+		align-items: center;
+		gap: var(--gap);
 	}
 
 	.logo a {
@@ -86,9 +99,13 @@
 			min-height: var(--header-height);
 		}
 
-		.nav-links {
+		.nav-container {
 			width: 100%;
-			justify-content: space-around;
+			justify-content: space-between;
+		}
+
+		.nav-links {
+			gap: var(--gap-small);
 		}
 	}
 </style>

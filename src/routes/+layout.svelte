@@ -1,10 +1,19 @@
 <script lang="ts">
 	import { Header, Footer, TwinklingStars } from '$lib/components';
+	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
+	import { theme, applyTheme } from '$lib/stores/theme';
 	import 'open-props/style';
 	import 'open-props/normalize';
 	import '../app.css';
 
 	const { children } = $props();
+
+	onMount(() => {
+		if (browser) {
+			applyTheme($theme);
+		}
+	});
 </script>
 
 <div class="space-layout">

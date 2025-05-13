@@ -22,8 +22,8 @@
 				<h2 class="space-heading">Hello, I'm {bio.fullName}</h2>
 				<p class="tagline">Senior Software Engineer</p>
 				<p>
-					I've been programming for fun and profit since 2014, focusing on distributed systems,
-					highload applications, and database internals.
+					I've been programming for fun and profit since 2014, focusing on distributed systems and
+					highload applications
 				</p>
 			</div>
 		</section>
@@ -40,7 +40,7 @@
 						performance significantly without any downtime. I also designed algorithms to balance
 						workloads across services and independently created automation tools in Go and C# to
 						support daily operations. Additionally, I contributed to documentation and led
-						development on multiple data-related epics.
+						development on multiple segmentation-related epics.
 					</p>
 				</TimelineItem>
 
@@ -49,19 +49,19 @@
 					<p>
 						At Veeam, I worked on a RESTful integration between their Azure and Backup platforms,
 						ensuring real-time synchronization of entities. I developed notification systems to
-						provide progress tracking for long-running operations in the UI. I also led initiatives
-						to improve engineering workflows, including a migration from TFS to Git and better code
-						review tooling.
+						provide progress tracking for long-running operations in the UI. I also helped with
+						initiatives to improve engineering workflows, including a migration from TFS to Git and
+						better code review tooling.
 					</p>
 				</TimelineItem>
 
 				<TimelineItem date="2017–2019">
 					<h3 class="section-title">SKB Kontur</h3>
 					<p>
-						I contributed to enhancing a flagship accounting product by implementing
-						high-performance bulk operations that greatly reduced user wait times. I also built
-						Chrome-based daemons via the DevTools protocol to power browser automation for key
-						customers, expanding the product's capabilities.
+						Took part in Implementing features for enterprise segment in one of the most popular
+						accounting product in Russia. These features saved a lot of time for our biggest and
+						richest customers, optimised user scenarios and helped in gaining success of our
+						product.
 					</p>
 				</TimelineItem>
 
@@ -70,8 +70,7 @@
 					<p>
 						During my time as a freelancer, I improved a Xamarin-based language learning app by
 						optimizing UI rendering and implementing MVVM architecture. My changes significantly
-						boosted app responsiveness and doubled daily active users. I also integrated robust
-						local storage with SQLite and Realm
+						boosted app responsiveness. I also integrated robust local storage Realm.
 					</p>
 				</TimelineItem>
 
@@ -93,25 +92,6 @@
 						improvements for data-intensive processes.
 					</p>
 				</TimelineItem>
-
-				<TimelineItem>
-					<h3 class="section-title">Personal Projects</h3>
-					<ul class="projects-list">
-						<li>
-							<Link href="https://carryon.fit/" external={true}>CarryFit</Link> – Carry-on luggage size
-							checker.
-						</li>
-						<li>
-							<Link href="https://github.com/AxelUser/MongoTransit" external={true}
-								>MongoTransit</Link
-							> – Data transfer tool for MongoDB clusters.
-						</li>
-						<li>
-							<Link href="https://www.maltsev.space/" external={true}>Blog</Link> – Occasional posts
-							on distributed systems and more.
-						</li>
-					</ul>
-				</TimelineItem>
 			</Timeline>
 		</section>
 
@@ -123,34 +103,67 @@
 		</section>
 
 		<section>
+			<h2 class="space-heading">Personal Projects</h2>
+			<div class="card-grid">
+				<Card>
+					<div class="project-icon">✈️</div>
+					<h3 class="section-title">CarryFit</h3>
+					<p>
+						An online tool that helps travelers check if their carry-on luggage meets size
+						requirements for different airlines worldwide. Simply enter your bag's dimensions to
+						instantly see which of 150+ airlines will accept it as cabin baggage.
+					</p>
+					<div class="badge-container">
+						<Badge>SvelteKit</Badge>
+						<Badge>TailwindCSS</Badge>
+						<Badge>TypeScript</Badge>
+					</div>
+					<div class="project-link">
+						<Link href="https://carryon.fit/" external={true}>Visit Site</Link>
+					</div>
+				</Card>
+
+				<Card>
+					<div class="project-icon">🔄</div>
+					<h3 class="section-title">MongoTransit</h3>
+					<p>
+						A tool for automatic replication of documents between MongoDB clusters. Supports
+						iterative transfers, sharded collections, and configurable synchronization parameters,
+						making it ideal for database migrations and data synchronization tasks.
+					</p>
+					<div class="badge-container">
+						<Badge>C#</Badge>
+						<Badge>MongoDB</Badge>
+					</div>
+					<div class="project-link">
+						<Link href="https://github.com/AxelUser/MongoTransit" external={true}
+							>View on GitHub</Link
+						>
+					</div>
+				</Card>
+			</div>
+		</section>
+
+		<section>
 			<h2 class="space-heading">Hobbies & Interests</h2>
 
 			<div class="card-grid">
-				<Card variant="elevated">
-					<div class="interest-icon books"></div>
+				<Card>
+					<div class="interest-icon books">📚</div>
 					<h3 class="section-title">Reading</h3>
-					<p>
-						I'm an avid reader, always looking to expand my knowledge and perspectives through books
-						on technology, science, and other topics.
-					</p>
+					<p>I enjoy reading books on technology, science, and other topics to learn new things.</p>
 				</Card>
 
-				<Card variant="elevated">
-					<div class="interest-icon climbing"></div>
+				<Card>
+					<div class="interest-icon climbing">🧗</div>
 					<h3 class="section-title">Rock Climbing</h3>
-					<p>
-						Rock climbing is one of my favorite physical activities, challenging both body and mind
-						while connecting with nature.
-					</p>
+					<p>I like rock climbing to stay active and enjoy the outdoors.</p>
 				</Card>
 
-				<Card variant="elevated">
-					<div class="interest-icon skiing"></div>
+				<Card>
+					<div class="interest-icon skiing">⛷️</div>
 					<h3 class="section-title">Mountain Skiing</h3>
-					<p>
-						I enjoy mountain skiing as a winter activity, combining the thrill of speed with
-						beautiful mountain landscapes.
-					</p>
+					<p>I enjoy mountain skiing in the winter.</p>
 				</Card>
 			</div>
 		</section>
@@ -209,25 +222,9 @@
 			<p>Interested in collaborating or just want to say hello? Feel free to reach out.</p>
 
 			<div class="button-group">
-				<Button href="mailto:contact@maltsev.space">Email</Button>
-				<Button
-					href="https://github.com/AxelUser"
-					onclick={() => window.open('https://github.com/AxelUser', '_blank')}
-				>
-					GitHub
-				</Button>
-				<Button
-					href="https://www.linkedin.com/in/dev-alexey-maltsev/"
-					onclick={() => window.open('https://www.linkedin.com/in/dev-alexey-maltsev/', '_blank')}
-				>
-					LinkedIn
-				</Button>
-				<Button
-					href="https://www.maltsev.space/"
-					onclick={() => window.open('https://www.maltsev.space/', '_blank')}
-				>
-					Blog
-				</Button>
+				<Link href="mailto:contact@maltsev.space" external={true}>Email</Link>
+				<Link href="https://github.com/AxelUser" external={true}>GitHub</Link>
+				<Link href="https://www.linkedin.com/in/dev-alexey-maltsev/" external={true}>LinkedIn</Link>
 			</div>
 		</section>
 	</div>
@@ -281,7 +278,7 @@
 
 	.button-group {
 		display: flex;
-		justify-content: center;
+		justify-content: flex-start;
 		gap: var(--gap);
 		margin-top: var(--gap);
 		flex-wrap: wrap;
@@ -291,7 +288,27 @@
 		display: flex;
 		gap: var(--gap-small);
 		flex-wrap: wrap;
+		margin-top: var(--gap-small);
+		margin-bottom: var(--gap-small);
 	}
+
+	.project-icon {
+		width: 50px;
+		height: 50px;
+		border-radius: 50%;
+		background-color: var(--surface-3);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--text-1);
+		font-size: var(--font-size-5);
+		margin-bottom: var(--gap-small);
+	}
+
+	.project-link {
+		margin-top: var(--gap-small);
+	}
+
 	.intro-section {
 		display: flex;
 		gap: var(--gap-large);
@@ -309,7 +326,9 @@
 		width: 180px;
 		height: 180px;
 		border-radius: 50%;
-		background: linear-gradient(45deg, var(--brand), var(--accent));
+		background-image: url('/images/ava.jpg');
+		background-size: cover;
+		background-position: center;
 		position: absolute;
 		top: 50%;
 		left: 50%;
@@ -368,10 +387,6 @@
 		font-size: var(--font-size-5);
 	}
 
-	.contact-section {
-		text-align: center;
-	}
-
 	@media (--lg-n-below) {
 		.intro-section {
 			flex-direction: column;
@@ -405,15 +420,5 @@
 			flex-direction: column;
 			align-items: center;
 		}
-	}
-
-	.projects-list {
-		padding-left: 1.5rem;
-		margin: 0;
-		color: var(--text-2);
-	}
-
-	.projects-list li {
-		margin-bottom: var(--gap-small);
 	}
 </style>

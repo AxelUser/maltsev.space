@@ -19,7 +19,7 @@
 
 	const {
 		variant = 'default',
-		clickable = true,
+		clickable = false,
 		class: className = '',
 		children,
 		...rest
@@ -51,12 +51,6 @@
 
 	.default {
 		box-shadow: var(--shadow-3);
-	}
-
-	.default:hover {
-		background-color: var(--surface-3);
-		box-shadow: var(--shadow-4);
-		border-color: var(--surface-4);
 	}
 
 	.neon {
