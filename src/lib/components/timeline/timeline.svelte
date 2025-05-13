@@ -6,6 +6,7 @@
 </div>
 
 <style>
+	@import 'open-props/media';
 	.timeline {
 		margin-top: var(--gap-large);
 		position: relative;

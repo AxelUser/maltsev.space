@@ -8,6 +8,7 @@
 </div>
 
 <style>
+	@import 'open-props/media';
 	.planet-container {
 		position: relative;
 		width: 200px;

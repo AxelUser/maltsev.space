@@ -13,6 +13,7 @@
 </div>
 
 <style>
+	@import 'open-props/media';
 	.timeline-item {
 		position: relative;
 		margin-bottom: var(--gap-large);

@@ -70,6 +70,7 @@
 </div>
 
 <style>
+	@import 'open-props/media';
 	.blog-page {
 		padding-bottom: var(--gap-large);
 		display: flex;

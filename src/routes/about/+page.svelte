@@ -231,6 +231,7 @@
 </div>
 
 <style>
+	@import 'open-props/media';
 	.about-page {
 		padding-bottom: var(--gap-large);
 	}

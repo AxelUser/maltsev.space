@@ -1,5 +1,10 @@
 <script>
 	import { ThemeSwitch } from '$lib/components';
+	let mobileMenuOpen = $state(false);
+
+	function toggleMobileMenu() {
+		mobileMenuOpen = !mobileMenuOpen;
+	}
 </script>
 
 <header>
@@ -7,11 +12,18 @@
 		<div class="logo">
 			<a href="/">MALTSEV.SPACE</a>
 		</div>
-		<div class="nav-container">
+
+		<button class="mobile-menu-toggle" onclick={toggleMobileMenu} aria-label="Toggle menu">
+			<span class="bar" aria-hidden="true"></span>
+			<span class="bar" aria-hidden="true"></span>
+			<span class="bar" aria-hidden="true"></span>
+		</button>
+
+		<div class="nav-container" class:active={mobileMenuOpen}>
 			<ul class="nav-links">
-				<li><a href="/">Home</a></li>
-				<li><a href="/about">About</a></li>
-				<li><a href="/blog">Blog</a></li>
+				<li><a href="/" onclick={() => (mobileMenuOpen = false)}>Home</a></li>
+				<li><a href="/about" onclick={() => (mobileMenuOpen = false)}>About</a></li>
+				<li><a href="/blog" onclick={() => (mobileMenuOpen = false)}>Blog</a></li>
 			</ul>
 			<ThemeSwitch />
 		</div>
@@ -19,6 +31,8 @@
 </header>
 
 <style>
+	@import 'open-props/media';
+
 	header {
 		height: var(--header-height);
 		backdrop-filter: blur(5px);
@@ -34,6 +48,7 @@
 		justify-content: space-between;
 		align-items: center;
 		height: 100%;
+		position: relative;
 	}
 
 	.nav-container {
@@ -81,6 +96,27 @@
 		background-color: color-mix(in srgb, var(--brand) 15%, transparent);
 	}
 
+	.mobile-menu-toggle {
+		display: none;
+		flex-direction: column;
+		justify-content: space-between;
+		width: 30px;
+		height: 24px;
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		padding: 0;
+		z-index: 20;
+	}
+
+	.mobile-menu-toggle .bar {
+		height: 3px;
+		width: 100%;
+		background-color: var(--text-1);
+		border-radius: 3px;
+		transition: all var(--transition-fast);
+	}
+
 	@media (--md-n-below) {
 		.nav-links {
 			gap: var(--gap-small);
@@ -88,24 +124,53 @@
 	}
 
 	@media (--sm-n-below) {
-		nav {
-			flex-direction: column;
-			padding-block: var(--gap-small);
-			gap: var(--gap-small);
+		.mobile-menu-toggle {
+			display: flex;
 		}
 
 		header {
-			height: auto;
-			min-height: var(--header-height);
+			height: var(--header-height);
+		}
+
+		nav {
+			flex-direction: row;
+			padding-block: var(--gap-small);
 		}
 
 		.nav-container {
+			position: absolute;
+			top: var(--header-height);
+			left: 0;
+			right: 0;
+			flex-direction: column;
+			background-color: var(--surface-1);
+			border-bottom: 1px solid var(--surface-3);
+			padding: var(--gap) var(--gap);
+			transform: translateY(-100%);
+			opacity: 0;
+			visibility: hidden;
+			transition: all var(--transition-fast);
 			width: 100%;
-			justify-content: space-between;
+		}
+
+		.nav-container.active {
+			transform: translateY(0);
+			opacity: 1;
+			visibility: visible;
 		}
 
 		.nav-links {
-			gap: var(--gap-small);
+			flex-direction: column;
+			align-items: center;
+			width: 100%;
+			margin-bottom: var(--gap);
+		}
+
+		.nav-links a {
+			display: block;
+			width: 100%;
+			text-align: center;
+			padding: var(--gap-small) 0;
 		}
 	}
 </style>
