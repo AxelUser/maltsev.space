@@ -1,0 +1,66 @@
+---
+description: 
+globs: *.svelte
+alwaysApply: false
+---
+# Svelte 5 Lifecycle
+
+Svelte 5 maintains the same lifecycle methods as previous versions, but with enhanced integration with the runes system.
+
+## Lifecycle Hooks
+```svelte
+<script>
+  import { onMount, onDestroy, beforeUpdate, afterUpdate } from 'svelte';
+  
+  let count = $state(0);
+  
+  // Runs when component is first mounted to the DOM
+  onMount(() => {
+    console.log('Component has been mounted');
+    // Return a function for cleanup (equivalent to onDestroy)
+    return () => {
+      console.log('Cleanup from onMount');
+    };
+  });
+  
+  // Runs just before the DOM is updated
+  beforeUpdate(() => {
+    console.log('About to update the DOM');
+  });
+  
+  // Runs after the DOM has been updated
+  afterUpdate(() => {
+    console.log('DOM has been updated');
+  });
+  
+  // Runs when component is destroyed
+  onDestroy(() => {
+    console.log('Component is being destroyed');
+  });
+  
+  // Using $effect for reactive lifecycle management
+  $effect(() => {
+    console.log(`Count is now ${count}`);
+    
+    // Optional cleanup function that runs before next effect
+    return () => {
+      console.log(`Cleaning up when count was ${count}`);
+    };
+  });
+  
+  // Run once on mount with empty dependency array
+  $effect.pre(() => {
+    // Runs before initial render
+    console.log('Before initial render');
+  });
+  
+  $effect.once(() => {
+    // Similar to onMount
+    console.log('Component mounted (effect.once)');
+  });
+</script>
+
+<button onclick={() => count++}>
+  Increment ({count})
+</button>
+

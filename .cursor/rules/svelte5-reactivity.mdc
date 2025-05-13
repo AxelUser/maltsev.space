@@ -1,0 +1,41 @@
+---
+description: 
+globs: *.svelte,*.svelte.ts
+alwaysApply: false
+---
+# Svelte 5 Reactivity
+
+Svelte 5 uses runes to handle reactivity, replacing the previous `$:` syntax:
+
+## State Management
+```typescript
+// Declaring reactive state
+let count = $state(0);                    // Basic state declaration
+let user = $state({ name: 'Alice' });     // Objects become deeply reactive by default
+let items = $state(['apple', 'banana']);  // Arrays become deeply reactive too
+
+// When you need non-reactive objects/arrays
+let rawData = $state.raw({ large: 'data' }); // Only assignments will trigger updates, not property changes
+
+// Taking snapshots of state
+const snapshot = $state.snapshot(user);   // Creates a non-reactive copy
+```
+
+## Derived Values and Effects
+```typescript
+// Derived values
+const doubled = $derived(count * 2);      // Computed from other reactive values
+const fullName = $derived(`${user.firstName} ${user.lastName}`);
+
+// Side effects
+$effect(() => {
+  console.log(`Count changed to ${count}`);
+});
+
+// Cleanup functions
+$effect(() => {
+  const interval = setInterval(() => console.log(count), 1000);
+  return () => clearInterval(interval); // Runs when dependencies change or component unmounts
+});
+
+```

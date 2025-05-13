@@ -1,0 +1,31 @@
+---
+description: General description of this project, as well as technological stack that is used.
+globs: 
+alwaysApply: false
+---
+# Project
+
+This project is a personal website for software engineer Aleksey Maltsev. The website is hosted at domain maltsev.space and features a "space traveling" theme with cosmic visual elements like stars, planets, and a space-inspired design aesthetic.
+
+# Technological Stack
+
+- **Package Management**: pnpm
+- **Language**: TypeScript
+- **UI Framework**: Svelte 5
+- **Routing**: SvelteKit
+- **Styling**: OpenProps
+
+# Code Structure
+
+- **src/routes/** - SvelteKit routing structure:
+  - `/` - Home page with hero section and post previews
+  - `/about` - About page with personal information
+  - `/blog` - Blog listing page
+  - `/blog/[slug]` - Individual blog post pages
+
+- **src/lib/** - Reusable utilities and components
+
+- **src/posts/** - Blog post content
+
+
+The website follows a minimalist design approach while incorporating immersive space visuals to create a unique browsing experience that reflects the "space traveling" theme.

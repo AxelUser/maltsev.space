@@ -1,0 +1,126 @@
+---
+description: 
+globs: *.svelte
+alwaysApply: false
+---
+# Styling Guide
+
+This project uses [Open Props](mdc:https:/open-props.style) for CSS custom properties along with our own theme variables defined in [app.css](mdc:src/app.css).
+
+## Open Props Integration
+
+Open Props provides supercharged CSS variables for consistent design. Include it in components as needed:
+
+```svelte
+<script>
+  // Component code
+</script>
+
+<style>
+  /* Use Open Props variables for spacing, sizing, etc. */
+  .card {
+    border-radius: var(--radius-2);
+    padding: var(--size-fluid-3);
+    box-shadow: var(--shadow-2);
+  }
+  
+  .grid-layout {
+    display: grid;
+    gap: var(--size-4);
+  }
+</style>
+```
+
+## Theme Color Variables
+
+Use the theme variables defined in [app.css](mdc:src/app.css) for consistent color theming that automatically adapts to light/dark modes:
+
+```svelte
+<style>
+  .component {
+    /* Theme colors */
+    color: var(--text-1);
+    background-color: var(--surface-1);
+    border: 1px solid var(--surface-3);
+  }
+  
+  .accent {
+    color: var(--accent);
+  }
+  
+  .link {
+    color: var(--link);
+  }
+  
+  /* Special color sets */
+  .special-item {
+    color: var(--star);
+    background-color: var(--nebula);
+  }
+</style>
+```
+
+## Typography
+
+Use predefined typography classes:
+
+```svelte
+<div class="space-title">Page Title</div>
+<div class="space-subtitle">Subtitle text</div>
+<div class="space-heading">Section Heading</div>
+<div class="prose">
+  <p>Regular text content with proper styling.</p>
+</div>
+```
+
+## Layout
+
+Use the container class for consistent page layouts:
+
+```svelte
+<div class="space-container">
+  <!-- Page content here -->
+</div>
+```
+
+## Responsive Design
+
+Utilize media query custom properties for responsive design:
+
+```svelte
+<style>
+  .component {
+    width: 100%;
+  }
+  
+  @media (--md-n-above) {
+    .component {
+      width: 75%;
+    }
+  }
+  
+  @media (--lg-n-above) {
+    .component {
+      width: 50%;
+    }
+  }
+</style>
+```
+
+## Spacing and Sizing
+
+Use consistent spacing variables:
+
+```svelte
+<style>
+  .component {
+    margin-bottom: var(--gap);
+    padding: var(--gap-small);
+  }
+  
+  .large-section {
+    margin-top: var(--gap-large);
+  }
+</style>
+```
+
