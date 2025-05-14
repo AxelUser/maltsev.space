@@ -399,6 +399,10 @@
 			text-align: center;
 			gap: var(--gap);
 		}
+
+		.intro-text .space-heading {
+			justify-self: center;
+		}
 	}
 
 	@media (--md-n-below) {
