@@ -1,5 +1,5 @@
 <script lang="ts">
-	import FloatingStars from '$lib/components/floating-stars.svelte';
+	import Nebula from '$lib/components/nebula.svelte';
 	import { Timeline, TimelineItem, TagCloud } from '$lib/components';
 	import { Card, Badge, Link, Button } from '$lib/components/ui';
 	import { bio } from '$lib/bio';
@@ -12,7 +12,7 @@
 
 <div class="about-page">
 	<header class="about-header">
-		<FloatingStars height={250} />
+		<Nebula />
 		<h1 class="space-title">About Me</h1>
 	</header>
 
