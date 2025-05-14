@@ -36,8 +36,22 @@
 		<section>
 			<h2 class="space-heading">My Journey</h2>
 			<Timeline>
-				<TimelineItem date="2020–present">
-					<h3 class="section-title">Infobip</h3>
+				<TimelineItem
+					date="2020–present"
+					title="Infobip"
+					companyUrl="https://www.infobip.com/"
+					technologies={[
+						'C#',
+						'Kotlin',
+						'Go',
+						'TypeScript',
+						'React',
+						'ASP.NET',
+						'Spring Boot',
+						'Kafka',
+						'MongoDB'
+					]}
+				>
 					<p>
 						As part of a distributed team, I developed and maintained over a dozen event-driven
 						microservices that power real-time user segmentation. I was involved in migrating
@@ -49,8 +63,12 @@
 					</p>
 				</TimelineItem>
 
-				<TimelineItem date="2019–2020">
-					<h3 class="section-title">Veeam</h3>
+				<TimelineItem
+					date="2019–2020"
+					title="Veeam"
+					companyUrl="https://www.veeam.com/"
+					technologies={['C#', 'Azure', 'TypeScript', 'React', 'ASP.NET', 'PostgreSQL']}
+				>
 					<p>
 						At Veeam, I worked on a RESTful integration between their Azure and Backup platforms,
 						ensuring real-time synchronization of entities. I developed notification systems to
@@ -60,8 +78,20 @@
 					</p>
 				</TimelineItem>
 
-				<TimelineItem date="2017–2019">
-					<h3 class="section-title">SKB Kontur</h3>
+				<TimelineItem
+					date="2017–2019"
+					title="SKB Kontur"
+					companyUrl="https://kontur.ru/"
+					technologies={[
+						'C#',
+						'.NET Framework',
+						'TypeScript',
+						'React',
+						'ASP.NET',
+						'WCF',
+						'MSSQL Server'
+					]}
+				>
 					<p>
 						Took part in Implementing features for enterprise segment in one of the most popular
 						accounting product in Russia. These features saved a lot of time for our biggest and
@@ -70,8 +100,12 @@
 					</p>
 				</TimelineItem>
 
-				<TimelineItem date="2018">
-					<h3 class="section-title">Freelancer @ Upwork</h3>
+				<TimelineItem
+					date="2018"
+					title="Freelancer @ Upwork"
+					companyUrl="https://www.upwork.com/"
+					technologies={['C#', 'Xamarin', 'Android', 'Realm', 'MVVM']}
+				>
 					<p>
 						During my time as a freelancer, I improved a Xamarin-based language learning app by
 						optimizing UI rendering and implementing MVVM architecture. My changes significantly
@@ -79,8 +113,11 @@
 					</p>
 				</TimelineItem>
 
-				<TimelineItem date="2015–2017">
-					<h3 class="section-title">Pro IT</h3>
+				<TimelineItem
+					date="2015–2017"
+					title="Pro IT"
+					technologies={['C#', '.NET Framework', 'ASP.NET', 'React', 'MSSQL Server', 'LINQ']}
+				>
 					<p>
 						I worked on .NET-based enterprise software, optimizing LINQ and SQL queries to double
 						request throughput in edge cases. I developed admin dashboards to streamline operations
@@ -89,8 +126,21 @@
 					</p>
 				</TimelineItem>
 
-				<TimelineItem date="2014–2015">
-					<h3 class="section-title">KAI Development</h3>
+				<TimelineItem
+					date="2014–2015"
+					title="KAI Development"
+					companyUrl="https://kaidev.ru/"
+					technologies={[
+						'C#',
+						'.NET Framework',
+						'PHP',
+						'JavaScript',
+						'Java',
+						'Android',
+						'MSSQL Server',
+						'Transact-SQL'
+					]}
+				>
 					<p>
 						My early work involved building internal dashboards to improve SEO workflows. I migrated
 						performance-heavy logic to stored procedures in Transact-SQL, resulting in notable speed
@@ -249,13 +299,6 @@
 
 	section {
 		margin-top: var(--gap);
-	}
-
-	.section-title {
-		margin-top: var(--gap-small);
-		margin-bottom: var(--gap-small);
-		color: var(--text-1);
-		font-size: var(--font-size-3);
 	}
 
 	.about-header {
