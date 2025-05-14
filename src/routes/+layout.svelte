@@ -16,6 +16,10 @@
 	});
 </script>
 
+<svelte:head>
+	<link rel="alternate" type="application/rss+xml" title="Aleksey Maltsev's Blog" href="/rss.xml" />
+</svelte:head>
+
 <div class="space-layout">
 	<Header />
 	<TwinklingStars />

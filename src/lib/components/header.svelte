@@ -1,5 +1,6 @@
 <script>
 	import { ThemeSwitch } from '$lib/components';
+	import { Rss, Menu } from '@lucide/svelte';
 	let mobileMenuOpen = $state(false);
 
 	function toggleMobileMenu() {
@@ -14,9 +15,7 @@
 		</div>
 
 		<button class="mobile-menu-toggle" onclick={toggleMobileMenu} aria-label="Toggle menu">
-			<span class="bar" aria-hidden="true"></span>
-			<span class="bar" aria-hidden="true"></span>
-			<span class="bar" aria-hidden="true"></span>
+			<Menu size={24} stroke-width={2.5} aria-hidden="true" />
 		</button>
 
 		<div class="nav-container" class:active={mobileMenuOpen}>
@@ -24,6 +23,16 @@
 				<li><a href="/" onclick={() => (mobileMenuOpen = false)}>Home</a></li>
 				<li><a href="/about" onclick={() => (mobileMenuOpen = false)}>About</a></li>
 				<li><a href="/blog" onclick={() => (mobileMenuOpen = false)}>Blog</a></li>
+				<li>
+					<a
+						href="/rss.xml"
+						onclick={() => (mobileMenuOpen = false)}
+						class="rss-link"
+						aria-label="RSS Feed"
+					>
+						<Rss size={16} aria-hidden="true" />
+					</a>
+				</li>
 			</ul>
 			<ThemeSwitch />
 		</div>
@@ -98,23 +107,19 @@
 
 	.mobile-menu-toggle {
 		display: none;
-		flex-direction: column;
-		justify-content: space-between;
-		width: 30px;
-		height: 24px;
+		align-items: center;
+		justify-content: center;
 		background: transparent;
 		border: none;
 		cursor: pointer;
 		padding: 0;
 		z-index: 20;
+		color: var(--text-1);
+		transition: color var(--transition-fast);
 	}
 
-	.mobile-menu-toggle .bar {
-		height: 3px;
-		width: 100%;
-		background-color: var(--text-1);
-		border-radius: 3px;
-		transition: all var(--transition-fast);
+	.mobile-menu-toggle:hover {
+		color: var(--accent);
 	}
 
 	@media (--md-n-below) {
@@ -127,7 +132,7 @@
 		}
 	}
 
-	@media (--sm-n-below) {
+	@media (--md-n-below) {
 		.mobile-menu-toggle {
 			display: flex;
 		}
@@ -189,10 +194,16 @@
 			font-size: var(--font-size-1);
 			letter-spacing: 0;
 		}
+	}
 
-		.mobile-menu-toggle {
-			width: 24px;
-			height: 20px;
-		}
+	.rss-link {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+	}
+
+	.rss-link svg {
+		width: 16px;
+		height: 16px;
 	}
 </style>
