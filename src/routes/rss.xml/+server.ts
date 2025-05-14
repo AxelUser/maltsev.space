@@ -1,12 +1,14 @@
+import { bio } from '$lib/bio';
+import { config } from '$lib/config';
 import { getPosts } from '$lib/posts';
 
 export const prerender = true;
 
 export async function GET() {
 	const posts = getPosts();
-	const siteURL = 'https://maltsev.space';
-	const title = 'Aleksey Maltsev';
-	const description = 'Personal blog by Aleksey Maltsev';
+	const siteURL = config.websiteUrl;
+	const title = config.websiteTitle;
+	const description = `Personal blog by ${bio.fullName}`;
 
 	const xml = `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">

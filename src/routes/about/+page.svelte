@@ -222,9 +222,9 @@
 			<p>Interested in collaborating or just want to say hello? Feel free to reach out.</p>
 
 			<div class="button-group">
-				<Link href="mailto:contact@maltsev.space" external={true}>Email</Link>
-				<Link href="https://github.com/AxelUser" external={true}>GitHub</Link>
-				<Link href="https://www.linkedin.com/in/dev-alexey-maltsev/" external={true}>LinkedIn</Link>
+				<Link href={`mailto:${bio.social.email}`} external={true}>Email</Link>
+				<Link href={bio.social.github} external={true}>GitHub</Link>
+				<Link href={bio.social.linkedIn} external={true}>LinkedIn</Link>
 			</div>
 		</section>
 	</div>

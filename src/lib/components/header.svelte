@@ -1,5 +1,6 @@
 <script>
 	import { ThemeSwitch } from '$lib/components';
+	import { config } from '$lib/config';
 	import { Rss, Menu } from '@lucide/svelte';
 	let mobileMenuOpen = $state(false);
 
@@ -11,7 +12,7 @@
 <header>
 	<nav class="space-container">
 		<div class="logo">
-			<a href="/">MALTSEV.SPACE</a>
+			<a href="/">{config.websiteTitle}</a>
 		</div>
 
 		<button class="mobile-menu-toggle" onclick={toggleMobileMenu} aria-label="Toggle menu">
