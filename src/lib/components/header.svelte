@@ -1,12 +1,35 @@
-<script>
+<script lang="ts">
 	import { ThemeSwitch } from '$lib/components';
 	import { config } from '$lib/config';
 	import { Rss, Menu } from '@lucide/svelte';
+	import { onMount } from 'svelte';
+
 	let mobileMenuOpen = $state(false);
+	let navContainer: HTMLDivElement;
+	let menuToggle: HTMLButtonElement;
 
 	function toggleMobileMenu() {
 		mobileMenuOpen = !mobileMenuOpen;
 	}
+
+	function handleClickOutside(event: MouseEvent) {
+		if (!mobileMenuOpen) return;
+
+		const target = event.target as Node;
+
+		if (menuToggle && menuToggle.contains(target)) return;
+
+		if (navContainer && !navContainer.contains(target)) {
+			mobileMenuOpen = false;
+		}
+	}
+
+	onMount(() => {
+		document.addEventListener('click', handleClickOutside, { capture: true });
+		return () => {
+			document.removeEventListener('click', handleClickOutside, { capture: true });
+		};
+	});
 </script>
 
 <header>
@@ -15,11 +38,16 @@
 			<a href="/">{config.websiteTitle}</a>
 		</div>
 
-		<button class="mobile-menu-toggle" onclick={toggleMobileMenu} aria-label="Toggle menu">
+		<button
+			class="mobile-menu-toggle"
+			bind:this={menuToggle}
+			onclick={toggleMobileMenu}
+			aria-label="Toggle menu"
+		>
 			<Menu size={24} stroke-width={2.5} aria-hidden="true" />
 		</button>
 
-		<div class="nav-container" class:active={mobileMenuOpen}>
+		<div class="nav-container" class:active={mobileMenuOpen} bind:this={navContainer}>
 			<ul class="nav-links">
 				<li><a href="/" onclick={() => (mobileMenuOpen = false)}>Home</a></li>
 				<li><a href="/about" onclick={() => (mobileMenuOpen = false)}>About</a></li>
@@ -104,6 +132,10 @@
 	.nav-links a:hover {
 		color: var(--text-1);
 		background-color: color-mix(in srgb, var(--brand) 15%, transparent);
+	}
+
+	.rss-link {
+		display: block;
 	}
 
 	.mobile-menu-toggle {
@@ -195,16 +227,5 @@
 			font-size: var(--font-size-1);
 			letter-spacing: 0;
 		}
-	}
-
-	.rss-link {
-		display: flex;
-		align-items: center;
-		gap: 0.25rem;
-	}
-
-	.rss-link svg {
-		width: 16px;
-		height: 16px;
 	}
 </style>

@@ -90,6 +90,9 @@ importers:
       vite:
         specifier: ^6.2.5
         version: 6.3.2
+      vite-plugin-qrcode:
+        specifier: ^0.2.4
+        version: 0.2.4(vite@6.3.2)
 
 packages:
 
@@ -1164,6 +1167,10 @@ packages:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
 
+  qrcode-terminal@0.12.0:
+    resolution: {integrity: sha512-EXtzRZmC+YGmGlDFbXKxQiMZNwCLEO6BANKXG4iCtSIM0yqc/pappSx3RIKr4r0uh5JsBckOXeKrB3Iz7mdQpQ==}
+    hasBin: true
+
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
 
@@ -1346,6 +1353,12 @@ packages:
 
   vfile@6.0.3:
     resolution: {integrity: sha512-KzIbH/9tXat2u30jf+smMwFCsno4wHVdNmzFyL+T/L3UGqqk6JKfVqOFOZEpZSHADH1k40ab6NUIXZq422ov3Q==}
+
+  vite-plugin-qrcode@0.2.4:
+    resolution: {integrity: sha512-XFNNSCTXdxCZFJrVVJlwFD6yk3jhf14xDFImI9y34FpIcRPjGcdmXXZ6V8YO6LUisB+n5AMbYITe2J7rOxwhmA==}
+    engines: {node: ^14.13.1 || ^16.0.0 || >=18}
+    peerDependencies:
+      vite: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0
 
   vite@6.3.2:
     resolution: {integrity: sha512-ZSvGOXKGceizRQIZSz7TGJ0pS3QLlVY/9hwxVh17W3re67je1RKYzFHivZ/t0tubU78Vkyb9WnHPENSBCzbckg==}
@@ -2403,6 +2416,8 @@ snapshots:
 
   punycode@2.3.1: {}
 
+  qrcode-terminal@0.12.0: {}
+
   queue-microtask@1.2.3: {}
 
   readdirp@4.1.2: {}
@@ -2651,6 +2666,11 @@ snapshots:
     dependencies:
       '@types/unist': 3.0.3
       vfile-message: 4.0.2
+
+  vite-plugin-qrcode@0.2.4(vite@6.3.2):
+    dependencies:
+      qrcode-terminal: 0.12.0
+      vite: 6.3.2
 
   vite@6.3.2:
     dependencies:
