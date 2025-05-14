@@ -1,5 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { createShader } from '$lib/shaders/utils';
+
+	import vertexShaderSource from '$lib/shaders/stars-vertex.glsl?raw';
+	import fragmentShaderSource from '$lib/shaders/stars-fragment.glsl?raw';
 
 	interface Props {
 		height?: number;
@@ -21,74 +25,6 @@
 	let starColors: Float32Array;
 
 	let innerWidth = $state(0);
-
-	const vertexShaderSource = `
-		attribute vec2 position;
-		attribute float size;
-		attribute float speed;
-		attribute vec3 color;
-		
-		uniform float time;
-		uniform vec2 resolution;
-		uniform float speedMultiplier;
-		
-		varying float vSize;
-		varying vec3 vColor;
-		
-		void main() {
-			float xOffset = sin(position.y * 0.01 + time * 0.5) * 20.0;
-			float yOffset = cos(position.x * 0.01 + time * 0.3) * 10.0;
-			
-			float x = mod(position.x - (speed * time * speedMultiplier) + xOffset, resolution.x);
-			float y = mod(position.y + yOffset, resolution.y);
-			
-			vec2 pos = vec2(x, y);
-			
-			vec2 zeroToOne = pos / resolution;
-			vec2 zeroToTwo = zeroToOne * 2.0;
-			vec2 clipSpace = zeroToTwo - 1.0;
-			
-			float sizePulse = sin(time * 2.0 + position.x * 0.1) * 0.2 + 1.0;
-			
-			gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
-			gl_PointSize = size * sizePulse * 2.0;
-			vSize = size * sizePulse;
-			vColor = color;
-		}
-	`;
-
-	const fragmentShaderSource = `
-		precision mediump float;
-		
-		varying float vSize;
-		varying vec3 vColor;
-		
-		void main() {
-			vec2 center = vec2(0.5, 0.5);
-			float dist = distance(gl_PointCoord, center);
-			
-			if (dist > 0.5) {
-				discard;
-			}
-			
-			float alpha = smoothstep(0.5, 0.0, dist);
-			gl_FragColor = vec4(vColor, alpha);
-		}
-	`;
-
-	function createShader(gl: WebGLRenderingContext, type: number, source: string): WebGLShader {
-		const shader = gl.createShader(type)!;
-		gl.shaderSource(shader, source);
-		gl.compileShader(shader);
-
-		if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-			console.error('Shader compilation error:', gl.getShaderInfoLog(shader));
-			gl.deleteShader(shader);
-			throw new Error('Shader compilation failed');
-		}
-
-		return shader;
-	}
 
 	function createProgram(
 		gl: WebGLRenderingContext,
