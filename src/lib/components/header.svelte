@@ -202,6 +202,20 @@
 		font-size: calc(var(--font-size-1) * 1.2);
 	}
 
+	.mobile-nav li {
+		width: 100%;
+		text-align: center;
+	}
+
+	.mobile-nav li:not(:last-child)::after {
+		content: '';
+		display: block;
+		width: 30%;
+		height: 1px;
+		background-color: color-mix(in srgb, var(--brand) 30%, transparent);
+		margin: var(--gap-small) auto 0;
+	}
+
 	@media (--md-n-below) {
 		.mobile-menu-toggle {
 			display: flex;
