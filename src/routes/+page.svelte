@@ -3,6 +3,7 @@
 	import { Button, Link } from '$lib/components/ui';
 	import { HeroPlanet, PostPreviewCard, TagCloud } from '$lib/components';
 	import { bio } from '$lib/bio';
+	import { config } from '$lib/config';
 
 	import 'open-props/media';
 
@@ -16,6 +17,10 @@
 
 	const { data } = $props();
 </script>
+
+<svelte:head>
+	<title>Home | {config.websiteTitle}</title>
+</svelte:head>
 
 <div class="hero" class:visible={isVisible}>
 	<h1>Howdy, I'm {bio.firstName}</h1>

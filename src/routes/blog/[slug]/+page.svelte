@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Link from '$lib/components/ui/link/link.svelte';
 	import Card from '$lib/components/ui/card/card.svelte';
+	import { config } from '$lib/config';
 
 	const { data } = $props();
 
@@ -8,7 +9,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.title}</title>
+	<title>{data.title} | {config.websiteTitle}</title>
 </svelte:head>
 
 <article>

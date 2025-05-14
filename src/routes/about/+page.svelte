@@ -3,7 +3,12 @@
 	import { Timeline, TimelineItem, TagCloud } from '$lib/components';
 	import { Card, Badge, Link, Button } from '$lib/components/ui';
 	import { bio } from '$lib/bio';
+	import { config } from '$lib/config';
 </script>
+
+<svelte:head>
+	<title>About Me | {config.websiteTitle}</title>
+</svelte:head>
 
 <div class="about-page">
 	<header class="about-header">

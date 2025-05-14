@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Button, Card, Badge, Link } from '$lib/components/ui';
 	import { PostPreviewCard } from '$lib/components';
+	import { config } from '$lib/config';
 
 	const { data } = $props();
 
@@ -24,6 +25,10 @@
 
 	const allTags = getAllTags();
 </script>
+
+<svelte:head>
+	<title>Blog | {config.websiteTitle}</title>
+</svelte:head>
 
 <div class="blog-page">
 	<header class="blog-header">
