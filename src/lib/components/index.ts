@@ -6,3 +6,4 @@ export { default as HeroPlanet } from './hero-planet.svelte';
 export { default as ThemeSwitch } from './theme-switch.svelte';
 export * from './timeline';
 export * from './tag-cloud';
+export * from './icons';
