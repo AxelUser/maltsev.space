@@ -38,34 +38,44 @@
 			<a href="/">{config.websiteTitle}</a>
 		</div>
 
-		<button
-			class="mobile-menu-toggle"
-			bind:this={menuToggle}
-			onclick={toggleMobileMenu}
-			aria-label="Toggle menu"
-		>
-			<Menu size={24} stroke-width={2.5} aria-hidden="true" />
-		</button>
+		<ul class="nav-links">
+			<li><a class="nav-link" href="/" onclick={() => (mobileMenuOpen = false)}>Home</a></li>
+			<li>
+				<a class="nav-link" href="/about" onclick={() => (mobileMenuOpen = false)}>About</a>
+			</li>
+			<li><a class="nav-link" href="/blog" onclick={() => (mobileMenuOpen = false)}>Blog</a></li>
+		</ul>
 
-		<div class="nav-container" class:active={mobileMenuOpen} bind:this={navContainer}>
-			<ul class="nav-links">
-				<li><a href="/" onclick={() => (mobileMenuOpen = false)}>Home</a></li>
-				<li><a href="/about" onclick={() => (mobileMenuOpen = false)}>About</a></li>
-				<li><a href="/blog" onclick={() => (mobileMenuOpen = false)}>Blog</a></li>
-				<li>
-					<a
-						href="/rss.xml"
-						onclick={() => (mobileMenuOpen = false)}
-						class="rss-link"
-						aria-label="RSS Feed"
-					>
-						<Rss size={16} aria-hidden="true" />
-					</a>
-				</li>
-			</ul>
+		<div class="nav-actions">
+			<a
+				href="/rss.xml"
+				onclick={() => (mobileMenuOpen = false)}
+				class="rss-link nav-link"
+				aria-label="RSS Feed"
+			>
+				<Rss size={16} aria-hidden="true" />
+			</a>
 			<ThemeSwitch />
+
+			<button
+				class="mobile-menu-toggle"
+				bind:this={menuToggle}
+				onclick={toggleMobileMenu}
+				aria-label="Toggle menu"
+			>
+				<Menu size={24} stroke-width={2.5} aria-hidden="true" />
+			</button>
 		</div>
 	</nav>
+	<div class="mobile-nav" class:active={mobileMenuOpen} bind:this={navContainer}>
+		<ul>
+			<li><a class="nav-link" href="/" onclick={() => (mobileMenuOpen = false)}>Home</a></li>
+			<li>
+				<a class="nav-link" href="/about" onclick={() => (mobileMenuOpen = false)}>About</a>
+			</li>
+			<li><a class="nav-link" href="/blog" onclick={() => (mobileMenuOpen = false)}>Blog</a></li>
+		</ul>
+	</div>
 </header>
 
 <style>
@@ -83,16 +93,9 @@
 
 	nav {
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
 		height: 100%;
 		position: relative;
-	}
-
-	.nav-container {
-		display: flex;
-		align-items: center;
-		gap: var(--gap);
 	}
 
 	.logo a {
@@ -115,27 +118,36 @@
 		list-style: none;
 		margin: 0;
 		padding: 0;
+		margin-left: var(--gap);
+		flex-grow: 1;
 	}
 
-	.nav-links a {
+	.nav-link {
 		color: var(--text-2);
 		text-decoration: none;
 		font-size: var(--font-size-1);
 		font-weight: var(--font-weight-4);
 		padding: var(--gap-small) var(--gap-small);
-		border-radius: var(--radius-sm);
 		transition:
 			color var(--transition-fast),
 			background-color var(--transition-fast);
 	}
 
-	.nav-links a:hover {
+	.nav-link:hover {
 		color: var(--text-1);
 		background-color: color-mix(in srgb, var(--brand) 15%, transparent);
 	}
 
+	.nav-actions {
+		display: flex;
+		align-items: center;
+		gap: var(--gap-small);
+		margin-left: auto;
+	}
+
 	.rss-link {
-		display: block;
+		display: flex;
+		align-items: center;
 	}
 
 	.mobile-menu-toggle {
@@ -146,23 +158,48 @@
 		border: none;
 		cursor: pointer;
 		padding: 0;
-		z-index: 20;
 		color: var(--text-1);
 		transition: color var(--transition-fast);
 	}
 
-	.mobile-menu-toggle:hover {
-		color: var(--accent);
+	.mobile-nav {
+		display: none;
+		position: absolute;
+		top: 100%;
+		left: 0;
+		right: 0;
+		background-color: var(--surface-1);
+		padding: var(--gap);
+		border-bottom: 1px solid color-mix(in srgb, var(--brand) 20%, transparent);
+		box-shadow: var(--shadow-2);
+		transform: translateY(-20px);
+		opacity: 0;
+		visibility: hidden;
+		transition: all 0.3s ease;
+		z-index: 5;
 	}
 
-	@media (--md-n-below) {
-		.nav-links {
-			gap: var(--gap-small);
-		}
+	.mobile-nav.active {
+		transform: translateY(0);
+		opacity: 1;
+		visibility: visible;
+	}
 
-		.logo a {
-			font-size: var(--font-size-2);
-		}
+	.mobile-nav ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--gap);
+	}
+
+	.mobile-nav .nav-link {
+		display: block;
+		text-align: center;
+		padding: var(--gap-small) 0;
+		font-size: calc(var(--font-size-1) * 1.2);
 	}
 
 	@media (--md-n-below) {
@@ -170,55 +207,17 @@
 			display: flex;
 		}
 
-		header {
-			height: var(--header-height);
+		.nav-links {
+			display: none;
 		}
 
-		nav {
-			flex-direction: row;
-			padding-block: var(--gap-small);
+		.mobile-nav {
+			display: block;
 		}
 
 		.logo a {
 			font-size: var(--font-size-2);
 			letter-spacing: 0.05em;
-		}
-
-		.nav-container {
-			position: absolute;
-			top: var(--header-height);
-			left: 0;
-			right: 0;
-			flex-direction: column;
-			background-color: var(--surface-1);
-			border-bottom: 1px solid var(--surface-3);
-			padding: var(--gap) var(--gap);
-			transform: translateY(-100%);
-			opacity: 0;
-			visibility: hidden;
-			transition: all var(--transition-fast);
-			width: 100%;
-		}
-
-		.nav-container.active {
-			transform: translateY(0);
-			opacity: 1;
-			visibility: visible;
-		}
-
-		.nav-links {
-			flex-direction: column;
-			align-items: center;
-			width: 100%;
-			margin-bottom: var(--gap);
-		}
-
-		.nav-links a {
-			display: block;
-			width: 100%;
-			text-align: center;
-			padding: var(--gap-small) 0;
-			font-size: calc(var(--font-size-1) * 1.2);
 		}
 	}
 
