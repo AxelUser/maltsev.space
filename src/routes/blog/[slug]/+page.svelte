@@ -1,5 +1,10 @@
 <script lang="ts">
+	import Link from '$lib/components/ui/link/link.svelte';
+	import Card from '$lib/components/ui/card/card.svelte';
+
 	const { data } = $props();
+
+	const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
 </script>
 
 <svelte:head>
@@ -23,23 +28,35 @@
 			<a href="/blog" class="back-to-blog">← Back to all posts</a>
 		</div>
 
-		<div class="share-post">
-			<span>Share this post:</span>
-			<div class="share-links">
-				<a
-					href={`https://twitter.com/intent/tweet?text=`}
-					target="_blank"
-					rel="noopener noreferrer"
-					class="share-link twitter">Twitter</a
+		<Card>
+			<div class="share-message">Enjoyed this post? Share it with the universe!</div>
+			<div class="share-buttons">
+				<Link
+					href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(data.title)}&url=${encodeURIComponent(pageUrl)}`}
+					external={true}
+					class="share-link twitter"
+					aria-label="Share on Twitter"
 				>
-				<a
-					href={`https://www.linkedin.com/shareArticle?mini=true&url=`}
-					target="_blank"
-					rel="noopener noreferrer"
-					class="share-link linkedin">LinkedIn</a
+					Twitter
+				</Link>
+				<Link
+					href={`https://www.linkedin.com/shareArticle?mini=true&title=${encodeURIComponent(data.title)}&url=${encodeURIComponent(pageUrl)}`}
+					external={true}
+					class="share-link linkedin"
+					aria-label="Share on LinkedIn"
 				>
+					LinkedIn
+				</Link>
+				<Link
+					href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`}
+					external={true}
+					class="share-link facebook"
+					aria-label="Share on Facebook"
+				>
+					Facebook
+				</Link>
 			</div>
-		</div>
+		</Card>
 	</footer>
 </article>
 
@@ -68,7 +85,6 @@
 		margin-bottom: var(--gap-small);
 	}
 
-	/* Post footer */
 	.post-footer {
 		margin-top: var(--gap-large);
 		padding-top: var(--gap);
@@ -93,38 +109,18 @@
 		color: var(--space-accent);
 	}
 
-	.share-post {
+	.share-message {
+		color: var(--text-1);
+		font-size: var(--font-size-2);
+		margin-bottom: var(--gap);
+		font-weight: 500;
+		text-align: center;
+	}
+
+	.share-buttons {
 		display: flex;
+		gap: var(--gap);
+		justify-content: center;
 		flex-wrap: wrap;
-		align-items: center;
-		gap: var(--space-gap);
-		margin-top: var(--space-gap);
-	}
-
-	.share-post span {
-		color: var(--space-text-muted);
-		font-size: var(--font-size-1);
-	}
-
-	.share-links {
-		display: flex;
-		gap: var(--space-gap-small);
-	}
-
-	.share-link {
-		display: inline-block;
-		padding: var(--space-gap-small);
-		background-color: var(--space-bg-light);
-		border-radius: var(--space-radius-sm);
-		color: var(--space-text-light);
-		text-decoration: none;
-		font-size: var(--font-size-1);
-		transition: all var(--space-transition-fast);
-	}
-
-	.share-link:hover {
-		background-color: var(--space-primary);
-		color: var(--space-text);
-		transform: translateY(-2px);
 	}
 </style>

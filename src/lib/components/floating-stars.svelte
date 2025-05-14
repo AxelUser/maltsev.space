@@ -36,7 +36,6 @@
 		varying vec3 vColor;
 		
 		void main() {
-			// Calculate position with more complex time-based movement
 			float xOffset = sin(position.y * 0.01 + time * 0.5) * 20.0;
 			float yOffset = cos(position.x * 0.01 + time * 0.3) * 10.0;
 			
@@ -45,12 +44,10 @@
 			
 			vec2 pos = vec2(x, y);
 			
-			// Convert to clip space coordinates
 			vec2 zeroToOne = pos / resolution;
 			vec2 zeroToTwo = zeroToOne * 2.0;
 			vec2 clipSpace = zeroToTwo - 1.0;
 			
-			// Add subtle pulsing to the star size
 			float sizePulse = sin(time * 2.0 + position.x * 0.1) * 0.2 + 1.0;
 			
 			gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
@@ -67,16 +64,13 @@
 		varying vec3 vColor;
 		
 		void main() {
-			// Calculate distance from center of point
 			vec2 center = vec2(0.5, 0.5);
 			float dist = distance(gl_PointCoord, center);
 			
-			// Create radial gradient effect
 			if (dist > 0.5) {
-				discard; // Discard pixels outside the circle
+				discard;
 			}
 			
-			// Create soft glow effect with color
 			float alpha = smoothstep(0.5, 0.0, dist);
 			gl_FragColor = vec4(vColor, alpha);
 		}
@@ -127,15 +121,12 @@
 			return false;
 		}
 
-		// Create shaders
 		const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
 		const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
 
-		// Create program
 		program = createProgram(gl, vertexShader, fragmentShader);
 		gl.useProgram(program);
 
-		// Enable blending
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 

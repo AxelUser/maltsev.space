@@ -91,7 +91,6 @@
 		margin: 0;
 	}
 
-	/* Filters */
 	.blog-filters {
 		margin-bottom: var(--gap-large);
 		display: flex;
@@ -123,7 +122,6 @@
 		margin-bottom: var(--gap);
 	}
 
-	/* Posts Grid */
 	.posts-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
