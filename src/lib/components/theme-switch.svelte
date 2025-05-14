@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { theme } from '$lib/stores/theme';
+	import { theme, type Theme } from '$lib/stores/theme';
 	import { Sun, Moon, Laptop } from '@lucide/svelte';
 
-	const setTheme = (newTheme: 'light' | 'dark' | 'system') => {
+	const setTheme = (newTheme: Theme) => {
 		theme.set(newTheme);
 	};
 </script>
