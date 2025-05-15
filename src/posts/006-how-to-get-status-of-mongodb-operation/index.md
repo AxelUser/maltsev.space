@@ -5,9 +5,10 @@ tags:
 title: "Checking MongoDB Operation Status: A Simple Guide"
 preview: "Learn how to easily check the status of your MongoDB operations with this step-by-step guide."
 draft: false
+hero: /images/blog/006-how-to-get-status-of-mongodb-operation/hero.jpg
 ---
 
-When working with databases, it's not uncommon to inspect the status of a running query, whether it's for profiling purposes or as part of a polling mechanism for asynchronous operations. In this blog post, we'll explore how to use MongoDB's $currentOp stage to retrieve information about running queries and how to use this functionality to store the status of running operations.
+When working with databases, it's not uncommon to inspect the status of a running query, whether it's for profiling purposes or as part of a polling mechanism for asynchronous operations. In this blog post, we'll explore how to use MongoDB's `$currentOp` stage to retrieve information about running queries and how to use this functionality to store the status of running operations.
 
 ## Background
 

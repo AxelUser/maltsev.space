@@ -10,6 +10,7 @@ keywords:
 title: "Fixing C# type pattern-matching"
 preview: "Craving Kotlin's secure pattern matching on sealed classes for your C# code? Discover how the Visitor Pattern can satisfy your longing!"
 draft: false
+hero: /images/blog/007-fixing-csharp-type-pattern-matching/hero.jpg
 ---
 
 Hello there! Are you looking for ways to make your code more robust, maintainable, and less prone to runtime errors? Well, buckle up because today we're going to explore how to substitute type pattern matching in C# with the Visitors pattern. Yes, I know it sounds a bit strange, but stick with me, and you'll see how this can help you write better code.

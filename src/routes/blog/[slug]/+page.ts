@@ -7,7 +7,8 @@ export const load: PageLoad = async ({ params }) => {
 		return {
 			content: post.default,
 			title: post.metadata.title as string,
-			date: post.metadata.date as string
+			date: post.metadata.date as string,
+			heroUrl: post.metadata?.hero as string | undefined
 		};
 	} catch (err) {
 		console.error(err);

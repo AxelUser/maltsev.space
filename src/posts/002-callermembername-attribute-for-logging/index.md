@@ -9,6 +9,7 @@ title: "Using CallerMemberName for Improved Logging in C#"
 preview: 'Learn how to use "magic" attributes in C#, such as CallerFilePath, CallerLineNumber, and CallerMemberName, to retrieve caller information and improve logging functionality.'
 draft: false
 legacy: true
+hero: /images/blog/002-callermembername-attribute-for-logging/hero.jpg
 ---
 
 In software development, especially when working with large codebases, tracking down where and how methods are called can be a challenging task. Debugging and logging become essential tools in a developer's toolkit to understand the flow of execution and identify issues.

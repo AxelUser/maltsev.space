@@ -6,19 +6,41 @@
 	const { data } = $props();
 
 	const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
+	const heroImage = data?.heroUrl;
 </script>
 
 <svelte:head>
 	<title>{data.title} | {config.websiteTitle}</title>
 </svelte:head>
 
+{#if heroImage}
+	<div class="hero-background-container">
+		<img
+			src={heroImage}
+			alt="{data.title} hero image"
+			loading="lazy"
+			class="hero-background-image"
+		/>
+		<div class="hero-content">
+			<hgroup>
+				<h1 class="space-title">{data.title}</h1>
+				<p>
+					<span>Published at <time datetime="2024-06-15">{data.date}</time></span>
+				</p>
+			</hgroup>
+		</div>
+	</div>
+{/if}
+
 <article>
-	<hgroup>
-		<h1 class="space-title">{data.title}</h1>
-		<p>
-			<span>Published at <time datetime="2024-06-15">{data.date}</time></span>
-		</p>
-	</hgroup>
+	{#if !heroImage}
+		<hgroup>
+			<h1 class="space-title">{data.title}</h1>
+			<p>
+				<span>Published at <time datetime="2024-06-15">{data.date}</time></span>
+			</p>
+		</hgroup>
+	{/if}
 
 	<div class="prose">
 		{@render data.content()}
@@ -67,25 +89,6 @@
 		padding-bottom: var(--gap-large);
 	}
 
-	h1 {
-		max-inline-size: none;
-	}
-
-	hgroup {
-		margin-bottom: var(--gap);
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap-small);
-	}
-
-	hgroup p {
-		display: flex;
-		gap: var(--gap);
-		font-size: var(--font-size-1);
-		color: var(--space-text-muted);
-		margin-bottom: var(--gap-small);
-	}
-
 	.post-footer {
 		margin-top: var(--gap-large);
 		padding-top: var(--gap);
@@ -123,5 +126,65 @@
 		gap: var(--gap);
 		justify-content: center;
 		flex-wrap: wrap;
+	}
+
+	.hero-background-container {
+		position: relative;
+		width: 100%;
+		padding: var(--gap-large) 0; /* Add padding to create space for the text */
+		margin-bottom: var(--gap);
+		color: var(--text-on-dark-bg, white); /* Ensure text is readable on image */
+	}
+
+	.hero-background-image {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		opacity: 0.3; /* Adjust opacity as needed */
+		z-index: -1; /* Place image behind the content */
+	}
+
+	.hero-content {
+		position: relative; /* Ensure content is above the image */
+		z-index: 1;
+		max-width: var(--max-width-prose, 70ch); /* Optional: constrain width of text */
+		margin: 0 auto; /* Center the content */
+		padding: 0 var(--gap); /* Add some horizontal padding for the content */
+	}
+
+	.hero-content hgroup {
+		/* Reset or adjust hgroup styles from global if needed */
+		margin-bottom: 0; /* Remove default margin if not needed here */
+	}
+
+	.hero-content h1 {
+		/* Ensure title is prominent */
+		color: inherit; /* Inherit color from .hero-background-container */
+	}
+
+	.hero-content p {
+		/* Ensure publication date is styled appropriately */
+		color: inherit; /* Inherit color */
+		font-size: var(--font-size-1);
+		margin-bottom: 0;
+	}
+
+	/* Conditional hgroup styling when no hero image */
+	article > hgroup {
+		margin-bottom: var(--gap);
+		display: flex;
+		flex-direction: column;
+		gap: var(--gap);
+	}
+
+	article > hgroup p {
+		display: flex;
+		gap: var(--gap);
+		font-size: var(--font-size-1);
+		color: var(--space-text-muted);
+		margin-bottom: var(--gap-small);
 	}
 </style>
