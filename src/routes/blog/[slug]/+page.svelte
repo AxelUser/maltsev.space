@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Link from '$lib/components/ui/link/link.svelte';
 	import Card from '$lib/components/ui/card/card.svelte';
+	import Button from '$lib/components/ui/button/button.svelte';
 	import { config } from '$lib/config';
 
 	const { data } = $props();
@@ -42,13 +43,17 @@
 		</hgroup>
 	{/if}
 
+	<div class="post-navigation top-navigation">
+		<Button href="/blog">← Back to all posts</Button>
+	</div>
+
 	<div class="prose">
 		{@render data.content()}
 	</div>
 
 	<footer class="post-footer">
 		<div class="post-navigation">
-			<a href="/blog" class="back-to-blog">← Back to all posts</a>
+			<Button href="/blog">← Back to all posts</Button>
 		</div>
 
 		<Card>
@@ -104,16 +109,13 @@
 	.post-navigation {
 		display: flex;
 		justify-content: space-between;
+		margin-bottom: var(--gap);
 	}
 
-	.back-to-blog {
-		color: var(--space-primary-light);
-		text-decoration: none;
-		transition: color var(--space-transition-fast);
-	}
-
-	.back-to-blog:hover {
-		color: var(--space-accent);
+	.top-navigation {
+		margin-bottom: var(--gap-large);
+		padding-bottom: var(--gap);
+		border-bottom: 1px solid color-mix(in srgb, var(--brand) 20%, transparent);
 	}
 
 	.share-message {

@@ -28,7 +28,12 @@
 				<p class="tagline">Senior Software Engineer</p>
 				<p>
 					I've been programming for fun and profit since 2014, focusing on distributed systems and
-					highload applications
+					highload applications. My main stack is <b>C#</b> and <b>.NET</b>, but I'm also proficient
+					in <b>Kotlin, Go, and TypeScript</b>.
+				</p>
+				<p>
+					<b>Fun fact:</b> I was born on the 11th of April, just a day before Yuri Gagarin's flight.
+					Poehali!
 				</p>
 			</div>
 		</section>
