@@ -1,0 +1,68 @@
+---
+description: 
+globs: *.svelte
+alwaysApply: false
+---
+# Svelte 5 Bindings
+
+Svelte 5 uses HTML attributes with `bind:` prefix for two-way data binding, similar to previous versions but with some differences in implementation.
+
+## Form Input Bindings
+```svelte
+<script>
+  let name = $state('');
+  let agreed = $state(false);
+  let selectedColor = $state('red');
+  let selectedColors = $state([]);
+  let details = $state('');
+  let quantity = $state(1);
+</script>
+
+<!-- Text inputs -->
+<input bind:value={name} placeholder="Enter your name" />
+
+<!-- Checkboxes -->
+<input type="checkbox" bind:checked={agreed} />
+
+<!-- Radio buttons -->
+<input type="radio" bind:group={selectedColor} value="red" /> Red
+<input type="radio" bind:group={selectedColor} value="blue" /> Blue
+
+<!-- Select dropdowns -->
+<select bind:value={selectedColor}>
+  <option value="red">Red</option>
+  <option value="blue">Blue</option>
+</select>
+
+<!-- Multiple select -->
+<select multiple bind:value={selectedColors}>
+  <option value="red">Red</option>
+  <option value="blue">Blue</option>
+  <option value="green">Green</option>
+</select>
+
+<!-- Textarea -->
+<textarea bind:value={details}></textarea>
+
+<!-- Number inputs -->
+<input type="number" bind:value={quantity} min="1" max="10" />
+```
+
+## Component Bindings
+```svelte
+<!-- Parent.svelte -->
+<script>
+  import Child from './child.svelte';
+  let value = $state('');
+</script>
+
+<Child bind:value />
+
+<!-- Child.svelte -->
+<script>
+  export let value;
+</script>
+
+<input bind:value />
+```
+

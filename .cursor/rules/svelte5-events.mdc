@@ -1,0 +1,21 @@
+---
+description: 
+globs: *.svelte
+alwaysApply: false
+---
+# Svelte 5 Events
+
+Svelte 5 uses camelCase HTML attributes for event handlers instead of Svelte 4's `on:event` directive syntax:
+
+```svelte
+<!-- Svelte 5 event syntax -->
+<button onclick={handleClick}>Click me</button>
+<input onkeydown={handleKeyDown} />
+<div onmouseenter={handleMouseEnter} onmouseleave={handleMouseLeave}>Hover me</div>
+
+<!-- You can still use modifiers with a dash -->
+<form onsubmit-preventDefault={handleSubmit}>Submit</form>
+<button onclick-once={showWelcome}>Welcome</button>
+<div onkeydown-capture-stopPropagation={handleKeyDown}>Press a key</div>
+
+```

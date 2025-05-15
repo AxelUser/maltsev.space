@@ -1,0 +1,77 @@
+---
+description: 
+globs: *.svelte
+alwaysApply: false
+---
+# Svelte 5 with TypeScript
+
+Svelte 5 has excellent TypeScript support with type safety for components, props, events, and state.
+
+## Component Props Typing
+```svelte
+<script lang="ts">
+  interface Props {
+    name: string;
+    count?: number;
+    items?: string[];
+    user: { id: number; username: string };
+    callback: (value: string) => void;
+    optional?: string;
+  }
+
+  // Define props with the $props rune
+  const { 
+    name, 
+    count = 0, 
+    items = [],
+    user, 
+    callback,
+    optional = 'default'
+  }: Props = $props();
+</script>
+```
+
+## State and Derived Values with Types
+```svelte
+<script lang="ts">
+  // Typed state
+  type User = {
+    id: number;
+    name: string;
+    email: string;
+  };
+  
+  let count = $state<number>(0);
+  let user = $state<User>({
+    id: 1,
+    name: 'Alice',
+    email: 'alice@example.com'
+  });
+  
+  // Type inference works as well
+  let messages = $state(['Hello']); // inferred as string[]
+  
+  // Derived values with type inference
+  const userName = $derived(user.name);
+  const userInfo = $derived(`${user.name} (${user.email})`);
+</script>
+```
+
+## Event Handlers with TypeScript
+```svelte
+<script lang="ts">
+  function handleClick(event: MouseEvent) {
+    console.log('Clicked at', event.clientX, event.clientY);
+  }
+  
+  function handleInput(event: Event) {
+    const target = event.target as HTMLInputElement;
+    console.log('Input value:', target.value);
+  }
+</script>
+
+<button onclick={handleClick}>Click me</button>
+
+
+
+<input onInput={handleInput} />

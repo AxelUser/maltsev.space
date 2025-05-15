@@ -1,0 +1,61 @@
+---
+description: 
+globs: *.svelte
+alwaysApply: false
+---
+# Svelte 5 Control Flow
+
+Svelte 5 uses standard JavaScript control flow syntax in templates, replacing the old `{#if}`, `{#each}`, etc. block syntax.
+
+## Conditionals
+```svelte
+<!-- Showing/hiding elements based on conditions -->
+{#if condition}
+  <p>Shown when condition is true</p>
+{:else if otherCondition}
+  <p>Shown when otherCondition is true</p>
+{:else}
+  <p>Shown otherwise</p>
+{/if}
+
+<!-- Ternary operator for simple conditions -->
+<p>{condition ? 'True' : 'False'}</p>
+```
+
+## Loops
+```svelte
+<!-- Iterating over arrays -->
+{#each items as item, index (item.id)}
+  <li>{index}: {item.name}</li>
+{/each}
+
+<!-- With key for optimized updates (item.id is the key) -->
+{#each items as item (item.id)}
+  <li>{item.name}</li>
+{/each}
+
+<!-- With fallback for empty arrays -->
+{#each items as item}
+  <li>{item.name}</li>
+{:else}
+  <p>No items found</p>
+{/each}
+```
+
+## Await Blocks
+```svelte
+<!-- Handling promises -->
+{#await promise}
+  <p>Loading...</p>
+{:then value}
+  <p>The value is {value}</p>
+{:catch error}
+  <p>Error: {error.message}</p>
+{/await}
+
+<!-- Simplified when you don't need loading state -->
+{#await promise then value}
+  <p>The value is {value}</p>
+{/await}
+```
+

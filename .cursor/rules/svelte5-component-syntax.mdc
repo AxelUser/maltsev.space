@@ -1,0 +1,56 @@
+---
+description: 
+globs: *.svelte
+alwaysApply: false
+---
+# Svelte 5 Component Syntax
+
+Svelte 5 components should be written in kebab-case filenames with the `.svelte` extension.
+
+## Component Structure
+```svelte
+<script>
+  // Imports
+  import { onMount } from 'svelte';
+  import OtherComponent from './other-component.svelte';
+  
+  // Props with TypeScript
+  export let name: string;
+  export let count: number = 0; // Default value
+  
+  // State
+  let message = $state('Hello');
+  
+  // Lifecycle
+  onMount(() => {
+    console.log('Component mounted');
+  });
+</script>
+
+<!-- Markup -->
+<div>
+  <h1>{message}, {name}!</h1>
+  <OtherComponent value={count} />
+</div>
+
+<!-- Styles - scoped by default -->
+<style>
+  div {
+    padding: 1rem;
+  }
+  
+  h1 {
+    color: #333;
+  }
+</style>
+```
+
+## Component Usage
+```svelte
+<script>
+  import MyComponent from './my-component.svelte';
+</script>
+
+<MyComponent name="World" count={42} />
+```
+

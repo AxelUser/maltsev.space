@@ -1,0 +1,68 @@
+---
+description: 
+globs: *.svelte
+alwaysApply: false
+---
+# Svelte 5 Slots
+
+Svelte 5 uses slots to pass content from parent components to child components.
+
+## Basic Slots
+```svelte
+<!-- Child.svelte -->
+<div class="card">
+  <div class="card-header">
+    <slot name="header">Default Header</slot>
+  </div>
+  <div class="card-body">
+    <slot>
+      <!-- Default content shown when no slot content is provided -->
+      <p>No content was provided</p>
+    </slot>
+  </div>
+  <div class="card-footer">
+    <slot name="footer"></slot>
+  </div>
+</div>
+
+<!-- Parent.svelte -->
+<script>
+  import Child from './child.svelte';
+</script>
+
+<Child>
+  <svelte:fragment slot="header">
+    <h2>Custom Header</h2>
+  </svelte:fragment>
+  
+  <p>This goes in the default slot</p>
+  
+  <svelte:fragment slot="footer">
+    <button>Close</button>
+  </svelte:fragment>
+</Child>
+```
+
+## Slot Props (Passing Data from Child to Parent)
+```svelte
+<!-- Child.svelte -->
+<script>
+  let items = $state(['Apple', 'Banana', 'Cherry']);
+</script>
+
+<ul>
+  {#each items as item, index}
+    <slot {item} {index}></slot>
+  {/each}
+</ul>
+
+<!-- Parent.svelte -->
+<script>
+  import Child from './child.svelte';
+</script>
+
+<Child let:item let:index>
+  <li>{index + 1}: {item}</li>
+</Child>
+```
+

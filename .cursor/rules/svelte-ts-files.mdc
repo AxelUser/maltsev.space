@@ -1,0 +1,95 @@
+---
+description: 
+globs: *.svelte,*.svelte.ts
+alwaysApply: false
+---
+# Svelte.ts Files and Component Structure
+
+## Component Logic Extraction
+
+In complex Svelte applications, it's often beneficial to extract component logic into separate `.svelte.ts` files. This helps maintain cleaner components by separating concerns:
+
+- `.svelte` files contain the component template, styles, and minimal script
+- `.svelte.ts` files contain the complex business logic, state management, and functions
+
+## Example Structure
+
+For a component named `todo-list.svelte`, create a companion file `todo-list.svelte.ts`:
+
+```ts
+// todo-list.svelte.ts
+export function createTodoLogic() {
+  const todos = $state([]);
+  
+  function addTodo(text) {
+    todos.push({ id: crypto.randomUUID(), text, completed: false });
+  }
+  
+  function removeTodo(id) {
+    const index = todos.findIndex(todo => todo.id === id);
+    if (index !== -1) {
+      todos.splice(index, 1);
+    }
+  }
+  
+  function toggleTodo(id) {
+    const todo = todos.find(todo => todo.id === id);
+    if (todo) {
+      todo.completed = !todo.completed;
+    }
+  }
+  
+  return { todos, addTodo, removeTodo, toggleTodo };
+}
+```
+
+Then in your component:
+
+```svelte
+<script>
+  import { createTodoLogic } from './todo-list.svelte.ts';
+  
+  const { todos, addTodo, removeTodo, toggleTodo } = createTodoLogic();
+</script>
+
+<!-- Component template -->
+```
+
+## Using Runes in .svelte.ts Files
+
+Svelte 5 runes (`$state`, `$derived`, `$effect`, etc.) can be used directly in `.svelte.ts` files. This allows for reactive state management outside of the component itself:
+
+```ts
+// counter.svelte.ts
+export function createCounter(initial = 0) {
+  const count = $state(initial);
+  const doubled = $derived(count * 2);
+  
+  $effect(() => {
+    console.log(`Count changed to ${count}`);
+  });
+  
+  function increment() {
+    count++;
+  }
+  
+  function decrement() {
+    count--;
+  }
+  
+  return {
+    count,
+    doubled,
+    increment,
+    decrement
+  };
+}
+```
+
+This pattern helps with:
+- Code reusability across components
+- Testing business logic in isolation
+- Cleaner component templates
+- Better separation of concerns
+
+
