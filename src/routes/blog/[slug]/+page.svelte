@@ -84,9 +84,12 @@
 </article>
 
 <style>
+	@import 'open-props/media';
+
 	article {
 		margin: 0 auto;
 		padding-bottom: var(--gap-large);
+		max-width: var(--max-width-prose, 70ch);
 	}
 
 	.post-footer {
@@ -131,9 +134,9 @@
 	.hero-background-container {
 		position: relative;
 		width: 100%;
-		padding: var(--gap-large) 0; /* Add padding to create space for the text */
+		padding: var(--gap-large) 0;
 		margin-bottom: var(--gap);
-		color: var(--text-on-dark-bg, white); /* Ensure text is readable on image */
+		color: var(--text-on-dark-bg, white);
 	}
 
 	.hero-background-image {
@@ -143,36 +146,32 @@
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		opacity: 0.3; /* Adjust opacity as needed */
-		z-index: -1; /* Place image behind the content */
+		opacity: 0.3;
+		z-index: -1;
 	}
 
 	.hero-content {
-		position: relative; /* Ensure content is above the image */
+		position: relative;
 		z-index: 1;
-		max-width: var(--max-width-prose, 70ch); /* Optional: constrain width of text */
-		margin: 0 auto; /* Center the content */
-		padding: 0 var(--gap); /* Add some horizontal padding for the content */
+		max-width: var(--max-width-prose, 70ch);
+		margin: 0 auto;
+		padding: 0;
 	}
 
 	.hero-content hgroup {
-		/* Reset or adjust hgroup styles from global if needed */
-		margin-bottom: 0; /* Remove default margin if not needed here */
+		margin-bottom: 0;
 	}
 
 	.hero-content h1 {
-		/* Ensure title is prominent */
-		color: inherit; /* Inherit color from .hero-background-container */
+		color: inherit;
 	}
 
 	.hero-content p {
-		/* Ensure publication date is styled appropriately */
-		color: inherit; /* Inherit color */
+		color: inherit;
 		font-size: var(--font-size-1);
 		margin-bottom: 0;
 	}
 
-	/* Conditional hgroup styling when no hero image */
 	article > hgroup {
 		margin-bottom: var(--gap);
 		display: flex;
@@ -186,5 +185,12 @@
 		font-size: var(--font-size-1);
 		color: var(--space-text-muted);
 		margin-bottom: var(--gap-small);
+	}
+
+	@media (--md-n-below) {
+		.hero-content hgroup,
+		article > hgroup {
+			text-align: center;
+		}
 	}
 </style>
