@@ -8,6 +8,7 @@
 	import '../app.css';
 	import posthog from 'posthog-js';
 	import { PUBLIC_POSTHOG_API_KEY, PUBLIC_POSTHOG_HOST } from '$env/static/public';
+	import { beforeNavigate, afterNavigate } from '$app/navigation';
 
 	const { children } = $props();
 
@@ -16,10 +17,17 @@
 			applyTheme($theme);
 			posthog.init(PUBLIC_POSTHOG_API_KEY, {
 				api_host: PUBLIC_POSTHOG_HOST,
-				person_profiles: 'always'
+				person_profiles: 'always',
+				capture_pageview: false,
+				capture_pageleave: false
 			});
 		}
 	});
+
+	if (browser) {
+		beforeNavigate(() => posthog.capture('$pageleave'));
+		afterNavigate(() => posthog.capture('$pageview'));
+	}
 </script>
 
 <svelte:head>
