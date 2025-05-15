@@ -6,12 +6,18 @@
 	import 'open-props/style';
 	import 'open-props/normalize';
 	import '../app.css';
+	import posthog from 'posthog-js';
+	import { PUBLIC_POSTHOG_API_KEY, PUBLIC_POSTHOG_HOST } from '$env/static/public';
 
 	const { children } = $props();
 
 	onMount(() => {
 		if (browser) {
 			applyTheme($theme);
+			posthog.init(PUBLIC_POSTHOG_API_KEY, {
+				api_host: PUBLIC_POSTHOG_HOST,
+				person_profiles: 'always'
+			});
 		}
 	});
 </script>
