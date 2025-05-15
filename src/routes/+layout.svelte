@@ -39,7 +39,6 @@
 		min-height: 100vh;
 		background-color: var(--surface-1);
 		position: relative;
-		overflow-x: hidden;
 		z-index: 0;
 	}
 

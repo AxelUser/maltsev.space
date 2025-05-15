@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { ThemeSwitch } from '$lib/components';
 	import { config } from '$lib/config';
-	import { Rss, Menu } from '@lucide/svelte';
+	import { Rss, Menu, X } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 
 	let mobileMenuOpen = $state(false);
@@ -63,7 +63,11 @@
 				onclick={toggleMobileMenu}
 				aria-label="Toggle menu"
 			>
-				<Menu size={24} stroke-width={2.5} aria-hidden="true" />
+				{#if mobileMenuOpen}
+					<X size={24} stroke-width={2.5} aria-hidden="true" />
+				{:else}
+					<Menu size={24} stroke-width={2.5} aria-hidden="true" />
+				{/if}
 			</button>
 		</div>
 	</nav>
