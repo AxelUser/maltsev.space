@@ -1,1 +1,1 @@
-export const env={}
+export const env={"PUBLIC_POSTHOG_API_KEY":"phc_SlVRyIPQLnByOOb6Wcbs49rx15E9SK1f1DPTOqk49NG","PUBLIC_POSTHOG_HOST":"https://us.i.posthog.com"}
