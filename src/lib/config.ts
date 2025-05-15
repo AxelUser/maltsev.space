@@ -1,5 +1,5 @@
 const config = {
-	websiteUrl: 'https://www.maltsev.space/',
+	websiteUrl: 'https://maltsev.space/',
 	websiteTitle: 'MALTSEV.SPACE'
 };
 
