@@ -4,7 +4,7 @@
 <title>MALTSEV.SPACE</title>
 <description>Personal blog by Aleksey Maltsev</description>
 <link>https://www.maltsev.space/</link>
-<atom:link href="https://www.maltsev.space//rss.xml" rel="self" type="application/rss+xml"/>
+<atom:link href="https://www.maltsev.space/rss.xml" rel="self" type="application/rss+xml"/>
 <item>
 <title>Fixing C# type pattern-matching</title>
 <link>https://www.maltsev.space//blog/007-fixing-csharp-type-pattern-matching</link>
