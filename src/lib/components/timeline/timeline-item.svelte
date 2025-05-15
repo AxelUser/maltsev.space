@@ -104,9 +104,4 @@
 		text-decoration: underline;
 		color: var(--link);
 	}
-
-	.external-link-icon {
-		color: var(--text-2);
-		transition: color 0.2s ease-in-out;
-	}
 </style>
