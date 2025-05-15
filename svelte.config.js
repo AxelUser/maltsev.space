@@ -51,7 +51,9 @@ const mdsvexOptions = {
 const config = {
 	preprocess: [vitePreprocess(), mdsvex(mdsvexOptions)],
 	kit: {
-		adapter: adapter(),
+		adapter: adapter({
+			fallback: '404.html'
+		}),
 		prerender: {
 			crawl: true,
 			handleMissingId: 'fail'
