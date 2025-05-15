@@ -16,7 +16,7 @@ export async function GET() {
 <title>${title}</title>
 <description>${description}</description>
 <link>${siteURL}</link>
-<atom:link href="${siteURL}/rss.xml" rel="self" type="application/rss+xml"/>
+<atom:link href="${siteURL}rss.xml" rel="self" type="application/rss+xml"/>
 ${posts
 	.map(
 		(post) => `<item>
