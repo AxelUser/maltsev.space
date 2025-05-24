@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button, Card, Badge, Link } from '$lib/components/ui';
-	import { PostPreviewCard } from '$lib/components';
+	import { ContentCard, PageHeader } from '$lib/components';
 	import { config } from '$lib/config';
 
 	const { data } = $props();
@@ -31,10 +31,7 @@
 </svelte:head>
 
 <div class="blog-page">
-	<header class="blog-header">
-		<h1 class="space-title">Blog</h1>
-		<p class="space-subtitle">Thoughts, ideas, and explorations</p>
-	</header>
+	<PageHeader title="Blog" subtitle="Thoughts, ideas, and explorations" />
 
 	<section class="blog-filters">
 		<div class="filter-label">Filter by topic:</div>
@@ -67,7 +64,15 @@
 		{:else}
 			<div class="posts-grid">
 				{#each filteredPosts as post}
-					<PostPreviewCard {...post} {activeTag} onTagClick={toggleTag} />
+					<ContentCard
+						href={`/blog/${post.slug}`}
+						title={post.title}
+						description={post.preview}
+						date={post.date}
+						tags={post.tags}
+						{activeTag}
+						onTagClick={toggleTag}
+					/>
 				{/each}
 			</div>
 		{/if}
@@ -80,20 +85,6 @@
 		padding-bottom: var(--gap-large);
 		display: flex;
 		flex-direction: column;
-	}
-
-	.blog-header {
-		margin: 0 auto;
-		text-align: center;
-		margin-bottom: var(--gap-large);
-	}
-
-	.blog-header .space-title {
-		margin-bottom: var(--gap-small);
-	}
-
-	.blog-header .space-subtitle {
-		margin: 0;
 	}
 
 	.blog-filters {

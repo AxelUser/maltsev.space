@@ -43,6 +43,7 @@
 			<li>
 				<a class="nav-link" href="/about" onclick={() => (mobileMenuOpen = false)}>About</a>
 			</li>
+			<li><a class="nav-link" href="/art" onclick={() => (mobileMenuOpen = false)}>Gallery</a></li>
 			<li><a class="nav-link" href="/blog" onclick={() => (mobileMenuOpen = false)}>Blog</a></li>
 		</ul>
 
@@ -77,6 +78,7 @@
 			<li>
 				<a class="nav-link" href="/about" onclick={() => (mobileMenuOpen = false)}>About</a>
 			</li>
+			<li><a class="nav-link" href="/art" onclick={() => (mobileMenuOpen = false)}>Gallery</a></li>
 			<li><a class="nav-link" href="/blog" onclick={() => (mobileMenuOpen = false)}>Blog</a></li>
 		</ul>
 	</div>

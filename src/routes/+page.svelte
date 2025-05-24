@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Button, Link } from '$lib/components/ui';
-	import { HeroPlanet, PostPreviewCard, TagCloud } from '$lib/components';
+	import { HeroPlanet, TagCloud, ContentCard } from '$lib/components';
 	import { bio } from '$lib/bio';
 	import { config } from '$lib/config';
 
@@ -40,7 +40,7 @@
 
 		<div class="posts-grid">
 			{#each data.posts as post}
-				<PostPreviewCard {...post} />
+				<ContentCard href={`/blog/${post.slug}`} title={post.title} description={post.preview} />
 			{/each}
 		</div>
 
