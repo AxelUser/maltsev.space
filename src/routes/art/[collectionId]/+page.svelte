@@ -10,7 +10,7 @@
 	let currentImageIndex = $state(0);
 
 	const imageUrls = $derived(
-		data.collection.images.map((img) => `/art/${data.collection.id}/${img}`)
+		data.collection.images.map((img) => `/images/art/${data.collection.id}/${img}`)
 	);
 
 	function openLightbox(index: number) {
@@ -51,7 +51,7 @@
 				aria-label="View {image} in lightbox"
 			>
 				<img
-					src="/art/{data.collection.id}/{image}"
+					src="/images/art/{data.collection.id}/{image}"
 					alt="Artwork {index + 1} from {data.collection.title}"
 					loading="lazy"
 				/>
