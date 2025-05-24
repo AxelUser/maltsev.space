@@ -73,7 +73,7 @@
 		opacity: 0;
 		transition: opacity 0.3s ease;
 		pointer-events: none;
-		z-index: -1;
+		z-index: -999;
 	}
 
 	.neon-border::before {
