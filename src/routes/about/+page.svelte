@@ -19,7 +19,7 @@
 	<div class="about-content">
 		<section class="section intro-section">
 			<div class="avatar-container">
-				<div class="avatar"></div>
+				<img src="/images/ava.jpg" alt="Avatar" class="avatar" loading="lazy" />
 				<div class="avatar-ring"></div>
 			</div>
 
@@ -380,9 +380,8 @@
 		width: 180px;
 		height: 180px;
 		border-radius: 50%;
-		background-image: url('/images/ava.jpg');
-		background-size: cover;
-		background-position: center;
+		object-fit: cover;
+		object-position: center;
 		position: absolute;
 		top: 50%;
 		left: 50%;
