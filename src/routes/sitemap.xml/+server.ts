@@ -1,6 +1,8 @@
 import { config } from '$lib/config';
 import { getPosts } from '$lib/posts';
 
+export const prerender = true;
+
 export async function GET() {
 	const posts = getPosts();
 	const baseUrl = config.websiteUrl.replace(/\/$/, '');

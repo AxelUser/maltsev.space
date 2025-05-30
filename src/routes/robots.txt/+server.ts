@@ -1,5 +1,7 @@
 import { config } from '$lib/config';
 
+export const prerender = true;
+
 export async function GET() {
 	const baseUrl = config.websiteUrl.replace(/\/$/, '');
 
