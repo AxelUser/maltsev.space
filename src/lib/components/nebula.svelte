@@ -4,79 +4,116 @@
 	import fragmentShaderSource from '$lib/shaders/nebula-fragment.glsl?raw';
 	import { createShader, createProgram } from '$lib/shaders/utils';
 
-	// Props for customization
-	export let gasColor1: [number, number, number] = [0.1, 0.3, 0.7]; // Cool Blue
-	export let gasColor2: [number, number, number] = [0.3, 0.6, 0.9]; // Lighter Blue/Cyan highlight
-	export let gasColorDark: [number, number, number] = [0.01, 0.02, 0.05]; // Very Dark Blue
+	interface Props {
+		gasColor1?: [number, number, number];
+		gasColor2?: [number, number, number];
+		gasColorDark?: [number, number, number];
+		flowSpeed?: number;
+		noiseScale?: number;
+		voidScale?: number;
+		voidDensity?: number;
+		voidCycleSpeed?: number;
+		vignetteStrength?: number;
+	}
 
-	export let flowSpeed: number = 1.5;
-	export let noiseScale: number = 2.5;
-	export let voidScale: number = 4.0;
-	export let voidDensity: number = 0.4; // 0 to 1, controls how "strong" or "carved out" voids are
-	export let voidCycleSpeed: number = 0.6;
-	export let vignetteStrength: number = 0.65; // 0 (strong vignette) to 1 (weak vignette/edges visible)
+	const {
+		gasColor1 = [0.1, 0.3, 0.7], // Cool Blue
+		gasColor2 = [0.3, 0.6, 0.9], // Lighter Blue/Cyan highlight
+		gasColorDark = [0.01, 0.02, 0.05], // Very Dark Blue
+		flowSpeed = 1.5,
+		noiseScale = 2.5,
+		voidScale = 4.0,
+		voidDensity = 0.4, // 0 to 1, controls how "strong" or "carved out" voids are
+		voidCycleSpeed = 0.6,
+		vignetteStrength = 0.65 // 0 (strong vignette) to 1 (weak vignette/edges visible)
+	}: Props = $props();
 
 	let canvas: HTMLCanvasElement;
-	let gl: WebGLRenderingContext | null = null;
-	let program: WebGLProgram | null = null;
+	let gl = $state<WebGLRenderingContext | null>(null);
+	let program = $state<WebGLProgram | null>(null);
 
-	let positionBuffer: WebGLBuffer | null = null;
-	let positionAttributeLocation: number = -1;
-	let resolutionUniformLocation: WebGLUniformLocation | null = null;
-	let timeUniformLocation: WebGLUniformLocation | null = null;
+	let positionBuffer = $state<WebGLBuffer | null>(null);
+	let positionAttributeLocation = $state(-1);
+	let resolutionUniformLocation = $state<WebGLUniformLocation | null>(null);
+	let timeUniformLocation = $state<WebGLUniformLocation | null>(null);
 
 	// Uniform locations for new props
-	let gasColor1UniformLocation: WebGLUniformLocation | null = null;
-	let gasColor2UniformLocation: WebGLUniformLocation | null = null;
-	let gasColorDarkUniformLocation: WebGLUniformLocation | null = null;
-	let flowSpeedUniformLocation: WebGLUniformLocation | null = null;
-	let noiseScaleUniformLocation: WebGLUniformLocation | null = null;
-	let voidScaleUniformLocation: WebGLUniformLocation | null = null;
-	let voidDensityUniformLocation: WebGLUniformLocation | null = null;
-	let voidCycleSpeedUniformLocation: WebGLUniformLocation | null = null;
-	let vignetteStrengthUniformLocation: WebGLUniformLocation | null = null;
+	let gasColor1UniformLocation = $state<WebGLUniformLocation | null>(null);
+	let gasColor2UniformLocation = $state<WebGLUniformLocation | null>(null);
+	let gasColorDarkUniformLocation = $state<WebGLUniformLocation | null>(null);
+	let flowSpeedUniformLocation = $state<WebGLUniformLocation | null>(null);
+	let noiseScaleUniformLocation = $state<WebGLUniformLocation | null>(null);
+	let voidScaleUniformLocation = $state<WebGLUniformLocation | null>(null);
+	let voidDensityUniformLocation = $state<WebGLUniformLocation | null>(null);
+	let voidCycleSpeedUniformLocation = $state<WebGLUniformLocation | null>(null);
+	let vignetteStrengthUniformLocation = $state<WebGLUniformLocation | null>(null);
 
-	let animationFrameId: number;
-	let startTime: number = 0;
-	let isInitialized = false;
+	let animationFrameId = $state<number>(0);
+	let startTime = $state(0);
+	let isInitialized = $state(false);
 
-	// Reactive updates for uniforms when props change
-	$: if (isInitialized && gl && program && gasColor1UniformLocation) {
-		gl.useProgram(program);
-		gl.uniform3fv(gasColor1UniformLocation, gasColor1);
-	}
-	$: if (isInitialized && gl && program && gasColor2UniformLocation) {
-		gl.useProgram(program);
-		gl.uniform3fv(gasColor2UniformLocation, gasColor2);
-	}
-	$: if (isInitialized && gl && program && gasColorDarkUniformLocation) {
-		gl.useProgram(program);
-		gl.uniform3fv(gasColorDarkUniformLocation, gasColorDark);
-	}
-	$: if (isInitialized && gl && program && flowSpeedUniformLocation) {
-		gl.useProgram(program);
-		gl.uniform1f(flowSpeedUniformLocation, flowSpeed);
-	}
-	$: if (isInitialized && gl && program && noiseScaleUniformLocation) {
-		gl.useProgram(program);
-		gl.uniform1f(noiseScaleUniformLocation, noiseScale);
-	}
-	$: if (isInitialized && gl && program && voidScaleUniformLocation) {
-		gl.useProgram(program);
-		gl.uniform1f(voidScaleUniformLocation, voidScale);
-	}
-	$: if (isInitialized && gl && program && voidDensityUniformLocation) {
-		gl.useProgram(program);
-		gl.uniform1f(voidDensityUniformLocation, voidDensity);
-	}
-	$: if (isInitialized && gl && program && voidCycleSpeedUniformLocation) {
-		gl.useProgram(program);
-		gl.uniform1f(voidCycleSpeedUniformLocation, voidCycleSpeed);
-	}
-	$: if (isInitialized && gl && program && vignetteStrengthUniformLocation) {
-		gl.useProgram(program);
-		gl.uniform1f(vignetteStrengthUniformLocation, vignetteStrength);
-	}
+	$effect(() => {
+		if (isInitialized && gl && program && gasColor1UniformLocation) {
+			gl.useProgram(program);
+			gl.uniform3fv(gasColor1UniformLocation, gasColor1);
+		}
+	});
+
+	$effect(() => {
+		if (isInitialized && gl && program && gasColor2UniformLocation) {
+			gl.useProgram(program);
+			gl.uniform3fv(gasColor2UniformLocation, gasColor2);
+		}
+	});
+
+	$effect(() => {
+		if (isInitialized && gl && program && gasColorDarkUniformLocation) {
+			gl.useProgram(program);
+			gl.uniform3fv(gasColorDarkUniformLocation, gasColorDark);
+		}
+	});
+
+	$effect(() => {
+		if (isInitialized && gl && program && flowSpeedUniformLocation) {
+			gl.useProgram(program);
+			gl.uniform1f(flowSpeedUniformLocation, flowSpeed);
+		}
+	});
+
+	$effect(() => {
+		if (isInitialized && gl && program && noiseScaleUniformLocation) {
+			gl.useProgram(program);
+			gl.uniform1f(noiseScaleUniformLocation, noiseScale);
+		}
+	});
+
+	$effect(() => {
+		if (isInitialized && gl && program && voidScaleUniformLocation) {
+			gl.useProgram(program);
+			gl.uniform1f(voidScaleUniformLocation, voidScale);
+		}
+	});
+
+	$effect(() => {
+		if (isInitialized && gl && program && voidDensityUniformLocation) {
+			gl.useProgram(program);
+			gl.uniform1f(voidDensityUniformLocation, voidDensity);
+		}
+	});
+
+	$effect(() => {
+		if (isInitialized && gl && program && voidCycleSpeedUniformLocation) {
+			gl.useProgram(program);
+			gl.uniform1f(voidCycleSpeedUniformLocation, voidCycleSpeed);
+		}
+	});
+
+	$effect(() => {
+		if (isInitialized && gl && program && vignetteStrengthUniformLocation) {
+			gl.useProgram(program);
+			gl.uniform1f(vignetteStrengthUniformLocation, vignetteStrength);
+		}
+	});
 
 	function initWebGL() {
 		if (!canvas) return false;
