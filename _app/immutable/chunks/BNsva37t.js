@@ -1,46 +1,4 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/png" href="../favicon-96x96.png" sizes="96x96" />
-		<link rel="icon" type="image/svg+xml" href="../favicon.svg" />
-		<link rel="shortcut icon" href="../favicon.ico" />
-		<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png" />
-		<meta name="apple-mobile-web-app-title" content="Maltsev.Space" />
-		<link rel="manifest" href="../site.webmanifest" />
-		<meta
-			name="viewport"
-			content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover"
-		/>
-		
-		<link href="../_app/immutable/assets/link.BAldVUzc.css" rel="stylesheet">
-		<link href="../_app/immutable/assets/tag-cloud.D51KQwgG.css" rel="stylesheet">
-		<link href="../_app/immutable/assets/0.Ev2lDQ97.css" rel="stylesheet">
-		<link href="../_app/immutable/assets/7.BPVSJhiw.css" rel="stylesheet">
-		<link rel="modulepreload" href="../_app/immutable/entry/start.tBSfuigx.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/qIisjEut.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/CIT_ucYj.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/CWHDacXY.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/CYgJF_JY.js">
-		<link rel="modulepreload" href="../_app/immutable/entry/app.CThbe6Hq.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/Dp1pzeXC.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/DwkwZOj8.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/DbInc6KC.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/t-Jmizco.js">
-		<link rel="modulepreload" href="../_app/immutable/nodes/0.IVaVWwLY.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/C-w_mhOk.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/D3bmhAul.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/DdpBA4fd.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/D52XjXQU.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/BCQ5r3qw.js">
-		<link rel="modulepreload" href="../_app/immutable/nodes/7.D2TRVLDU.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/DNSHY1Ls.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/oTaK_h9O.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/BSXX02MK.js"><!--[--><link rel="alternate" type="application/rss+xml" title="Aleksey Maltsev's Blog" href="/rss.xml"><!--]--><!--[--><!--]--><title>Shift Your C# Enums | MALTSEV.SPACE</title>
-	</head>
-
-	<body data-sveltekit-preload-data="hover">
-		<div style="display: contents"><!--[--><!--[--><!----><div class="space-layout svelte-144yekp"><header class="svelte-yqzv1j"><nav class="space-container svelte-yqzv1j"><div class="logo svelte-yqzv1j"><a href="/" class="svelte-yqzv1j">MALTSEV.SPACE</a></div> <ul class="nav-links svelte-yqzv1j"><li><a class="nav-link svelte-yqzv1j" href="/">Home</a></li> <li><a class="nav-link svelte-yqzv1j" href="/about">About</a></li> <li><a class="nav-link svelte-yqzv1j" href="/art">Gallery</a></li> <li><a class="nav-link svelte-yqzv1j" href="/blog">Blog</a></li></ul> <div class="nav-actions svelte-yqzv1j"><a href="/rss.xml" class="rss-link nav-link svelte-yqzv1j" aria-label="RSS Feed"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="lucide-icon lucide lucide-rss"><!--[--><!----><path d="M4 11a9 9 0 0 1 9 9"><!----></path><!----><!----><path d="M4 4a16 16 0 0 1 16 16"><!----></path><!----><!----><circle cx="5" cy="19" r="1"><!----></circle><!----><!--]--><!----><!----></svg><!----></a> <div class="theme-switch svelte-awph5w"><button class="theme-button svelte-awph5w" title="Light theme" aria-label="Light theme"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-sun"><!--[--><!----><circle cx="12" cy="12" r="4"><!----></circle><!----><!----><path d="M12 2v2"><!----></path><!----><!----><path d="M12 20v2"><!----></path><!----><!----><path d="m4.93 4.93 1.41 1.41"><!----></path><!----><!----><path d="m17.66 17.66 1.41 1.41"><!----></path><!----><!----><path d="M2 12h2"><!----></path><!----><!----><path d="M20 12h2"><!----></path><!----><!----><path d="m6.34 17.66-1.41 1.41"><!----></path><!----><!----><path d="m19.07 4.93-1.41 1.41"><!----></path><!----><!--]--><!----><!----></svg><!----></button> <button class="theme-button svelte-awph5w" title="Dark theme" aria-label="Dark theme"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-moon"><!--[--><!----><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"><!----></path><!----><!--]--><!----><!----></svg><!----></button> <button class="theme-button svelte-awph5w active" title="System theme" aria-label="System theme"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-laptop"><!--[--><!----><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"><!----></path><!----><!--]--><!----><!----></svg><!----></button></div><!----> <button class="mobile-menu-toggle svelte-yqzv1j" aria-label="Toggle menu"><!--[!--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="lucide-icon lucide lucide-menu"><!--[--><!----><path d="M4 12h16"><!----></path><!----><!----><path d="M4 18h16"><!----></path><!----><!----><path d="M4 6h16"><!----></path><!----><!--]--><!----><!----></svg><!--]--></button></div></nav> <div class="mobile-nav svelte-yqzv1j"><ul class="svelte-yqzv1j"><li class="svelte-yqzv1j"><a class="nav-link svelte-yqzv1j" href="/">Home</a></li> <li class="svelte-yqzv1j"><a class="nav-link svelte-yqzv1j" href="/about">About</a></li> <li class="svelte-yqzv1j"><a class="nav-link svelte-yqzv1j" href="/art">Gallery</a></li> <li class="svelte-yqzv1j"><a class="nav-link svelte-yqzv1j" href="/blog">Blog</a></li></ul></div></header><!----> <div class="stars-background svelte-1xnwqdy"><!--[--><!--]--></div><!----> <main class="svelte-144yekp"><div class="space-container"><!----><!--[--><div class="hero-background-container svelte-17kp2kb"><img src="/images/blog/001-binary-shifts-for-flags/hero.jpg" alt="Shift Your C# Enums hero image" loading="lazy" class="hero-background-image svelte-17kp2kb"> <div class="hero-content svelte-17kp2kb"><hgroup class="svelte-17kp2kb"><h1 class="space-title svelte-17kp2kb">Shift Your C# Enums</h1> <p class="svelte-17kp2kb"><span>Published at <time datetime="2024-06-15">2018-10-26</time></span></p></hgroup></div></div><!--]--> <article class="svelte-17kp2kb"><!--[!--><!--]--> <div class="post-navigation top-navigation svelte-17kp2kb"><!--[--><a href="/blog" class="button primary medium svelte-6ghmor"><!---->← Back to all posts<!----></a><!--]--><!----></div> <div class="prose"><p>If you want easily increment your flags in <code>Enum</code>, you can represent it’s values with bitwise shift operator:</p> <!----><pre class="shiki shiki-themes material-theme-palenight github-dark" style="background-color:#292D3E;--shiki-dark-bg:#24292e;color:#babed8;--shiki-dark:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#89DDFF;--shiki-dark:#E1E4E8">[</span><span style="color:#FFCB6B;--shiki-dark:#B392F0">Flags</span><span style="color:#89DDFF;--shiki-dark:#E1E4E8">]</span></span>
+import{t as o,a as r}from"./DwkwZOj8.js";import"./DdpBA4fd.js";import{s as n,f as k,n as e}from"./CWHDacXY.js";import{h as l}from"./rUMV_AGp.js";const i={date:"2018-10-26",tags:["C#"],keywords:["C#",".Net","Enums"],title:"Shift Your C# Enums",preview:"Discover the simple yet powerful technique of using bitwise shift operator in C# Enums, and how it can improve the readability and maintainability of your code.",draft:!1,legacy:!0,hero:"/images/blog/001-binary-shifts-for-flags/hero.jpg"},{date:B,tags:E,keywords:C,title:u,preview:m,draft:g,legacy:f,hero:x}=i;var t=o('<p>If you want easily increment your flags in <code>Enum</code>, you can represent it’s values with bitwise shift operator:</p> <!> <p>Performance is equal, cause in code all enums translated into underlying numbers by compiler itself, so no runtime overhead. Seems a little bit more trivial, than multiplying “by hand”:</p> <!> <p>More info about bitwise operators and Enums you can learn from <a href="https://www.alanzucconi.com/2015/07/26/enum-flags-and-bitwise-operators/" rel="nofollow">this post</a>.</p>',1);function c(p){var s=t(),a=n(k(s),2);l(a,()=>`<pre class="shiki shiki-themes material-theme-palenight github-dark" style="background-color:#292D3E;--shiki-dark-bg:#24292e;color:#babed8;--shiki-dark:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#89DDFF;--shiki-dark:#E1E4E8">[</span><span style="color:#FFCB6B;--shiki-dark:#B392F0">Flags</span><span style="color:#89DDFF;--shiki-dark:#E1E4E8">]</span></span>
 <span class="line"><span style="color:#FFCB6B;--shiki-dark:#F97583">enum</span><span style="color:#FFCB6B;--shiki-dark:#B392F0"> ProgrammingLanguages</span></span>
 <span class="line"><span style="color:#89DDFF;--shiki-dark:#E1E4E8">&#123;</span></span>
 <span class="line"><span style="color:#FFCB6B;--shiki-dark:#B392F0">    None</span><span style="color:#89DDFF;--shiki-dark:#F97583">        =</span><span style="color:#F78C6C;--shiki-dark:#79B8FF"> 0</span><span style="color:#89DDFF;--shiki-dark:#E1E4E8">,</span></span>
@@ -59,7 +17,7 @@
 <span class="line"><span style="color:#FFCB6B;--shiki-dark:#B392F0">    FSharp</span><span style="color:#89DDFF;--shiki-dark:#F97583">      =</span><span style="color:#F78C6C;--shiki-dark:#79B8FF"> 1</span><span style="color:#89DDFF;--shiki-dark:#F97583"> &#x3C;&#x3C;</span><span style="color:#F78C6C;--shiki-dark:#79B8FF"> 12</span><span style="color:#89DDFF;--shiki-dark:#E1E4E8">,</span></span>
 <span class="line"><span style="color:#FFCB6B;--shiki-dark:#B392F0">    DotNetFamily</span><span style="color:#89DDFF;--shiki-dark:#F97583"> =</span><span style="color:#BABED8;--shiki-dark:#E1E4E8"> VisualBasic </span><span style="color:#89DDFF;--shiki-dark:#F97583">|</span><span style="color:#BABED8;--shiki-dark:#E1E4E8"> VisualCpp </span><span style="color:#89DDFF;--shiki-dark:#F97583">|</span><span style="color:#BABED8;--shiki-dark:#E1E4E8"> CSharp</span><span style="color:#89DDFF;--shiki-dark:#E1E4E8">,</span></span>
 <span class="line"><span style="color:#FFCB6B;--shiki-dark:#B392F0">    JvmFamily</span><span style="color:#89DDFF;--shiki-dark:#F97583"> =</span><span style="color:#BABED8;--shiki-dark:#E1E4E8"> Java </span><span style="color:#89DDFF;--shiki-dark:#F97583">|</span><span style="color:#BABED8;--shiki-dark:#E1E4E8"> Scala </span><span style="color:#89DDFF;--shiki-dark:#F97583">|</span><span style="color:#BABED8;--shiki-dark:#E1E4E8"> Clojure</span></span>
-<span class="line"><span style="color:#89DDFF;--shiki-dark:#E1E4E8">&#125;</span></span></code></pre><!----> <p>Performance is equal, cause in code all enums translated into underlying numbers by compiler itself, so no runtime overhead. Seems a little bit more trivial, than multiplying “by hand”:</p> <!----><pre class="shiki shiki-themes material-theme-palenight github-dark" style="background-color:#292D3E;--shiki-dark-bg:#24292e;color:#babed8;--shiki-dark:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#89DDFF;--shiki-dark:#E1E4E8">[</span><span style="color:#FFCB6B;--shiki-dark:#B392F0">Flags</span><span style="color:#89DDFF;--shiki-dark:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#89DDFF;--shiki-dark:#E1E4E8">&#125;</span></span></code></pre>`);var F=n(a,4);l(F,()=>`<pre class="shiki shiki-themes material-theme-palenight github-dark" style="background-color:#292D3E;--shiki-dark-bg:#24292e;color:#babed8;--shiki-dark:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#89DDFF;--shiki-dark:#E1E4E8">[</span><span style="color:#FFCB6B;--shiki-dark:#B392F0">Flags</span><span style="color:#89DDFF;--shiki-dark:#E1E4E8">]</span></span>
 <span class="line"><span style="color:#FFCB6B;--shiki-dark:#F97583">enum</span><span style="color:#FFCB6B;--shiki-dark:#B392F0"> ProgrammingLanguages</span></span>
 <span class="line"><span style="color:#89DDFF;--shiki-dark:#E1E4E8">&#123;</span></span>
 <span class="line"><span style="color:#FFCB6B;--shiki-dark:#B392F0">    None</span><span style="color:#89DDFF;--shiki-dark:#F97583">        =</span><span style="color:#F78C6C;--shiki-dark:#79B8FF"> 0</span><span style="color:#89DDFF;--shiki-dark:#E1E4E8">,</span></span>
@@ -78,29 +36,4 @@
 <span class="line"><span style="color:#FFCB6B;--shiki-dark:#B392F0">    FSharp</span><span style="color:#89DDFF;--shiki-dark:#F97583">      =</span><span style="color:#F78C6C;--shiki-dark:#79B8FF"> 4096</span><span style="color:#89DDFF;--shiki-dark:#E1E4E8">,</span></span>
 <span class="line"><span style="color:#FFCB6B;--shiki-dark:#B392F0">    DotNetFamily</span><span style="color:#89DDFF;--shiki-dark:#F97583"> =</span><span style="color:#BABED8;--shiki-dark:#E1E4E8"> VisualBasic </span><span style="color:#89DDFF;--shiki-dark:#F97583">|</span><span style="color:#BABED8;--shiki-dark:#E1E4E8"> VisualCpp </span><span style="color:#89DDFF;--shiki-dark:#F97583">|</span><span style="color:#BABED8;--shiki-dark:#E1E4E8"> CSharp</span><span style="color:#89DDFF;--shiki-dark:#E1E4E8">,</span></span>
 <span class="line"><span style="color:#FFCB6B;--shiki-dark:#B392F0">    JvmFamily</span><span style="color:#89DDFF;--shiki-dark:#F97583"> =</span><span style="color:#BABED8;--shiki-dark:#E1E4E8"> Java </span><span style="color:#89DDFF;--shiki-dark:#F97583">|</span><span style="color:#BABED8;--shiki-dark:#E1E4E8"> Scala </span><span style="color:#89DDFF;--shiki-dark:#F97583">|</span><span style="color:#BABED8;--shiki-dark:#E1E4E8"> Clojure</span></span>
-<span class="line"><span style="color:#89DDFF;--shiki-dark:#E1E4E8">&#125;</span></span></code></pre><!----> <p>More info about bitwise operators and Enums you can learn from <a href="https://www.alanzucconi.com/2015/07/26/enum-flags-and-bitwise-operators/" rel="nofollow">this post</a>.</p><!----></div> <footer class="post-footer svelte-17kp2kb"><div class="post-navigation svelte-17kp2kb"><!--[--><a href="/blog" class="button primary medium svelte-6ghmor"><!---->← Back to all posts<!----></a><!--]--><!----></div> <div class="card default svelte-1bwdm5p"><div class="share-message svelte-17kp2kb">Enjoyed this post? Share it with the universe!</div> <div class="share-buttons svelte-17kp2kb"><a class="link default share-link twitter svelte-blzdii" target="_blank" rel="noopener noreferrer" href="https://twitter.com/intent/tweet?text=Shift%20Your%20C%23%20Enums&amp;url=" aria-label="Share on Twitter"><!---->Twitter<!----> <!--[!--><!--]--></a><!----> <a class="link default share-link linkedin svelte-blzdii" target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/shareArticle?mini=true&amp;title=Shift%20Your%20C%23%20Enums&amp;url=" aria-label="Share on LinkedIn"><!---->LinkedIn<!----> <!--[!--><!--]--></a><!----> <a class="link default share-link facebook svelte-blzdii" target="_blank" rel="noopener noreferrer" href="https://www.facebook.com/sharer/sharer.php?u=" aria-label="Share on Facebook"><!---->Facebook<!----> <!--[!--><!--]--></a><!----></div><!----> <!--[!--><!--]--></div><!----></footer></article><!----><!----></div></main> <footer class="svelte-1mbgpkc"><div class="space-container"><p class="space-text-small">© 2025 | Aleksey Maltsev</p></div></footer><!----></div><!----><!--]--> <!--[!--><!--]--><!--]-->
-			
-			<script>
-				{
-					__sveltekit_144cp0w = {
-						base: new URL("..", location).pathname.slice(0, -1)
-					};
-
-					const element = document.currentScript.parentElement;
-
-					Promise.all([
-						import("../_app/immutable/entry/start.tBSfuigx.js"),
-						import("../_app/immutable/entry/app.CThbe6Hq.js")
-					]).then(([kit, app]) => {
-						kit.start(app, element, {
-							node_ids: [0, 7],
-							data: [null,null],
-							form: null,
-							error: null
-						});
-					});
-				}
-			</script>
-		</div>
-	</body>
-</html>
+<span class="line"><span style="color:#89DDFF;--shiki-dark:#E1E4E8">&#125;</span></span></code></pre>`),e(2),r(p,s)}const b=Object.freeze(Object.defineProperty({__proto__:null,default:c,metadata:i},Symbol.toStringTag,{value:"Module"}));export{b as _};
