@@ -1,14 +1,16 @@
 <script lang="ts">
 	import Nebula from '$lib/components/nebula.svelte';
-	import { Timeline, TimelineItem, TagCloud } from '$lib/components';
-	import { Card, Badge, Link, Button } from '$lib/components/ui';
+	import { Timeline, TimelineItem, TagCloud, SEO } from '$lib/components';
+	import { Card, Badge, Link } from '$lib/components/ui';
 	import { bio } from '$lib/bio';
-	import { config } from '$lib/config';
 </script>
 
-<svelte:head>
-	<title>About Me | {config.websiteTitle}</title>
-</svelte:head>
+<SEO
+	title="About Me"
+	description={`Learn about ${bio.fullName}, Senior Software Engineer at Infobip. Programming since 2014, specializing in distributed systems, C#, Go, and highload applications. Previously at Veeam and SkbKontur.`}
+	url="/about"
+	keywords={['about', 'software engineer', 'career', 'experience', 'distributed systems']}
+/>
 
 <div class="about-page">
 	<header class="about-header">

@@ -2,17 +2,29 @@
 	import Link from '$lib/components/ui/link/link.svelte';
 	import Card from '$lib/components/ui/card/card.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
+	import { SEO } from '$lib/components';
 	import { config } from '$lib/config';
 
 	const { data } = $props();
 
 	const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
 	const heroImage = data?.heroUrl;
+
+	const publishedTime = data.date ? new Date(data.date).toISOString() : undefined;
+
+	const allKeywords = [...(data.keywords || []), ...(data.tags || [])];
 </script>
 
-<svelte:head>
-	<title>{data.title} | {config.websiteTitle}</title>
-</svelte:head>
+<SEO
+	title={data.title}
+	description={(data as any).preview || `Read about ${data.title} on ${config.websiteTitle}`}
+	image={heroImage}
+	imageAlt={`${data.title} - Blog post hero image`}
+	url={`/blog/${(data as any).slug}`}
+	type="article"
+	{publishedTime}
+	keywords={allKeywords}
+/>
 
 {#if heroImage}
 	<div class="hero-background-container">

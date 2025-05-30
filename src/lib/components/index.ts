@@ -6,6 +6,7 @@ export { default as ContentCard } from './content-card.svelte';
 export { default as HeroPlanet } from './hero-planet.svelte';
 export { default as ThemeSwitch } from './theme-switch.svelte';
 export { default as Lightbox } from './lightbox.svelte';
+export { default as SEO } from './seo/seo.svelte';
 export * from './timeline';
 export * from './tag-cloud';
 export * from './icons';

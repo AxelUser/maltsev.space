@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Button, Link } from '$lib/components/ui';
-	import { HeroPlanet, TagCloud, ContentCard } from '$lib/components';
+	import { HeroPlanet, TagCloud, ContentCard, SEO } from '$lib/components';
 	import { bio } from '$lib/bio';
 	import { config } from '$lib/config';
 
@@ -18,9 +18,12 @@
 	const { data } = $props();
 </script>
 
-<svelte:head>
-	<title>Home | {config.websiteTitle}</title>
-</svelte:head>
+<SEO
+	title="Home"
+	description={`${bio.fullName} - Senior Software Engineer at Infobip focusing on distributed systems and highload applications. Programming since 2014, sharing insights about C#, Go, system design, and performance optimization.`}
+	url="/"
+	keywords={['portfolio', 'blog', 'software engineering', 'distributed systems']}
+/>
 
 <div class="hero" class:visible={isVisible}>
 	<h1>Howdy, I'm {bio.firstName}</h1>
