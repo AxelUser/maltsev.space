@@ -119,8 +119,7 @@ export function createNebulaRenderer() {
 	}
 
 	function render(time: number) {
-		if (!context) {
-			animationFrameId = requestAnimationFrame(render);
+		if (!context || !isInitialized) {
 			return;
 		}
 
@@ -188,11 +187,6 @@ export function createNebulaRenderer() {
 				gl.deleteShader(shader);
 			});
 			gl.deleteProgram(program);
-
-			const loseContextExt = gl.getExtension('WEBGL_lose_context');
-			if (loseContextExt) {
-				loseContextExt.loseContext();
-			}
 		}
 
 		context = null;
