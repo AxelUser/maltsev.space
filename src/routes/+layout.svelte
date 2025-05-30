@@ -32,6 +32,7 @@
 
 <svelte:head>
 	<link rel="alternate" type="application/rss+xml" title="Aleksey Maltsev's Blog" href="/rss.xml" />
+	<link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
 </svelte:head>
 
 <div class="space-layout">

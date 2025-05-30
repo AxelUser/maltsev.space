@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Button, Card, Badge, Link } from '$lib/components/ui';
-	import { ContentCard, PageHeader } from '$lib/components';
-	import { config } from '$lib/config';
+	import { Button, Badge } from '$lib/components/ui';
+	import { ContentCard, PageHeader, SEO } from '$lib/components';
+	import { bio } from '$lib/bio';
 
 	const { data } = $props();
 
@@ -26,9 +26,12 @@
 	const allTags = getAllTags();
 </script>
 
-<svelte:head>
-	<title>Blog | {config.websiteTitle}</title>
-</svelte:head>
+<SEO
+	title="Blog"
+	description={`${bio.fullName}'s blog about software engineering, distributed systems, C#, Go, and system design. Insights from a Senior Software Engineer at Infobip.`}
+	url="/blog"
+	keywords={['blog', 'software engineering', 'programming', 'distributed systems', 'C#', 'Go']}
+/>
 
 <div class="blog-page">
 	<PageHeader title="Blog" subtitle="Thoughts, ideas, and explorations" />

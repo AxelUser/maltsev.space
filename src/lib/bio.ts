@@ -17,6 +17,7 @@ export const bio = {
 	social: {
 		email: 'alexey.maltsev.work@gmail.com',
 		linkedIn: 'https://www.linkedin.com/in/dev-alexey-maltsev/',
-		github: 'https://github.com/AxelUser'
+		github: 'https://github.com/AxelUser',
+		twitter: '@axel_user'
 	}
 };
