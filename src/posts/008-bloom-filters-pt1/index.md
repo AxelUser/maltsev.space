@@ -13,6 +13,10 @@ draft: true
 hero: /images/blog/008-bloom-filters-pt1/hero.jpg
 ---
 
+<script>
+ import SimpleBloomFilter from '$lib/components/visualization/bloom-filters/simple-bloom-filter.svelte';
+</script>
+
 >This post is the first part of a small series where we’ll dive deep into the world of Bloom filters. Today, we’ll focus on the classic Bloom filter and break down how it works. In the next parts, we’ll explore more advanced variants and optimizations that make Bloom filters even more powerful.
 
 There’s a special kind of data structure out there called _probabilistic data structures_ — and I have a soft spot for some of them. One of my personal favorites is the **Bloom filter**. It’s a beautifully simple idea that solves a very common problem: how to check if something is in a set without using too much memory, even if that means sacrificing a bit of accuracy.
@@ -56,8 +60,17 @@ Let’s get our hands dirty.
 
 In the interactive playground below, you can **insert any string values into the Bloom filter** and watch how it modifies the internal bit array. You can also **check if a value is present**, and see how Bloom filters may return `possibly present` even for things you never inserted — that’s our famous false positives in action.
 
-- When you add a value: the filter applies multiple hash functions, calculates positions, and flips the corresponding bits to `1`.
-- When you check a value: it simply verifies if all these bits are still set to `1`. If yes — it says "maybe"; if any of them is `0` — it’s a definite "no".
+A few technical notes about this demo:
+
+- It uses a **double hashing technique** (which we’ll cover in more detail later). In short: instead of generating many completely separate hashes, it combines just two distinct hash functions to simulate any number of `k` hash functions. This approach is both efficient and widely used in real-world Bloom filters.
+- For simplicity and to keep things visual, the filter here uses a very compact bit array — only **16 bits** (`m = 16`).
+
+Here’s what happens under the hood:
+
+- When you add a value: the filter applies the double hash to calculate multiple positions and flips the corresponding bits to `1`.
+- When you check a value: it verifies if all these bits are still set to `1`. If yes — it says "maybe"; if any of them is `0` — it’s a definite "no".
+
+<SimpleBloomFilter />
 
 ### Why Can't We Delete?
 
