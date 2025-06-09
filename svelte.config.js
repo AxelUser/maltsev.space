@@ -10,7 +10,7 @@ const darkTheme = 'github-dark';
 
 const highlighter = await createHighlighter({
 	themes: [lightTheme, darkTheme],
-	langs: ['csharp', 'javascript', 'json']
+	langs: ['csharp', 'kotlin', 'javascript', 'json']
 });
 
 /** @type {import('rehype-autolink-headings').Options} */
