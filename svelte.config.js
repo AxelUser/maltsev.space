@@ -31,7 +31,7 @@ const autolinkHeadingsOptions = {
 /** @type {import('mdsvex').MdsvexOptions} */
 const mdsvexOptions = {
 	extensions: ['.md', '.svx'],
-	remarkPlugins: [[remarkToc, { tight: true }]],
+	remarkPlugins: [[remarkToc, { tight: true, maxDepth: 3 }]],
 	rehypePlugins: [slug, [autolinkHeadings, autolinkHeadingsOptions]],
 	highlight: {
 		highlighter: async (code, lang = 'text') => {
