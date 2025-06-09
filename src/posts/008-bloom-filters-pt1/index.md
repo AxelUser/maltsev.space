@@ -14,7 +14,7 @@ hero: /images/blog/008-bloom-filters-pt1/hero.jpg
 ---
 
 <script>
- import SimpleBloomFilter from '$lib/components/visualization/bloom-filters/simple-bloom-filter.svelte';
+ import { SimpleBloomFilter, ParameterCalculator } from '$lib/components/visualization/bloom-filters';
 </script>
 
 >This post is the first part of a small series where we’ll dive deep into the world of Bloom filters. Today, we’ll focus on the classic Bloom filter and break down how it works. In the next parts, we’ll explore more advanced variants and optimizations that make Bloom filters even more powerful.
@@ -403,7 +403,7 @@ Calculate `m`:
 m = -(n * ln(p)) / (ln(2))^2
   = -(100,000 * ln(0.01)) / (ln(2))^2
   = -(100,000 * (-4.6052)) / (0.4809)
-  ≈ 958,506 bits (≈ 119.8 KB)
+  ≈ 958,506 bits (≈ 117 KiB)
 ```
 
 Calculate `k`:
@@ -440,6 +440,8 @@ So the false positive rate is approximately **1.18%**.
 If you're getting bored (or dizzy) with all these formulas — don’t worry. Instead of torturing your brain, let's just throw your numbers into the calculator below and let it crunch everything for you.
 
 After all, you're sitting right next to one of the most advanced calculators humanity ever built — **for Christ's sake, let it do the math.**
+
+<ParameterCalculator />
 
 ## Wrapping Up
 
