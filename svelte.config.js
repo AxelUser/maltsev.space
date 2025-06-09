@@ -2,6 +2,7 @@ import { mdsvex, escapeSvelte } from 'mdsvex';
 import { createHighlighter } from 'shiki';
 import autolinkHeadings from 'rehype-autolink-headings';
 import slug from 'rehype-slug';
+import remarkToc from 'remark-toc';
 import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
@@ -30,6 +31,7 @@ const autolinkHeadingsOptions = {
 /** @type {import('mdsvex').MdsvexOptions} */
 const mdsvexOptions = {
 	extensions: ['.md', '.svx'],
+	remarkPlugins: [[remarkToc, { tight: true }]],
 	rehypePlugins: [slug, [autolinkHeadings, autolinkHeadingsOptions]],
 	highlight: {
 		highlighter: async (code, lang = 'text') => {
