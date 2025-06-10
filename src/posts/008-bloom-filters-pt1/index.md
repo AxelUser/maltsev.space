@@ -139,9 +139,9 @@ The idea is surprisingly simple: instead of calculating _k_ totally independent 
 
 The formula goes like this:
 
-```
-position_i(x) = (h1(x) + i * h2(x)) mod m
-```
+$$
+\text{position}_i(x) = (h_1(x) + i \cdot h_2(x)) \bmod m
+$$
 
 Where:
 
@@ -177,15 +177,15 @@ This optimization is commonly used in real-world Bloom filter implementations �
 
 Yeah... You may have already noticed a potential issue in our formula:
 
-```
-position_i(x) = (h1(x) + i * h2(x)) mod m
-```
+$$
+\text{position}_i(x) = (h_1(x) + i \cdot h_2(x)) \bmod m
+$$
 
 If `h2(x)` happens to be zero, all your hashes collapse into the same value:
 
-```
-position_i(x) = (h1(x) + i * 0) mod m = h1(x) mod m
-```
+$$
+\text{position}_i(x) = (h_1(x) + i \cdot 0) \bmod m = h_1(x) \bmod m
+$$
 
 How likely is that? Well, it depends, but not impossible.
 
@@ -203,9 +203,9 @@ This guarantees forward progress: even in the worst case you still generate `k` 
 
 There’s one more sneaky issue that’s often overlooked when using the double hashing formula:
 
-```
-position_i(x) = (h1(x) + i * h2(x)) mod m
-```
+$$
+\text{position}_i(x) = (h_1(x) + i \cdot h_2(x)) \bmod m
+$$
 
 Everything seems fine… until one day your Bloom filter quietly becomes _less random than you expect_. This happens when `h2(x)` and `m` (the Bloom filter size) are not **coprime**.
 
@@ -329,9 +329,9 @@ These parameters are tightly interconnected — changing one affects the others,
 
 The false positive rate is arguably the most important characteristic of a Bloom filter. It represents the probability that the filter incorrectly reports an element as present when it actually isn’t. The theoretical false positive probability can be approximated by:
 
-```
-p = (1 - e^(-k * n / m))^k
-```
+$$
+p = \left(1 - e^{-kn/m}\right)^k
+$$
 
 Where once again:
 
@@ -366,29 +366,29 @@ Both insertions and lookups require computing `k` hash functions and updating or
 
 If you know the expected number of elements (`n`) and your target false positive probability (`p`), you can compute the optimal size of the bit array as:
 
-```
-m = -(n * ln(p)) / (ln(2))^2
-```
+$$
+m = -\frac{n \ln(p)}{(\ln(2))^2}
+$$
 
 Or approximately:
 
-```
-m ≈ -n * ln(p) * 2.08
-```
+$$
+m \approx -n \ln(p) \cdot 2.08
+$$
 
 #### Optimal Number of Hash Functions (k)
 
 Once you have `m`, you can compute the optimal number of hash functions:
 
-```
-k = (m / n) * ln(2)
-```
+$$
+k = \frac{m}{n} \ln(2)
+$$
 
 Or approximately:
 
-```
-k ≈ (m / n) * 0.693
-```
+$$
+k \approx \frac{m}{n} \cdot 0.693
+$$
 
 Choosing this optimal `k` minimizes the false positive rate for your selected `m` and `n`.
 

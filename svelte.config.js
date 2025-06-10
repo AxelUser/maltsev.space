@@ -5,6 +5,8 @@ import slug from 'rehype-slug';
 import remarkToc from 'remark-toc';
 import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import rehypeKatexSvelte from 'rehype-katex-svelte';
+import remarkMath from 'remark-math';
 
 const lightTheme = 'material-theme-palenight';
 const darkTheme = 'github-dark';
@@ -31,8 +33,8 @@ const autolinkHeadingsOptions = {
 /** @type {import('mdsvex').MdsvexOptions} */
 const mdsvexOptions = {
 	extensions: ['.md', '.svx'],
-	remarkPlugins: [[remarkToc, { tight: true, maxDepth: 3 }]],
-	rehypePlugins: [slug, [autolinkHeadings, autolinkHeadingsOptions]],
+	remarkPlugins: [[remarkToc, { tight: true, maxDepth: 3 }], remarkMath],
+	rehypePlugins: [slug, [autolinkHeadings, autolinkHeadingsOptions], rehypeKatexSvelte],
 	highlight: {
 		highlighter: async (code, lang = 'text') => {
 			const html = escapeSvelte(
