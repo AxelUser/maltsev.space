@@ -3,21 +3,25 @@
 	
 	<url>
 		<loc>https://maltsev.space</loc>
-		<lastmod>2025-05-30</lastmod>
+		<lastmod>2025-06-10</lastmod>
 	</url>
 	<url>
 		<loc>https://maltsev.space/about</loc>
-		<lastmod>2025-05-30</lastmod>
+		<lastmod>2025-06-10</lastmod>
 	</url>
 	<url>
 		<loc>https://maltsev.space/blog</loc>
-		<lastmod>2025-05-30</lastmod>
+		<lastmod>2025-06-10</lastmod>
 	</url>
 	<url>
 		<loc>https://maltsev.space/art</loc>
-		<lastmod>2025-05-30</lastmod>
+		<lastmod>2025-06-10</lastmod>
 	</url>
 	
+	<url>
+		<loc>https://maltsev.space/blog/008-bloom-filters-pt1</loc>
+		<lastmod>2025-06-09</lastmod>
+	</url>
 	<url>
 		<loc>https://maltsev.space/blog/007-fixing-csharp-type-pattern-matching</loc>
 		<lastmod>2024-02-18</lastmod>

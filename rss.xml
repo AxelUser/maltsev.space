@@ -6,6 +6,12 @@
 <link>https://maltsev.space/</link>
 <atom:link href="https://maltsev.space/rss.xml" rel="self" type="application/rss+xml"/>
 <item>
+<title>Grokking Bloom Filters - Part 1</title>
+<link>https://maltsev.space//blog/008-bloom-filters-pt1</link>
+<description>How a tiny data structure cuts memory usage by 90% — while helping systems instantly check if data exists.</description>
+<pubDate>Mon, 09 Jun 2025 00:00:00 GMT</pubDate>
+<guid isPermaLink="true">https://maltsev.space//blog/008-bloom-filters-pt1</guid>
+</item><item>
 <title>Fixing C# type pattern-matching</title>
 <link>https://maltsev.space//blog/007-fixing-csharp-type-pattern-matching</link>
 <description>Craving Kotlin's secure pattern matching on sealed classes for your C# code? Discover how the Visitor Pattern can satisfy your longing!</description>
