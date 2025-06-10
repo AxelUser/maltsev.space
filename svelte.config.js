@@ -2,15 +2,18 @@ import { mdsvex, escapeSvelte } from 'mdsvex';
 import { createHighlighter } from 'shiki';
 import autolinkHeadings from 'rehype-autolink-headings';
 import slug from 'rehype-slug';
+import remarkToc from 'remark-toc';
 import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import rehypeKatexSvelte from 'rehype-katex-svelte';
+import remarkMath from 'remark-math';
 
 const lightTheme = 'material-theme-palenight';
 const darkTheme = 'github-dark';
 
 const highlighter = await createHighlighter({
 	themes: [lightTheme, darkTheme],
-	langs: ['csharp', 'javascript', 'json']
+	langs: ['csharp', 'kotlin', 'javascript', 'json']
 });
 
 /** @type {import('rehype-autolink-headings').Options} */
@@ -30,7 +33,8 @@ const autolinkHeadingsOptions = {
 /** @type {import('mdsvex').MdsvexOptions} */
 const mdsvexOptions = {
 	extensions: ['.md', '.svx'],
-	rehypePlugins: [slug, [autolinkHeadings, autolinkHeadingsOptions]],
+	remarkPlugins: [[remarkToc, { tight: true, maxDepth: 3 }], remarkMath],
+	rehypePlugins: [slug, [autolinkHeadings, autolinkHeadingsOptions], rehypeKatexSvelte],
 	highlight: {
 		highlighter: async (code, lang = 'text') => {
 			const html = escapeSvelte(
