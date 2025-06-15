@@ -17,10 +17,10 @@
 
 <SEO
 	title={data.title}
-	description={(data as any).preview || `Read about ${data.title} on ${config.websiteTitle}`}
+	description={data.preview || `Read about ${data.title} on ${config.websiteTitle}`}
 	image={heroImage}
 	imageAlt={`${data.title} - Blog post hero image`}
-	url={`/blog/${(data as any).slug}`}
+	url={`/blog/${data.slug}`}
 	type="article"
 	{publishedTime}
 	keywords={allKeywords}
