@@ -7,6 +7,7 @@ export { default as HeroPlanet } from './hero-planet.svelte';
 export { default as ThemeSwitch } from './theme-switch.svelte';
 export { default as Lightbox } from './lightbox.svelte';
 export { default as SEO } from './seo/seo.svelte';
+export { default as PostsGrid } from './posts-grid.svelte';
 export * from './timeline';
 export * from './tag-cloud';
 export * from './icons';

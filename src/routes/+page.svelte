@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Button, Link } from '$lib/components/ui';
-	import { HeroPlanet, TagCloud, ContentCard, SEO } from '$lib/components';
+	import { HeroPlanet, TagCloud, ContentCard, SEO, PostsGrid } from '$lib/components';
 	import { bio } from '$lib/bio';
 	import { config } from '$lib/config';
 
@@ -41,11 +41,7 @@
 	<section>
 		<h2 class="space-heading">Latest Articles</h2>
 
-		<div class="posts-grid">
-			{#each data.posts as post}
-				<ContentCard href={`/blog/${post.slug}`} title={post.title} description={post.preview} />
-			{/each}
-		</div>
+		<PostsGrid posts={data.posts} />
 
 		<div class="view-all">
 			<Link href="/blog" hasArrow={true}>View All Posts</Link>
@@ -117,13 +113,6 @@
 		gap: var(--gap-large);
 	}
 
-	.posts-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-		gap: var(--gap);
-		margin-top: var(--gap);
-	}
-
 	.view-all {
 		margin-top: var(--gap-large);
 		text-align: center;
@@ -157,11 +146,6 @@
 	}
 
 	@media (--lg-n-above) {
-		.posts-grid {
-			grid-template-columns: repeat(3, 1fr);
-			gap: var(--gap-large);
-		}
-
 		.about-grid {
 			grid-template-columns: 3fr 2fr;
 			gap: calc(var(--gap-large) * 2);
