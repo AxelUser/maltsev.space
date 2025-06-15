@@ -136,7 +136,6 @@
 		text-overflow: ellipsis;
 		display: block;
 		min-height: 4em;
-		max-height: 6em;
 	}
 
 	.card-metadata {

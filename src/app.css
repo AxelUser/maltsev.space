@@ -319,7 +319,6 @@ html {
 
 	code {
 		font-family: var(--font-monospace-code);
-		padding: 0.1em 0.3em;
 		border-radius: var(--radius-1);
 		font-size: 0.9em;
 	}

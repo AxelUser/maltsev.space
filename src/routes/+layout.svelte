@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Header, Footer, TwinklingStars } from '$lib/components';
-	import { browser } from '$app/environment';
+	import { browser, dev } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { theme, applyTheme } from '$lib/stores/theme';
 	import 'open-props/style';
@@ -13,7 +13,7 @@
 	const { children } = $props();
 
 	onMount(() => {
-		if (browser) {
+		if (browser && !dev) {
 			applyTheme($theme);
 			posthog.init(PUBLIC_POSTHOG_API_KEY, {
 				api_host: PUBLIC_POSTHOG_HOST,
@@ -24,7 +24,7 @@
 		}
 	});
 
-	if (browser) {
+	if (browser && !dev) {
 		beforeNavigate(() => posthog.capture('$pageleave'));
 		afterNavigate(() => posthog.capture('$pageview'));
 	}

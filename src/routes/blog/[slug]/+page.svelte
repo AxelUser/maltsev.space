@@ -17,10 +17,10 @@
 
 <SEO
 	title={data.title}
-	description={(data as any).preview || `Read about ${data.title} on ${config.websiteTitle}`}
+	description={data.preview || `Read about ${data.title} on ${config.websiteTitle}`}
 	image={heroImage}
 	imageAlt={`${data.title} - Blog post hero image`}
-	url={`/blog/${(data as any).slug}`}
+	url={`/blog/${data.slug}`}
 	type="article"
 	{publishedTime}
 	keywords={allKeywords}
@@ -45,10 +45,13 @@
 		/>
 		<div class="hero-content">
 			<hgroup>
-				<h1 class="space-title">{data.title}</h1>
-				<p>
+				<p class="publish-date">
 					<span>Published at <time datetime="2024-06-15">{data.date}</time></span>
 				</p>
+				<h1 class="space-title">{data.title}</h1>
+				{#if data.preview}
+					<p class="post-preview">{data.preview}</p>
+				{/if}
 			</hgroup>
 		</div>
 	</div>
@@ -57,10 +60,13 @@
 <article>
 	{#if !heroImage}
 		<hgroup>
-			<h1 class="space-title">{data.title}</h1>
-			<p>
+			<p class="publish-date">
 				<span>Published at <time datetime="2024-06-15">{data.date}</time></span>
 			</p>
+			<h1 class="space-title">{data.title}</h1>
+			{#if data.preview}
+				<p class="post-preview">{data.preview}</p>
+			{/if}
 		</hgroup>
 	{/if}
 
@@ -185,16 +191,6 @@
 		margin-bottom: 0;
 	}
 
-	.hero-content h1 {
-		color: inherit;
-	}
-
-	.hero-content p {
-		color: inherit;
-		font-size: var(--font-size-1);
-		margin-bottom: 0;
-	}
-
 	article > hgroup {
 		margin-bottom: var(--gap);
 		display: flex;
@@ -202,12 +198,21 @@
 		gap: var(--gap);
 	}
 
-	article > hgroup p {
-		display: flex;
-		gap: var(--gap);
+	.publish-date {
 		font-size: var(--font-size-1);
-		color: var(--space-text-muted);
+		color: var(--accent);
+		font-weight: var(--font-weight-6);
 		margin-bottom: var(--gap-small);
+		display: block;
+	}
+
+	.post-preview {
+		font-size: var(--font-size-2);
+		color: var(--text-2);
+		font-style: italic;
+		line-height: 1.6;
+		margin-top: var(--gap);
+		display: block;
 	}
 
 	@media (--md-n-below) {

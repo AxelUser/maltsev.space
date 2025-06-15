@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button, Badge } from '$lib/components/ui';
-	import { ContentCard, PageHeader, SEO } from '$lib/components';
+	import { ContentCard, PageHeader, PostsGrid, SEO } from '$lib/components';
 	import { bio } from '$lib/bio';
 
 	const { data } = $props();
@@ -65,19 +65,7 @@
 				</Button>
 			</div>
 		{:else}
-			<div class="posts-grid">
-				{#each filteredPosts as post}
-					<ContentCard
-						href={`/blog/${post.slug}`}
-						title={post.title}
-						description={post.preview}
-						date={post.date}
-						tags={post.tags}
-						{activeTag}
-						onTagClick={toggleTag}
-					/>
-				{/each}
-			</div>
+			<PostsGrid posts={filteredPosts} {activeTag} onTagClick={toggleTag} />
 		{/if}
 	</section>
 </div>
@@ -121,27 +109,10 @@
 		margin-bottom: var(--gap);
 	}
 
-	.posts-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-		gap: var(--gap);
-	}
-
-	@media (--lg-n-above) {
-		.posts-grid {
-			grid-template-columns: repeat(3, 1fr);
-			gap: var(--gap-large);
-		}
-	}
-
 	@media (--sm-n-below) {
 		.blog-filters {
 			flex-direction: column;
 			align-items: flex-start;
-		}
-
-		.posts-grid {
-			grid-template-columns: 1fr;
 		}
 	}
 </style>

@@ -7,7 +7,7 @@ keywords:
   - "Probabilistic data structures"
   - "Hash functions"
   - "Bit arrays"
-title: "Grokking Bloom Filters - Part 1"
+title: "Grokking Bloom Filters: The Classic Bloom Filter Demystified"
 preview: "How a tiny data structure cuts memory usage by 90% — while helping systems instantly check if data exists."
 draft: false
 hero: /images/blog/008-bloom-filters-pt1/hero.jpg
