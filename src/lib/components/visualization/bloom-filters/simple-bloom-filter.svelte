@@ -173,8 +173,8 @@
 		<div class="main-content">
 			<!-- Hash Values Display -->
 			<div class="hash-display">
-				<DisplayCard label="Hash 1:" value={hash1Value ?? '—'} variant="hash" />
-				<DisplayCard label="Hash 2:" value={hash2Value ?? '—'} variant="hash" />
+				<DisplayCard label="Hash 1:" value={hash1Value} variant="centered" showEmpty={false} />
+				<DisplayCard label="Hash 2:" value={hash2Value} variant="centered" showEmpty={false} />
 			</div>
 
 			<!-- Binary Representation -->
@@ -268,6 +268,8 @@
 </div>
 
 <style>
+	@import 'open-props/media';
+
 	.bloom-filter-container {
 		margin: 0 auto;
 		padding: var(--gap);
@@ -294,13 +296,10 @@
 	}
 
 	.hash-display {
-		display: flex;
-		gap: var(--gap-large);
-		justify-content: center;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		gap: var(--gap);
 		margin-bottom: var(--gap);
-		padding: var(--gap);
-		background: var(--surface-1);
-		border-radius: var(--radius-2);
 	}
 
 	.binary-display {
@@ -309,6 +308,7 @@
 		padding: var(--gap);
 		background: var(--surface-1);
 		border-radius: var(--radius-2);
+		border: 1px solid var(--surface-3);
 	}
 
 	.binary-display label {
@@ -341,6 +341,10 @@
 	.input-section {
 		text-align: center;
 		margin-bottom: var(--gap);
+		padding: var(--gap);
+		background: var(--surface-1);
+		border-radius: var(--radius-2);
+		border: 1px solid var(--surface-3);
 	}
 
 	.input-section input {
@@ -376,9 +380,10 @@
 	.result-display {
 		text-align: center;
 		margin-bottom: var(--gap);
-		padding: var(--gap-small);
+		padding: var(--gap);
 		border-radius: var(--radius-2);
 		background: var(--surface-1);
+		border: 1px solid var(--surface-3);
 	}
 
 	.operation {
@@ -395,7 +400,7 @@
 		color: var(--text-2);
 	}
 
-	@media (max-width: 768px) {
+	@media (--md-n-below) {
 		.layout {
 			grid-template-columns: 1fr;
 			gap: var(--gap);
@@ -405,9 +410,7 @@
 			position: static;
 			order: -1;
 		}
-	}
 
-	@media (max-width: 600px) {
 		.binary-grid {
 			grid-template-columns: 1fr;
 			max-width: 200px;

@@ -139,42 +139,42 @@
 						label="Bit Array Size (m)"
 						value={formatNumber(calculationMode === 'optimal' ? optimalM : customM || optimalM, 0)}
 						unit="bits"
-						variant="result"
+						variant="elevated"
 					/>
 
 					<DisplayCard
 						label="Hash Functions (k)"
 						value={calculationMode === 'optimal' ? optimalK : customK || optimalK}
 						unit="functions"
-						variant="result"
+						variant="elevated"
 					/>
 
 					<DisplayCard
 						label="Actual False Positive Rate"
 						value={formatPercentage(actualFPR)}
 						unit="probability"
-						variant="result"
+						variant="elevated"
 					/>
 
 					<DisplayCard
 						label="Memory Usage"
 						value={formatMemory(memoryUsageBytes)}
 						unit="total"
-						variant="result"
+						variant="elevated"
 					/>
 
 					<DisplayCard
 						label="Bits per Element"
 						value={formatNumber(bitsPerElement)}
 						unit="bits/element"
-						variant="result"
+						variant="elevated"
 					/>
 
 					<DisplayCard
 						label="Space Efficiency"
 						value={`${formatNumber(100 * (1 - memoryUsageBytes / (expectedElements * ELEMENT_BITS)))}%`}
 						description={`vs naive storage (${ELEMENT_BITS} bits/element)`}
-						variant="result"
+						variant="elevated"
 					/>
 				</div>
 			</div>
@@ -197,6 +197,7 @@
 					}
 				]}
 				variant="sticky"
+				cardVariant="compact"
 			/>
 
 			<div class="parameters-section">
@@ -270,6 +271,7 @@
 		border-radius: var(--radius-2);
 		padding: var(--gap);
 		margin-bottom: var(--gap);
+		border: 1px solid var(--surface-3);
 	}
 
 	.input-section h3,
