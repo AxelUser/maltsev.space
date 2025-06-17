@@ -25,7 +25,6 @@
 		autoAnimate = true
 	}: Props = $props();
 
-	let bloomFilter: SimpleBloomFilter;
 	let inputValue = $state<string>('');
 	let isAnimating = $state<boolean>(false);
 	let currentStep = $state<number>(-1);
@@ -36,12 +35,13 @@
 	let hash1Value = $state<number | null>(null);
 	let hash2Value = $state<number | null>(null);
 	let binaryValue = $state<string>('');
-	let bitArray = $state<boolean[]>([]);
 	let highlightedBits = $state<Set<number>>(new Set());
 	let bitColors = $state<Map<number, 'blue' | 'red'>>(new Map());
 
-	onMount(() => {
-		bloomFilter = new SimpleBloomFilter(size, numHashFunctions);
+	let bloomFilter = $derived(new SimpleBloomFilter(size, numHashFunctions));
+	let bitArray = $state<boolean[]>([]);
+
+	$effect(() => {
 		bitArray = bloomFilter.getBitArray();
 	});
 
