@@ -4,6 +4,7 @@
 	interface OwnProps {
 		href?: string;
 		type?: 'button' | 'submit' | 'reset';
+		disabled?: boolean;
 		class?: string;
 		onclick?: (event: MouseEvent) => void;
 		children?: Snippet;
@@ -37,7 +38,8 @@
 		type = 'button',
 		class: className = '',
 		children,
-		onclick
+		onclick,
+		disabled
 	}: Props = $props();
 
 	const buttonClasses = $derived(button({ intent, size, fullWidth, class: className }));
@@ -48,7 +50,7 @@
 		{@render children?.()}
 	</a>
 {:else}
-	<button {type} class={buttonClasses} {onclick}>
+	<button {type} class={buttonClasses} {onclick} {disabled}>
 		{@render children?.()}
 	</button>
 {/if}
@@ -64,12 +66,17 @@
 		font-family: var(--font-system-ui);
 	}
 
+	.button:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
 	.primary {
 		background-color: var(--brand);
 		color: var(--brand-foreground);
 	}
 
-	.primary:hover {
+	.primary:hover:not(:disabled) {
 		background-color: var(--link);
 	}
 
@@ -79,7 +86,7 @@
 		border: 1px solid var(--brand);
 	}
 
-	.secondary:hover {
+	.secondary:hover:not(:disabled) {
 		background-color: color-mix(in srgb, var(--brand) 10%, transparent);
 		color: var(--text-1);
 	}

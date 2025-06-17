@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { SimpleBloomFilter } from './simple-bloom-filter';
 	import BitSegment from './bit-segment.svelte';
 	import {
@@ -8,6 +7,7 @@
 		DEFAULT_SIZE,
 		DEFAULT_NUM_HASH_FUNCTIONS
 	} from './types';
+	import { Button } from '$lib/components/ui';
 
 	interface Props {
 		size?: number;
@@ -27,7 +27,6 @@
 
 	let inputValue = $state<string>('');
 	let isAnimating = $state<boolean>(false);
-	let currentStep = $state<number>(-1);
 	let animationSteps = $state<AnimationStep[]>([]);
 	let lastOperation = $state<BloomFilterOperation | null>(null);
 	let result = $state<boolean | null>(null);
@@ -71,7 +70,6 @@
 		}
 
 		for (let i = 0; i < animationSteps.length; i++) {
-			currentStep = i;
 			const step = animationSteps[i];
 
 			switch (step.type) {
@@ -124,7 +122,6 @@
 		}
 
 		isAnimating = false;
-		currentStep = -1;
 	}
 
 	async function handleInsert() {
@@ -216,25 +213,21 @@
 						onkeydown={(e) => e.key === 'Enter' && handleInsert()}
 					/>
 					<div class="button-group">
-						<button
-							type="button"
+						<Button
+							intent="primary"
 							onclick={handleInsert}
 							disabled={isAnimating || !inputValue.trim()}
-							class="insert-btn"
 						>
 							Insert
-						</button>
-						<button
-							type="button"
+						</Button>
+						<Button
+							intent="primary"
 							onclick={handleCheck}
 							disabled={isAnimating || !inputValue.trim()}
-							class="check-btn"
 						>
 							Check
-						</button>
-						<button type="button" onclick={handleReset} disabled={isAnimating} class="reset-btn">
-							Reset
-						</button>
+						</Button>
+						<Button intent="secondary" onclick={handleReset} disabled={isAnimating}>Reset</Button>
 					</div>
 				</div>
 			{/if}
@@ -457,48 +450,6 @@
 		gap: var(--gap-small);
 		justify-content: center;
 		flex-wrap: wrap;
-	}
-
-	button {
-		padding: var(--gap-small) var(--gap);
-		border: none;
-		border-radius: var(--radius-2);
-		font-size: var(--font-size-1);
-		font-weight: var(--font-weight-6);
-		cursor: pointer;
-		transition: all 0.2s ease;
-	}
-
-	button:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-
-	.insert-btn {
-		background: var(--brand);
-		color: var(--brand-foreground);
-	}
-
-	.insert-btn:hover:not(:disabled) {
-		background: var(--accent);
-	}
-
-	.check-btn {
-		background: var(--surface-3);
-		color: var(--text-1);
-	}
-
-	.check-btn:hover:not(:disabled) {
-		background: var(--surface-4);
-	}
-
-	.reset-btn {
-		background: var(--surface-3);
-		color: var(--text-2);
-	}
-
-	.reset-btn:hover:not(:disabled) {
-		background: var(--surface-4);
 	}
 
 	.result-display {
