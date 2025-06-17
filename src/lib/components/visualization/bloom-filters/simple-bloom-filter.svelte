@@ -8,6 +8,7 @@
 		DEFAULT_NUM_HASH_FUNCTIONS
 	} from './types';
 	import { Button } from '$lib/components/ui';
+	import { DisplayCard, ParameterGroup } from '../common';
 
 	interface Props {
 		size?: number;
@@ -172,18 +173,8 @@
 		<div class="main-content">
 			<!-- Hash Values Display -->
 			<div class="hash-display">
-				<div class="hash-item">
-					<label>Hash 1:</label>
-					<span class="hash-value" class:visible={hash1Value !== null}>
-						{hash1Value ?? '—'}
-					</span>
-				</div>
-				<div class="hash-item">
-					<label>Hash 2:</label>
-					<span class="hash-value" class:visible={hash2Value !== null}>
-						{hash2Value ?? '—'}
-					</span>
-				</div>
+				<DisplayCard label="Hash 1:" value={hash1Value ?? '—'} variant="hash" />
+				<DisplayCard label="Hash 2:" value={hash2Value ?? '—'} variant="hash" />
 			</div>
 
 			<!-- Binary Representation -->
@@ -264,17 +255,14 @@
 		</div>
 		<!-- Parameters -->
 		<div class="parameters-column">
-			<div class="parameters-section">
-				<h3>Parameters</h3>
-				<div class="parameter-item">
-					<label>k (Hash Functions):</label>
-					<span class="parameter-value">{k}</span>
-				</div>
-				<div class="parameter-item">
-					<label>m (Bit Array Size):</label>
-					<span class="parameter-value">{m}</span>
-				</div>
-			</div>
+			<ParameterGroup
+				title="Parameters"
+				parameters={[
+					{ label: 'k (Hash Functions):', value: k },
+					{ label: 'm (Bit Array Size):', value: m }
+				]}
+				variant="sticky"
+			/>
 		</div>
 	</div>
 </div>
@@ -301,46 +289,6 @@
 		top: var(--gap);
 	}
 
-	.parameters-section {
-		background: var(--surface-1);
-		border-radius: var(--radius-2);
-		padding: var(--gap);
-	}
-
-	.parameters-section h3 {
-		margin: 0 0 var(--gap) 0;
-		font-size: var(--font-size-2);
-		font-weight: var(--font-weight-6);
-	}
-
-	.parameter-item {
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap-small);
-		margin-bottom: var(--gap);
-	}
-
-	.parameter-item:last-child {
-		margin-bottom: 0;
-	}
-
-	.parameter-item label {
-		font-size: var(--font-size-1);
-		color: var(--text-2);
-		font-weight: var(--font-weight-6);
-	}
-
-	.parameter-value {
-		font-size: var(--font-size-3);
-		font-family: var(--font-monospace-code);
-		color: var(--text-1);
-		font-weight: var(--font-weight-7);
-		padding: var(--gap-small);
-		background: var(--surface-2);
-		border-radius: var(--radius-1);
-		text-align: center;
-	}
-
 	.main-content {
 		min-width: 0;
 	}
@@ -353,33 +301,6 @@
 		padding: var(--gap);
 		background: var(--surface-1);
 		border-radius: var(--radius-2);
-	}
-
-	.hash-item {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: var(--gap-small);
-	}
-
-	.hash-item label {
-		font-size: var(--font-size-1);
-		color: var(--text-2);
-		font-weight: var(--font-weight-6);
-	}
-
-	.hash-value {
-		font-size: var(--font-size-3);
-		font-family: var(--font-monospace-code);
-		color: var(--text-1);
-		opacity: 0;
-		transition: opacity 0.3s ease;
-		min-width: 3ch;
-		text-align: center;
-	}
-
-	.hash-value.visible {
-		opacity: 1;
 	}
 
 	.binary-display {
@@ -484,32 +405,12 @@
 			position: static;
 			order: -1;
 		}
-
-		.parameters-section {
-			padding: var(--gap-small);
-		}
-
-		.parameter-item {
-			flex-direction: row;
-			justify-content: space-between;
-			align-items: center;
-		}
-
-		.parameter-value {
-			padding: var(--gap-small);
-			min-width: 60px;
-		}
 	}
 
 	@media (max-width: 600px) {
 		.binary-grid {
 			grid-template-columns: 1fr;
 			max-width: 200px;
-		}
-
-		.parameter-item {
-			flex-direction: column;
-			align-items: stretch;
 		}
 	}
 </style>

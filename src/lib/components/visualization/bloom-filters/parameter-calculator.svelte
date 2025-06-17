@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { Button } from '$lib/components/ui';
+	import { DisplayCard, LabeledInput, ParameterGroup } from '../common';
+
 	const ELEMENT_BITS = 32;
 
 	let expectedElements = $state<number>(100000);
@@ -66,30 +69,26 @@
 			<div class="input-section">
 				<h3>Input Parameters</h3>
 
-				<div class="input-group">
-					<label for="expected-elements">Expected Elements (n):</label>
-					<input
-						id="expected-elements"
-						type="number"
-						bind:value={expectedElements}
-						min="1"
-						step="1"
-						placeholder="100000"
-					/>
-				</div>
+				<LabeledInput
+					label="Expected Elements (n):"
+					bind:value={expectedElements}
+					type="number"
+					min={1}
+					step="1"
+					placeholder="100000"
+					id="expected-elements"
+				/>
 
-				<div class="input-group">
-					<label for="false-positive-rate">Target False Positive Rate (p):</label>
-					<input
-						id="false-positive-rate"
-						type="number"
-						bind:value={falsePositiveRate}
-						min="0.000001"
-						max="0.999999"
-						step="0.001"
-						placeholder="0.01"
-					/>
-				</div>
+				<LabeledInput
+					label="Target False Positive Rate (p):"
+					bind:value={falsePositiveRate}
+					type="number"
+					min={0.000001}
+					max={0.999999}
+					step="0.001"
+					placeholder="0.01"
+					id="false-positive-rate"
+				/>
 
 				<!-- Calculation Mode -->
 				<div class="mode-section">
@@ -108,29 +107,25 @@
 
 				{#if calculationMode === 'custom'}
 					<div class="custom-params">
-						<div class="input-group">
-							<label for="custom-m">Bit Array Size (m):</label>
-							<input
-								id="custom-m"
-								type="number"
-								bind:value={customM}
-								min="1"
-								step="1"
-								placeholder={optimalM.toString()}
-							/>
-						</div>
+						<LabeledInput
+							label="Bit Array Size (m):"
+							bind:value={customM}
+							type="number"
+							min={1}
+							step="1"
+							placeholder={optimalM.toString()}
+							id="custom-m"
+						/>
 
-						<div class="input-group">
-							<label for="custom-k">Hash Functions (k):</label>
-							<input
-								id="custom-k"
-								type="number"
-								bind:value={customK}
-								min="1"
-								step="1"
-								placeholder={optimalK.toString()}
-							/>
-						</div>
+						<LabeledInput
+							label="Hash Functions (k):"
+							bind:value={customK}
+							type="number"
+							min={1}
+							step="1"
+							placeholder={optimalK.toString()}
+							id="custom-k"
+						/>
 					</div>
 				{/if}
 			</div>
@@ -140,88 +135,74 @@
 				<h3>Calculated Results</h3>
 
 				<div class="results-grid">
-					<div class="result-card">
-						<div class="result-label">Bit Array Size (m)</div>
-						<div class="result-value">
-							{formatNumber(calculationMode === 'optimal' ? optimalM : customM || optimalM, 0)}
-						</div>
-						<div class="result-unit">bits</div>
-					</div>
+					<DisplayCard
+						label="Bit Array Size (m)"
+						value={formatNumber(calculationMode === 'optimal' ? optimalM : customM || optimalM, 0)}
+						unit="bits"
+						variant="result"
+					/>
 
-					<div class="result-card">
-						<div class="result-label">Hash Functions (k)</div>
-						<div class="result-value">
-							{calculationMode === 'optimal' ? optimalK : customK || optimalK}
-						</div>
-						<div class="result-unit">functions</div>
-					</div>
+					<DisplayCard
+						label="Hash Functions (k)"
+						value={calculationMode === 'optimal' ? optimalK : customK || optimalK}
+						unit="functions"
+						variant="result"
+					/>
 
-					<div class="result-card">
-						<div class="result-label">Actual False Positive Rate</div>
-						<div class="result-value">
-							{formatPercentage(actualFPR)}
-						</div>
-						<div class="result-unit">probability</div>
-					</div>
+					<DisplayCard
+						label="Actual False Positive Rate"
+						value={formatPercentage(actualFPR)}
+						unit="probability"
+						variant="result"
+					/>
 
-					<div class="result-card">
-						<div class="result-label">Memory Usage</div>
-						<div class="result-value">
-							{formatMemory(memoryUsageBytes)}
-						</div>
-						<div class="result-unit">total</div>
-					</div>
+					<DisplayCard
+						label="Memory Usage"
+						value={formatMemory(memoryUsageBytes)}
+						unit="total"
+						variant="result"
+					/>
 
-					<div class="result-card">
-						<div class="result-label">Bits per Element</div>
-						<div class="result-value">
-							{formatNumber(bitsPerElement)}
-						</div>
-						<div class="result-unit">bits/element</div>
-					</div>
+					<DisplayCard
+						label="Bits per Element"
+						value={formatNumber(bitsPerElement)}
+						unit="bits/element"
+						variant="result"
+					/>
 
-					<div class="result-card">
-						<div class="result-label">Space Efficiency</div>
-						<div class="result-value">
-							{formatNumber(100 * (1 - memoryUsageBytes / (expectedElements * ELEMENT_BITS)))}%
-						</div>
-						<div class="result-unit">vs naive storage ({ELEMENT_BITS} bits/element)</div>
-					</div>
+					<DisplayCard
+						label="Space Efficiency"
+						value={`${formatNumber(100 * (1 - memoryUsageBytes / (expectedElements * ELEMENT_BITS)))}%`}
+						description={`vs naive storage (${ELEMENT_BITS} bits/element)`}
+						variant="result"
+					/>
 				</div>
 			</div>
 		</div>
 
 		<!-- Parameters Display -->
 		<div class="parameters-column">
-			<div class="parameters-section">
-				<h3>Current Parameters</h3>
-				<div class="parameter-item">
-					<label>Expected Elements (n):</label>
-					<span class="parameter-value">{formatNumber(expectedElements, 0)}</span>
-				</div>
-				<div class="parameter-item">
-					<label>Target FPR (p):</label>
-					<span class="parameter-value">{formatPercentage(falsePositiveRate)}</span>
-				</div>
-				<div class="parameter-item">
-					<label>Bit Array Size (m):</label>
-					<span class="parameter-value">
-						{formatNumber(calculationMode === 'optimal' ? optimalM : customM || optimalM, 0)}
-					</span>
-				</div>
-				<div class="parameter-item">
-					<label>Hash Functions (k):</label>
-					<span class="parameter-value">
-						{calculationMode === 'optimal' ? optimalK : customK || optimalK}
-					</span>
-				</div>
-			</div>
+			<ParameterGroup
+				title="Current Parameters"
+				parameters={[
+					{ label: 'Expected Elements (n):', value: formatNumber(expectedElements, 0) },
+					{ label: 'Target FPR (p):', value: formatPercentage(falsePositiveRate) },
+					{
+						label: 'Bit Array Size (m):',
+						value: formatNumber(calculationMode === 'optimal' ? optimalM : customM || optimalM, 0)
+					},
+					{
+						label: 'Hash Functions (k):',
+						value: calculationMode === 'optimal' ? optimalK : customK || optimalK
+					}
+				]}
+				variant="sticky"
+			/>
 
 			<div class="parameters-section">
 				<h3>Quick Presets</h3>
 				<div class="preset-buttons">
-					<button
-						class="preset-btn"
+					<Button
 						onclick={() => {
 							expectedElements = 1000;
 							falsePositiveRate = 0.01;
@@ -229,9 +210,8 @@
 						}}
 					>
 						Small (1K, 1%)
-					</button>
-					<button
-						class="preset-btn"
+					</Button>
+					<Button
 						onclick={() => {
 							expectedElements = 100000;
 							falsePositiveRate = 0.01;
@@ -239,9 +219,8 @@
 						}}
 					>
 						Medium (100K, 1%)
-					</button>
-					<button
-						class="preset-btn"
+					</Button>
+					<Button
 						onclick={() => {
 							expectedElements = 1000000;
 							falsePositiveRate = 0.001;
@@ -249,7 +228,7 @@
 						}}
 					>
 						Large (1M, 0.1%)
-					</button>
+					</Button>
 				</div>
 			</div>
 		</div>
@@ -308,39 +287,6 @@
 		color: var(--text-2);
 	}
 
-	.input-group {
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap-small);
-		margin-bottom: var(--gap);
-	}
-
-	.input-group label {
-		font-size: var(--font-size-1);
-		color: var(--text-2);
-		font-weight: var(--font-weight-6);
-	}
-
-	.input-group input {
-		padding: var(--gap-small);
-		border: 1px solid var(--surface-3);
-		border-radius: var(--radius-2);
-		background: var(--surface-2);
-		color: var(--text-1);
-		font-size: var(--font-size-2);
-		font-family: var(--font-monospace-code);
-	}
-
-	.input-group input::placeholder {
-		color: var(--text-2);
-		opacity: 0.8;
-	}
-
-	.input-group input:focus {
-		outline: none;
-		border-color: var(--brand);
-	}
-
 	.mode-section {
 		margin: var(--gap) 0;
 		padding: var(--gap-small);
@@ -376,35 +322,6 @@
 		gap: var(--gap);
 	}
 
-	.result-card {
-		background: var(--surface-2);
-		border-radius: var(--radius-2);
-		padding: var(--gap);
-		text-align: center;
-		border: 1px solid var(--surface-3);
-	}
-
-	.result-label {
-		font-size: var(--font-size-0);
-		color: var(--text-2);
-		font-weight: var(--font-weight-6);
-		margin-bottom: var(--gap-small);
-	}
-
-	.result-value {
-		font-size: var(--font-size-3);
-		font-family: var(--font-monospace-code);
-		color: var(--text-1);
-		font-weight: var(--font-weight-7);
-		margin-bottom: var(--gap-small);
-	}
-
-	.result-unit {
-		font-size: var(--font-size-0);
-		color: var(--text-2);
-		opacity: 0.8;
-	}
-
 	.parameters-column {
 		position: sticky;
 		top: var(--gap);
@@ -423,55 +340,10 @@
 		font-weight: var(--font-weight-6);
 	}
 
-	.parameter-item {
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap-small);
-		margin-bottom: var(--gap);
-	}
-
-	.parameter-item:last-child {
-		margin-bottom: 0;
-	}
-
-	.parameter-item label {
-		font-size: var(--font-size-1);
-		color: var(--text-2);
-		font-weight: var(--font-weight-6);
-	}
-
-	.parameter-value {
-		font-size: var(--font-size-2);
-		font-family: var(--font-monospace-code);
-		color: var(--text-1);
-		font-weight: var(--font-weight-7);
-		padding: var(--gap-small);
-		background: var(--surface-2);
-		border-radius: var(--radius-1);
-		text-align: center;
-	}
-
 	.preset-buttons {
 		display: flex;
 		flex-direction: column;
 		gap: var(--gap-small);
-	}
-
-	.preset-btn {
-		padding: var(--gap-small);
-		border: none;
-		border-radius: var(--radius-2);
-		font-size: var(--font-size-1);
-		font-weight: var(--font-weight-6);
-		cursor: pointer;
-		transition: all 0.2s ease;
-		background: var(--surface-3);
-		color: var(--text-1);
-	}
-
-	.preset-btn:hover {
-		background: var(--brand);
-		color: var(--brand-foreground);
 	}
 
 	@media (max-width: 768px) {
@@ -489,28 +361,12 @@
 			padding: var(--gap-small);
 		}
 
-		.parameter-item {
-			flex-direction: row;
-			justify-content: space-between;
-			align-items: center;
-		}
-
-		.parameter-value {
-			padding: var(--gap-small);
-			min-width: 80px;
-		}
-
 		.results-grid {
 			grid-template-columns: 1fr;
 		}
 	}
 
 	@media (max-width: 600px) {
-		.parameter-item {
-			flex-direction: column;
-			align-items: stretch;
-		}
-
 		.preset-buttons {
 			flex-direction: column;
 		}
