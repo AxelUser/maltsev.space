@@ -32,20 +32,18 @@
 </div>
 
 <style>
+	@import 'open-props/media';
+
 	.parameters-section {
 		background: var(--surface-1);
 		border-radius: var(--radius-2);
 		padding: var(--gap);
 		margin-bottom: var(--gap);
 		border: 1px solid var(--surface-3);
-		transition: all 0.2s ease;
 	}
 
 	.parameters-section.sticky {
 		position: sticky;
-		top: var(--gap);
-		background: var(--surface-2);
-		box-shadow: var(--shadow-1);
 	}
 
 	.parameters-section h3 {
@@ -55,18 +53,15 @@
 		color: var(--text-1);
 		text-align: center;
 		padding-bottom: var(--gap-small);
-		border-bottom: 1px solid var(--surface-3);
 	}
 
-	@media (max-width: 768px) {
+	@media (--md-n-below) {
 		.parameters-section {
 			padding: var(--gap-small);
 		}
 
 		.parameters-section.sticky {
 			position: static;
-			background: var(--surface-1);
-			box-shadow: none;
 		}
 	}
 </style>

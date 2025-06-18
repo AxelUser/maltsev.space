@@ -8,7 +8,7 @@
 		DEFAULT_NUM_HASH_FUNCTIONS
 	} from './types';
 	import { Button } from '$lib/components/ui';
-	import { DisplayCard, ParameterGroup } from '../common';
+	import { DisplayCard, LabeledInput, ParameterGroup } from '../common';
 
 	interface Props {
 		size?: number;
@@ -196,13 +196,13 @@
 			<!-- User Input Section -->
 			{#if userInputEnabled}
 				<div class="input-section">
-					<input
-						type="text"
+					<LabeledInput
 						bind:value={inputValue}
-						placeholder="Enter a string..."
 						disabled={isAnimating}
+						placeholder="Enter any text..."
 						onkeydown={(e) => e.key === 'Enter' && handleInsert()}
 					/>
+
 					<div class="button-group">
 						<Button
 							intent="primary"
@@ -297,7 +297,7 @@
 
 	.hash-display {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
 		gap: var(--gap);
 		margin-bottom: var(--gap);
 	}
@@ -339,35 +339,10 @@
 	}
 
 	.input-section {
-		text-align: center;
+		display: flex;
+		flex-direction: column;
+		gap: var(--gap-small);
 		margin-bottom: var(--gap);
-		padding: var(--gap);
-		background: var(--surface-1);
-		border-radius: var(--radius-2);
-		border: 1px solid var(--surface-3);
-	}
-
-	.input-section input {
-		width: 100%;
-		max-width: 300px;
-		padding: var(--gap-small);
-		margin-bottom: var(--gap);
-		border: 1px solid var(--surface-3);
-		border-radius: var(--radius-2);
-		background: var(--surface-1);
-		color: var(--text-1);
-		font-size: var(--font-size-2);
-		text-align: center;
-	}
-
-	.input-section input::placeholder {
-		color: var(--text-2);
-		opacity: 0.8;
-	}
-
-	.input-section input:focus {
-		outline: none;
-		border-color: var(--brand);
 	}
 
 	.button-group {

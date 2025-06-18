@@ -1,16 +1,11 @@
 <script lang="ts">
-	interface Props {
-		label: string;
-		value: string | number | null;
-		type?: 'text' | 'number';
-		placeholder?: string;
-		disabled?: boolean;
-		min?: number;
-		max?: number;
-		step?: number | string;
-		id?: string;
-		required?: boolean;
+	import type { SvelteHTMLElements } from 'svelte/elements';
+
+	interface OwnProps {
+		label?: string;
 	}
+
+	type Props = OwnProps & SvelteHTMLElements['input'];
 
 	let {
 		label,
@@ -29,7 +24,9 @@
 </script>
 
 <div class="input-group">
-	<label for={inputId}>{label}{required ? '*' : ''}</label>
+	{#if label}
+		<label for={inputId}>{label}{required ? '*' : ''}</label>
+	{/if}
 	<input id={inputId} {type} bind:value {placeholder} {disabled} {min} {max} {step} {required} />
 </div>
 
@@ -44,11 +41,6 @@
 		border: 1px solid var(--surface-3);
 		margin-bottom: var(--gap);
 		transition: all 0.2s ease;
-	}
-
-	.input-group:focus-within {
-		border-color: var(--brand);
-		box-shadow: 0 0 0 2px var(--brand-alpha);
 	}
 
 	.input-group label {
