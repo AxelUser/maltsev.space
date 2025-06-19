@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { SimpleBloomFilter } from './simple-bloom-filter';
 	import BitSegment from './bit-segment.svelte';
 	import {
@@ -8,6 +7,8 @@
 		DEFAULT_SIZE,
 		DEFAULT_NUM_HASH_FUNCTIONS
 	} from './types';
+	import { Button } from '$lib/components/ui';
+	import { DisplayCard, LabeledInput, ParameterGroup } from '../common';
 
 	interface Props {
 		size?: number;
@@ -25,10 +26,8 @@
 		autoAnimate = true
 	}: Props = $props();
 
-	let bloomFilter: SimpleBloomFilter;
 	let inputValue = $state<string>('');
 	let isAnimating = $state<boolean>(false);
-	let currentStep = $state<number>(-1);
 	let animationSteps = $state<AnimationStep[]>([]);
 	let lastOperation = $state<BloomFilterOperation | null>(null);
 	let result = $state<boolean | null>(null);
@@ -36,12 +35,13 @@
 	let hash1Value = $state<number | null>(null);
 	let hash2Value = $state<number | null>(null);
 	let binaryValue = $state<string>('');
-	let bitArray = $state<boolean[]>([]);
 	let highlightedBits = $state<Set<number>>(new Set());
 	let bitColors = $state<Map<number, 'blue' | 'red'>>(new Map());
 
-	onMount(() => {
-		bloomFilter = new SimpleBloomFilter(size, numHashFunctions);
+	let bloomFilter = $derived(new SimpleBloomFilter(size, numHashFunctions));
+	let bitArray = $state<boolean[]>([]);
+
+	$effect(() => {
 		bitArray = bloomFilter.getBitArray();
 	});
 
@@ -71,7 +71,6 @@
 		}
 
 		for (let i = 0; i < animationSteps.length; i++) {
-			currentStep = i;
 			const step = animationSteps[i];
 
 			switch (step.type) {
@@ -124,7 +123,6 @@
 		}
 
 		isAnimating = false;
-		currentStep = -1;
 	}
 
 	async function handleInsert() {
@@ -175,18 +173,8 @@
 		<div class="main-content">
 			<!-- Hash Values Display -->
 			<div class="hash-display">
-				<div class="hash-item">
-					<label>Hash 1:</label>
-					<span class="hash-value" class:visible={hash1Value !== null}>
-						{hash1Value ?? '—'}
-					</span>
-				</div>
-				<div class="hash-item">
-					<label>Hash 2:</label>
-					<span class="hash-value" class:visible={hash2Value !== null}>
-						{hash2Value ?? '—'}
-					</span>
-				</div>
+				<DisplayCard label="Hash 1:" value={hash1Value} variant="centered" showEmpty={false} />
+				<DisplayCard label="Hash 2:" value={hash2Value} variant="centered" showEmpty={false} />
 			</div>
 
 			<!-- Binary Representation -->
@@ -208,33 +196,29 @@
 			<!-- User Input Section -->
 			{#if userInputEnabled}
 				<div class="input-section">
-					<input
-						type="text"
+					<LabeledInput
 						bind:value={inputValue}
-						placeholder="Enter a string..."
 						disabled={isAnimating}
+						placeholder="Enter any text..."
 						onkeydown={(e) => e.key === 'Enter' && handleInsert()}
 					/>
+
 					<div class="button-group">
-						<button
-							type="button"
+						<Button
+							intent="primary"
 							onclick={handleInsert}
 							disabled={isAnimating || !inputValue.trim()}
-							class="insert-btn"
 						>
 							Insert
-						</button>
-						<button
-							type="button"
+						</Button>
+						<Button
+							intent="primary"
 							onclick={handleCheck}
 							disabled={isAnimating || !inputValue.trim()}
-							class="check-btn"
 						>
 							Check
-						</button>
-						<button type="button" onclick={handleReset} disabled={isAnimating} class="reset-btn">
-							Reset
-						</button>
+						</Button>
+						<Button intent="secondary" onclick={handleReset} disabled={isAnimating}>Reset</Button>
 					</div>
 				</div>
 			{/if}
@@ -271,22 +255,21 @@
 		</div>
 		<!-- Parameters -->
 		<div class="parameters-column">
-			<div class="parameters-section">
-				<h3>Parameters</h3>
-				<div class="parameter-item">
-					<label>k (Hash Functions):</label>
-					<span class="parameter-value">{k}</span>
-				</div>
-				<div class="parameter-item">
-					<label>m (Bit Array Size):</label>
-					<span class="parameter-value">{m}</span>
-				</div>
-			</div>
+			<ParameterGroup
+				title="Parameters"
+				parameters={[
+					{ label: 'k (Hash Functions):', value: k },
+					{ label: 'm (Bit Array Size):', value: m }
+				]}
+				variant="sticky"
+			/>
 		</div>
 	</div>
 </div>
 
 <style>
+	@import 'open-props/media';
+
 	.bloom-filter-container {
 		margin: 0 auto;
 		padding: var(--gap);
@@ -308,85 +291,15 @@
 		top: var(--gap);
 	}
 
-	.parameters-section {
-		background: var(--surface-1);
-		border-radius: var(--radius-2);
-		padding: var(--gap);
-	}
-
-	.parameters-section h3 {
-		margin: 0 0 var(--gap) 0;
-		font-size: var(--font-size-2);
-		font-weight: var(--font-weight-6);
-	}
-
-	.parameter-item {
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap-small);
-		margin-bottom: var(--gap);
-	}
-
-	.parameter-item:last-child {
-		margin-bottom: 0;
-	}
-
-	.parameter-item label {
-		font-size: var(--font-size-1);
-		color: var(--text-2);
-		font-weight: var(--font-weight-6);
-	}
-
-	.parameter-value {
-		font-size: var(--font-size-3);
-		font-family: var(--font-monospace-code);
-		color: var(--text-1);
-		font-weight: var(--font-weight-7);
-		padding: var(--gap-small);
-		background: var(--surface-2);
-		border-radius: var(--radius-1);
-		text-align: center;
-	}
-
 	.main-content {
 		min-width: 0;
 	}
 
 	.hash-display {
-		display: flex;
-		gap: var(--gap-large);
-		justify-content: center;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+		gap: var(--gap);
 		margin-bottom: var(--gap);
-		padding: var(--gap);
-		background: var(--surface-1);
-		border-radius: var(--radius-2);
-	}
-
-	.hash-item {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: var(--gap-small);
-	}
-
-	.hash-item label {
-		font-size: var(--font-size-1);
-		color: var(--text-2);
-		font-weight: var(--font-weight-6);
-	}
-
-	.hash-value {
-		font-size: var(--font-size-3);
-		font-family: var(--font-monospace-code);
-		color: var(--text-1);
-		opacity: 0;
-		transition: opacity 0.3s ease;
-		min-width: 3ch;
-		text-align: center;
-	}
-
-	.hash-value.visible {
-		opacity: 1;
 	}
 
 	.binary-display {
@@ -395,6 +308,7 @@
 		padding: var(--gap);
 		background: var(--surface-1);
 		border-radius: var(--radius-2);
+		border: 1px solid var(--surface-3);
 	}
 
 	.binary-display label {
@@ -425,31 +339,10 @@
 	}
 
 	.input-section {
-		text-align: center;
+		display: flex;
+		flex-direction: column;
+		gap: var(--gap-small);
 		margin-bottom: var(--gap);
-	}
-
-	.input-section input {
-		width: 100%;
-		max-width: 300px;
-		padding: var(--gap-small);
-		margin-bottom: var(--gap);
-		border: 1px solid var(--surface-3);
-		border-radius: var(--radius-2);
-		background: var(--surface-1);
-		color: var(--text-1);
-		font-size: var(--font-size-2);
-		text-align: center;
-	}
-
-	.input-section input::placeholder {
-		color: var(--text-2);
-		opacity: 0.8;
-	}
-
-	.input-section input:focus {
-		outline: none;
-		border-color: var(--brand);
 	}
 
 	.button-group {
@@ -459,54 +352,13 @@
 		flex-wrap: wrap;
 	}
 
-	button {
-		padding: var(--gap-small) var(--gap);
-		border: none;
-		border-radius: var(--radius-2);
-		font-size: var(--font-size-1);
-		font-weight: var(--font-weight-6);
-		cursor: pointer;
-		transition: all 0.2s ease;
-	}
-
-	button:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-
-	.insert-btn {
-		background: var(--brand);
-		color: var(--brand-foreground);
-	}
-
-	.insert-btn:hover:not(:disabled) {
-		background: var(--accent);
-	}
-
-	.check-btn {
-		background: var(--surface-3);
-		color: var(--text-1);
-	}
-
-	.check-btn:hover:not(:disabled) {
-		background: var(--surface-4);
-	}
-
-	.reset-btn {
-		background: var(--surface-3);
-		color: var(--text-2);
-	}
-
-	.reset-btn:hover:not(:disabled) {
-		background: var(--surface-4);
-	}
-
 	.result-display {
 		text-align: center;
 		margin-bottom: var(--gap);
-		padding: var(--gap-small);
+		padding: var(--gap);
 		border-radius: var(--radius-2);
 		background: var(--surface-1);
+		border: 1px solid var(--surface-3);
 	}
 
 	.operation {
@@ -523,7 +375,7 @@
 		color: var(--text-2);
 	}
 
-	@media (max-width: 768px) {
+	@media (--md-n-below) {
 		.layout {
 			grid-template-columns: 1fr;
 			gap: var(--gap);
@@ -534,31 +386,9 @@
 			order: -1;
 		}
 
-		.parameters-section {
-			padding: var(--gap-small);
-		}
-
-		.parameter-item {
-			flex-direction: row;
-			justify-content: space-between;
-			align-items: center;
-		}
-
-		.parameter-value {
-			padding: var(--gap-small);
-			min-width: 60px;
-		}
-	}
-
-	@media (max-width: 600px) {
 		.binary-grid {
 			grid-template-columns: 1fr;
 			max-width: 200px;
-		}
-
-		.parameter-item {
-			flex-direction: column;
-			align-items: stretch;
 		}
 	}
 </style>

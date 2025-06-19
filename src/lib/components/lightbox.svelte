@@ -12,8 +12,8 @@
 
 	const { images, currentIndex, isOpen, onClose, onNavigate }: Props = $props();
 
-	let lightboxContainer: HTMLDivElement;
-	let imageElement: HTMLImageElement;
+	let lightboxContainer = $state<HTMLDivElement>();
+	let imageElement = $state<HTMLImageElement>();
 	let imageLoaded = $state(false);
 
 	function handleKeyDown(event: KeyboardEvent) {
@@ -33,12 +33,6 @@
 					onNavigate(currentIndex + 1);
 				}
 				break;
-		}
-	}
-
-	function handleBackdropClick(event: MouseEvent) {
-		if (event.target === lightboxContainer) {
-			onClose();
 		}
 	}
 

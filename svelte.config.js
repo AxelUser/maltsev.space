@@ -37,6 +37,10 @@ const mdsvexOptions = {
 	rehypePlugins: [slug, [autolinkHeadings, autolinkHeadingsOptions], rehypeKatexSvelte],
 	highlight: {
 		highlighter: async (code, lang = 'text') => {
+			if (lang === 'mermaid') {
+				return `{@html \`<pre class="mermaid">${code}</pre>\`}`;
+			}
+
 			const html = escapeSvelte(
 				highlighter.codeToHtml(code, {
 					lang,

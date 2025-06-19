@@ -193,6 +193,12 @@ html {
 	padding-inline: var(--gap);
 }
 
+.katex-display > .katex {
+	max-width: 100% !important;
+	overflow-y: hidden !important;
+	white-space: normal !important;
+}
+
 @media (--xl-n-below) {
 	.space-container {
 		max-width: min(90%, 1000px);
@@ -346,6 +352,10 @@ html {
 		font-weight: var(--shiki-dark-font-weight) !important;
 		text-decoration: var(--shiki-dark-text-decoration) !important;
 	}
+}
+
+.mermaid {
+	max-inline-size: none;
 }
 
 /* Header anchor links */
