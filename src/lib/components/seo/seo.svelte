@@ -45,7 +45,7 @@
 		description:
 			'Senior Software Engineer focused on distributed systems and highload applications',
 		url: config.websiteUrl,
-		image: `${config.websiteUrl}/images/ava.jpg`,
+		image: `${config.websiteUrl}images/ava.jpg`,
 		sameAs: [bio.social.github, bio.social.linkedIn].filter(Boolean)
 	});
 
