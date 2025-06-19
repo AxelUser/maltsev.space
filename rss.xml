@@ -3,56 +3,56 @@
 <channel>
 <title>MALTSEV.SPACE</title>
 <description>Personal blog by Aleksey Maltsev</description>
-<link>https://maltsev.space/</link>
-<atom:link href="https://maltsev.space/rss.xml" rel="self" type="application/rss+xml"/>
+<link>https://www.maltsev.space/</link>
+<atom:link href="https://www.maltsev.space/rss.xml" rel="self" type="application/rss+xml"/>
 <item>
 <title>Grokking Bloom Filters: The Classic Bloom Filter Demystified</title>
-<link>https://maltsev.space//blog/008-bloom-filters-pt1</link>
+<link>https://www.maltsev.space//blog/008-bloom-filters-pt1</link>
 <description>How a tiny data structure cuts memory usage by 90% — while helping systems instantly check if data exists.</description>
 <pubDate>Mon, 09 Jun 2025 00:00:00 GMT</pubDate>
-<guid isPermaLink="true">https://maltsev.space//blog/008-bloom-filters-pt1</guid>
+<guid isPermaLink="true">https://www.maltsev.space//blog/008-bloom-filters-pt1</guid>
 </item><item>
 <title>Fixing C# type pattern-matching</title>
-<link>https://maltsev.space//blog/007-fixing-csharp-type-pattern-matching</link>
+<link>https://www.maltsev.space//blog/007-fixing-csharp-type-pattern-matching</link>
 <description>Craving Kotlin's secure pattern matching on sealed classes for your C# code? Discover how the Visitor Pattern can satisfy your longing!</description>
 <pubDate>Sun, 18 Feb 2024 00:00:00 GMT</pubDate>
-<guid isPermaLink="true">https://maltsev.space//blog/007-fixing-csharp-type-pattern-matching</guid>
+<guid isPermaLink="true">https://www.maltsev.space//blog/007-fixing-csharp-type-pattern-matching</guid>
 </item><item>
 <title>Checking MongoDB Operation Status: A Simple Guide</title>
-<link>https://maltsev.space//blog/006-how-to-get-status-of-mongodb-operation</link>
+<link>https://www.maltsev.space//blog/006-how-to-get-status-of-mongodb-operation</link>
 <description>Learn how to easily check the status of your MongoDB operations with this step-by-step guide.</description>
 <pubDate>Wed, 20 Apr 2022 00:00:00 GMT</pubDate>
-<guid isPermaLink="true">https://maltsev.space//blog/006-how-to-get-status-of-mongodb-operation</guid>
+<guid isPermaLink="true">https://www.maltsev.space//blog/006-how-to-get-status-of-mongodb-operation</guid>
 </item><item>
 <title>Unlocking the Power of Generics: Simulating Dictionary Behavior in C#</title>
-<link>https://maltsev.space//blog/005-dictionary-on-generics</link>
+<link>https://www.maltsev.space//blog/005-dictionary-on-generics</link>
 <description>Do you want to improve performance of caching? Get rid of Dictionary and use just CLR for that!</description>
 <pubDate>Mon, 22 Jun 2020 00:00:00 GMT</pubDate>
-<guid isPermaLink="true">https://maltsev.space//blog/005-dictionary-on-generics</guid>
+<guid isPermaLink="true">https://www.maltsev.space//blog/005-dictionary-on-generics</guid>
 </item><item>
 <title>Benefits of deconstructors for custom types</title>
-<link>https://maltsev.space//blog/004-deconstructors</link>
+<link>https://www.maltsev.space//blog/004-deconstructors</link>
 <description>How and when to use deconstruction syntax-sugar for your custom types in C#</description>
 <pubDate>Thu, 15 Nov 2018 00:00:00 GMT</pubDate>
-<guid isPermaLink="true">https://maltsev.space//blog/004-deconstructors</guid>
+<guid isPermaLink="true">https://www.maltsev.space//blog/004-deconstructors</guid>
 </item><item>
 <title>Testing Private Code in C#: Breaking Encapsulation with InternalsVisibleTo Attribute</title>
-<link>https://maltsev.space//blog/003-internals-visible-for-testing</link>
+<link>https://www.maltsev.space//blog/003-internals-visible-for-testing</link>
 <description>Learn about the different options available for testing private logic in C# and how the InternalsVisibleTo attribute can help you access internal members without compromising the encapsulation of your code.</description>
 <pubDate>Mon, 12 Nov 2018 00:00:00 GMT</pubDate>
-<guid isPermaLink="true">https://maltsev.space//blog/003-internals-visible-for-testing</guid>
+<guid isPermaLink="true">https://www.maltsev.space//blog/003-internals-visible-for-testing</guid>
 </item><item>
 <title>Using CallerMemberName for Improved Logging in C#</title>
-<link>https://maltsev.space//blog/002-callermembername-attribute-for-logging</link>
+<link>https://www.maltsev.space//blog/002-callermembername-attribute-for-logging</link>
 <description>Learn how to use "magic" attributes in C#, such as CallerFilePath, CallerLineNumber, and CallerMemberName, to retrieve caller information and improve logging functionality.</description>
 <pubDate>Sat, 27 Oct 2018 00:00:00 GMT</pubDate>
-<guid isPermaLink="true">https://maltsev.space//blog/002-callermembername-attribute-for-logging</guid>
+<guid isPermaLink="true">https://www.maltsev.space//blog/002-callermembername-attribute-for-logging</guid>
 </item><item>
 <title>Shift Your C# Enums</title>
-<link>https://maltsev.space//blog/001-binary-shifts-for-flags</link>
+<link>https://www.maltsev.space//blog/001-binary-shifts-for-flags</link>
 <description>Discover the simple yet powerful technique of using bitwise shift operator in C# Enums, and how it can improve the readability and maintainability of your code.</description>
 <pubDate>Fri, 26 Oct 2018 00:00:00 GMT</pubDate>
-<guid isPermaLink="true">https://maltsev.space//blog/001-binary-shifts-for-flags</guid>
+<guid isPermaLink="true">https://www.maltsev.space//blog/001-binary-shifts-for-flags</guid>
 </item>
 </channel>
 </rss>
