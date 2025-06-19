@@ -60,6 +60,7 @@
 	"dependencies": {
 		"@fontsource/atkinson-hyperlegible": "^5.2.5",
 		"class-variance-authority": "^0.7.1",
+		"mermaid": "^11.6.0",
 		"posthog-js": "^1.242.2",
 		"rehype-autolink-headings": "^7.1.0",
 		"rehype-katex-svelte": "^1.2.0",

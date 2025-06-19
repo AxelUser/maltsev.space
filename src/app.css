@@ -354,6 +354,10 @@ html {
 	}
 }
 
+.mermaid {
+	max-inline-size: none;
+}
+
 /* Header anchor links */
 .header-anchor {
 	opacity: 0.5;
