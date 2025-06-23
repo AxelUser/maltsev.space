@@ -32,6 +32,9 @@ importers:
       remark-math:
         specifier: 3.0.0
         version: 3.0.0
+      remark-svgbob:
+        specifier: ^2.0.0
+        version: 2.0.0
       shiki:
         specifier: ^3.3.0
         version: 3.3.0
@@ -2275,6 +2278,9 @@ packages:
 
   remark-math@3.0.0:
     resolution: {integrity: sha512-1ptXVKQaxexoS1pywvbtoRofKenkulyWa7trXUh2LR5NCdzmqfUlM/aA8qyke7h63BGMFXVjPNjOZmD8oWkKDg==}
+
+  remark-svgbob@2.0.0:
+    resolution: {integrity: sha512-lR/G7+N08syBgoU2VsPJs4zKs0rN3GFBQcOHx21fRUuWIFUn8KkL6kzHTNGi0VrHfs2AXIEFiyP+BgIH0h0KQQ==}
 
   remark-toc@9.0.0:
     resolution: {integrity: sha512-KJ9txbo33GjDAV1baHFze7ij4G8c7SGYoY8Kzsm2gzFpbhL/bSoVpMMzGa3vrNDSWASNd/3ppAqL7cP2zD6JIA==}
@@ -4939,6 +4945,11 @@ snapshots:
       unist-util-visit: 5.0.0
 
   remark-math@3.0.0: {}
+
+  remark-svgbob@2.0.0:
+    dependencies:
+      hast-util-to-html: 9.0.5
+      unist-util-visit: 5.0.0
 
   remark-toc@9.0.0:
     dependencies:

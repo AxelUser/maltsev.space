@@ -66,6 +66,7 @@
 		"rehype-katex-svelte": "^1.2.0",
 		"rehype-slug": "^6.0.0",
 		"remark-math": "3.0.0",
+		"remark-svgbob": "^2.0.0",
 		"shiki": "^3.3.0"
 	}
 }

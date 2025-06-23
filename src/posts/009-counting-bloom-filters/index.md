@@ -12,26 +12,30 @@ draft: false
 hero: /images/blog/009-counting-bloom-filters/hero.jpg
 ---
 
-<script>
-    import mermaid from 'mermaid';
- import { onMount } from 'svelte';
-
- onMount(() => {
-  mermaid.initialize({
-   theme: 'dark'
-  });
-
-  mermaid.run({
-   querySelector: '.mermaid'
-  });
- });
-</script>
-
 Bloom filters are incredibly space-efficient probabilistic data structures, perfect for answering a simple question: "Is this element in the set — no or maybe?"
 
 But as we discussed in [deep dive into Bloom filters](/blog/008-bloom-filters-pt1), there's a big limitation: **they don't support deletion**.
 
 In this part of the series, we'll tackle that problem. We'll explore how we can extend Bloom filters to allow element removal — and what trade-offs come with that.
+
+```svgbob
+      Standard Bloom Filter vs Counting Bloom Filter
+      
+  Standard BF (bit array):
+  +---+---+---+---+---+---+---+---+---+---+
+  | 0 | 1 | 0 | 1 | 1 | 0 | 1 | 0 | 1 | 0 |
+  +---+---+---+---+---+---+---+---+---+---+
+    0   1   2   3   4   5   6   7   8   9
+
+  Counting BF (counter array):  
+  +---+---+---+---+---+---+---+---+---+---+
+  | 0 | 2 | 0 | 1 | 3 | 0 | 1 | 0 | 2 | 0 |
+  +---+---+---+---+---+---+---+---+---+---+
+    0   1   2   3   4   5   6   7   8   9
+    
+  Each counter tracks how many elements 
+  have set that position
+```
 
 ## Contents
 
@@ -150,6 +154,26 @@ Originally proposed by [Fan et al.](http://staff.ustc.edu.cn/~xiangyangli/paper/
 As long as each counter accurately reflects how many elements touched a position, we can safely remove individual elements without affecting others.
 
 Let's see this in action:
+
+```svgbob
+              Counting Bloom Filter Memory Layout
+              
+    Counter Array (4-bit counters, 0-15 range):
+    +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
+    |  0  |  1  |  0  |  0  |  2  |  0  |  1  |  1  |  0  |  1  |
+    +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
+      0     1     2     3     4     5     6     7     8     9
+
+    Element A: hash(A) → positions [1, 4, 7]
+               increment counters[1], [4], [7]
+               
+    Element B: hash(B) → positions [4, 6, 9]  
+               increment counters[4], [6], [9]
+               
+    Position 4 is shared: counter = 2 (both A and B)
+    
+    Memory usage: array_size × 4 bits per counter
+```
 
 #### Step 1: Inserting Elements to the CBF
 
@@ -274,6 +298,44 @@ Each segment contains `B` buckets. Every bucket holds a small, fixed number of c
 - a **counter** (how many times it's been added)
 
 So instead of one giant table, we split it into `d` isolated parts.
+
+```svgbob
+                d-left Counting Bloom Filter Memory Layout
+                          (d=2 segments, B=4 buckets each)
+
+  Segment 0:                          Segment 1:
+  ┌─────────────────────────────┐    ┌─────────────────────────────┐
+  │ Bucket 0                    │    │ Bucket 0                    │
+  │ ┌─────────┬─────────┬─────┐ │    │ ┌─────────┬─────────┬─────┐ │
+  │ │fp:0xA2C │fp:0x7F1 │ ... │ │    │ │fp:0x3E9 │  empty  │ ... │ │
+  │ │cnt: 1   │cnt: 2   │     │ │    │ │cnt: 1   │         │     │ │
+  │ └─────────┴─────────┴─────┘ │    │ └─────────┴─────────┴─────┘ │
+  ├─────────────────────────────┤    ├─────────────────────────────┤
+  │ Bucket 1                    │    │ Bucket 1                    │
+  │ ┌─────────┬─────────┬─────┐ │    │ ┌─────────┬─────────┬─────┐ │
+  │ │fp:0x5B8 │  empty  │ ... │ │    │ │fp:0x9D4 │fp:0x1C7 │ ... │ │
+  │ │cnt: 1   │         │     │ │    │ │cnt: 3   │cnt: 1   │     │ │
+  │ └─────────┴─────────┴─────┘ │    │ └─────────┴─────────┴─────┘ │
+  ├─────────────────────────────┤    ├─────────────────────────────┤
+  │ Bucket 2                    │    │ Bucket 2                    │
+  │ ┌─────────┬─────────┬─────┐ │    │ ┌─────────┬─────────┬─────┐ │
+  │ │  empty  │  empty  │ ... │ │    │ │fp:0x6A1 │  empty  │ ... │ │
+  │ │         │         │     │ │    │ │cnt: 1   │         │     │ │
+  │ └─────────┴─────────┴─────┘ │    │ └─────────┴─────────┴─────┘ │
+  ├─────────────────────────────┤    ├─────────────────────────────┤
+  │ Bucket 3                    │    │ Bucket 3                    │
+  │ ┌─────────┬─────────┬─────┐ │    │ ┌─────────┬─────────┬─────┐ │
+  │ │fp:0x8E6 │  empty  │ ... │ │    │ │  empty  │  empty  │ ... │ │
+  │ │cnt: 2   │         │     │ │    │ │         │         │     │ │
+  │ └─────────┴─────────┴─────┘ │    │ └─────────┴─────────┴─────┘ │
+  └─────────────────────────────┘    └─────────────────────────────┘
+
+  Key features:
+  • Each cell stores: fingerprint (fp) + counter (cnt)
+  • Insertion chooses least loaded bucket across all segments
+  • Fingerprint is permuted differently per segment
+  • Load balancing reduces hotspots and collisions
+```
 
 ### Why d-left?
 
