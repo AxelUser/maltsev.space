@@ -8,11 +8,11 @@
 	const { data } = $props();
 
 	const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
-	const heroImage = data?.heroUrl;
+	const heroImage = $derived(data?.heroUrl);
 
-	const publishedTime = data.date ? new Date(data.date).toISOString() : undefined;
+	const publishedTime = $derived(data.date ? new Date(data.date).toISOString() : undefined);
 
-	const allKeywords = [...(data.keywords || []), ...(data.tags || [])];
+	const allKeywords = $derived([...(data.keywords || []), ...(data.tags || [])]);
 </script>
 
 <SEO
