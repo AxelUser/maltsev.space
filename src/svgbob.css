@@ -1,9 +1,14 @@
+.svgbob {
+	color: var(--text-1);
+}
+
 .svgbob line,
 .svgbob path,
 .svgbob circle,
 .svgbob rect,
 .svgbob polygon {
-	stroke: white;
+	stroke: var(--text-1) !important;
+	fill: none;
 	stroke-width: 2;
 	stroke-opacity: 1;
 	fill-opacity: 1;
@@ -13,7 +18,8 @@
 
 .svgbob text {
 	white-space: pre;
-	fill: white;
+	fill: var(--text-1) !important;
+	stroke: none;
 	font-family:
 		Iosevka Fixed,
 		monospace;
@@ -21,7 +27,7 @@
 }
 
 .svgbob rect.backdrop {
-	stroke: none;
+	stroke: none !important;
 	fill: transparent;
 }
 
@@ -30,16 +36,32 @@
 }
 
 .svgbob .filled {
-	fill: white;
+	fill: var(--text-1) !important;
+	stroke: var(--text-1) !important;
 }
 
 .svgbob .bg_filled {
 	fill: transparent;
+	stroke: var(--text-1) !important;
 	stroke-width: 1;
 }
 
 .svgbob .nofill {
 	fill: transparent;
+	stroke: var(--text-1) !important;
+}
+
+/* Marker styling */
+.svgbob marker {
+	fill: var(--text-1) !important;
+	stroke: var(--text-1) !important;
+}
+
+.svgbob defs marker path,
+.svgbob defs marker circle,
+.svgbob defs marker polygon {
+	fill: var(--text-1) !important;
+	stroke: var(--text-1) !important;
 }
 
 .svgbob .end_marked_arrow {

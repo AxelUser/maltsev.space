@@ -18,25 +18,6 @@ But as we discussed in [deep dive into Bloom filters](/blog/008-bloom-filters-pt
 
 In this part of the series, we'll tackle that problem. We'll explore how we can extend Bloom filters to allow element removal — and what trade-offs come with that.
 
-```svgbob
-      Standard Bloom Filter vs Counting Bloom Filter
-      
-  Standard BF (bit array):
-  +---+---+---+---+---+---+---+---+---+---+
-  | 0 | 1 | 0 | 1 | 1 | 0 | 1 | 0 | 1 | 0 |
-  +---+---+---+---+---+---+---+---+---+---+
-    0   1   2   3   4   5   6   7   8   9
-
-  Counting BF (counter array):  
-  +---+---+---+---+---+---+---+---+---+---+
-  | 0 | 2 | 0 | 1 | 3 | 0 | 1 | 0 | 2 | 0 |
-  +---+---+---+---+---+---+---+---+---+---+
-    0   1   2   3   4   5   6   7   8   9
-    
-  Each counter tracks how many elements 
-  have set that position
-```
-
 ## Contents
 
 ## Why Deletion Is Hard
@@ -145,6 +126,21 @@ That's where **Counting Bloom Filters (CBFs)** come in.
 
 Originally proposed by [Fan et al.](http://staff.ustc.edu.cn/~xiangyangli/paper/Journal/False-Negative-Bloom-TKDE.pdf), CBFs replace the bit array with an array of **small integer counters** — typically 4-bit values. These allow us to track how many elements have set each position.
 
+```svgbob
+Classic Bloom Filter (1-bit array):
+┌─┬─┬─┬─┬─┬─┬─┬─┬─┬─┐
+│0│0│1│0│0│1│0│1│1│0│  ← each cell = 1 bit
+└─┴─┴─┴─┴─┴─┴─┴─┴─┴─┘
+ 0 1 2 3 4 5 6 7 8 9
+
+Counting Bloom Filter (4-bit counters):
+┌─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
+│  0  │  1  │  0  │  0  │  2  │  0  │  1  │  1  │  0  │  1  │
+│0000 │0001 │0000 │0000 │0010 │0000 │0001 │0001 │0000 │0001 │  ← each cell = 4 bits
+└─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
+   0     1     2     3     4     5     6     7     8     9
+```
+
 ### How It Works
 
 - **Insertion**: Hash the element to `k` positions, and increment the counters at those positions.
@@ -152,28 +148,6 @@ Originally proposed by [Fan et al.](http://staff.ustc.edu.cn/~xiangyangli/paper/
 - **Deletion**: Hash the element again, and decrement those same counters.
 
 As long as each counter accurately reflects how many elements touched a position, we can safely remove individual elements without affecting others.
-
-Let's see this in action:
-
-```svgbob
-              Counting Bloom Filter Memory Layout
-              
-    Counter Array (4-bit counters, 0-15 range):
-    +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
-    |  0  |  1  |  0  |  0  |  2  |  0  |  1  |  1  |  0  |  1  |
-    +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
-      0     1     2     3     4     5     6     7     8     9
-
-    Element A: hash(A) → positions [1, 4, 7]
-               increment counters[1], [4], [7]
-               
-    Element B: hash(B) → positions [4, 6, 9]  
-               increment counters[4], [6], [9]
-               
-    Position 4 is shared: counter = 2 (both A and B)
-    
-    Memory usage: array_size × 4 bits per counter
-```
 
 #### Step 1: Inserting Elements to the CBF
 
@@ -188,8 +162,8 @@ graph TD
     A2 --> C["Final counter array:<br/>[0,1,0,0,2,0,1,1,0,1]<br/>Position 4 shared: count = 2"]
     B1 --> C
     
-    style A fill:#22d3ee,color:#212529
-    style B fill:#22d3ee,color:#212529
+    style A fill:#3b82f6,color:#f8f9fa
+    style B fill:#3b82f6,color:#f8f9fa
     style C fill:#22c55e,color:#212529
 ```
 
@@ -197,34 +171,31 @@ graph TD
 
 ```mermaid
 graph TD
-    A["Current state:<br/>[0,1,0,0,2,0,1,1,0,1]<br/>Both A and B inserted"] --> B["✅ Delete Element A<br/>Hash positions: 1, 4, 7"]
+    A["Current state:<br/>[0,1,0,0,2,0,1,1,0,1]<br/>Both A and B inserted"] --> B["Delete Element A<br/>Hash positions: 1, 4, 7"]
     
     B --> C["Decrement counters:<br/>counter[1] = 0<br/>counter[4] = 1 (2→1, still > 0)<br/>counter[7] = 0"]
     
-    C --> D["Updated counter array:<br/>[0,0,0,0,1,0,1,0,0,1]<br/>Element B's data preserved!"]
+    C --> D["✅ Updated counter array:<br/>[0,0,0,0,1,0,1,0,0,1]<br/>Element B's data preserved!"]
     
     style A fill:#495057,color:#f8f9fa
-    style B fill:#22c55e,color:#212529
-    style C fill:#22c55e,color:#212529
-    style D fill:#22c55e,color:#212529
+    style B fill:#3b82f6,color:#f8f9fa
+    style D fill:#495057,color:#f8f9fa
 ```
 
 #### Step 3: Successful Check
 
 ```mermaid
 graph TD
-    A["Updated state:<br/>[0,0,0,0,1,0,1,0,0,1]<br/>Element A deleted safely"] --> B["✅ Check Element B<br/>Hash positions: 4, 6, 9"]
+    A["Updated state:<br/>[0,0,0,0,1,0,1,0,0,1]<br/>Element A deleted safely"] --> B["Check Element B<br/>Hash positions: 4, 6, 9"]
     
-    B --> C["Check each counter:<br/>counter[4] = 1 ✓<br/>counter[6] = 1 ✓<br/>counter[9] = 1 ✓"]
+    B --> C["Check each counter:<br/>counter[4] = 1 ✅<br/>counter[6] = 1 ✅<br/>counter[9] = 1 ✅"]
     
     C --> D{"All counters > 0?"}
     
-    D -->|"Yes, all > 0"| E["SUCCESS!<br/>Element B still present<br/>No false negative"]
+    D -->|"Yes, all > 0"| E["✅ SUCCESS!<br/>Element B still present<br/>No false negative"]
     
-    style A fill:#22c55e,color:#212529
-    style B fill:#22c55e,color:#212529
-    style C fill:#22c55e,color:#212529
-    style D fill:#22c55e,color:#212529
+    style A fill:#495057,color:#f8f9fa
+    style B fill:#3b82f6,color:#f8f9fa
     style E fill:#22c55e,color:#212529
 ```
 
@@ -290,9 +261,9 @@ This data structure is quite different from classic Bloom and Counting Bloom Fil
 
 ### Core Idea
 
-The [d-left Counting Bloom Filter (dlCBF)](https://people.eecs.berkeley.edu/~sylvia/cs268-2014/papers/countingbloom.pdf) replaces the flat array of counters with a multi-part structure — or simply, `d` separate hash tables (segments).
+The [d-left Counting Bloom Filter (dlCBF)](https://people.eecs.berkeley.edu/~sylvia/cs268-2014/papers/countingbloom.pdf) replaces the flat array of counters with a multi-part structure — or simply, `d` separate hash tables (subtables).
 
-Each segment contains `B` buckets. Every bucket holds a small, fixed number of cells (e.g., 8). Each cell has:
+Each subtable contains `B` buckets. Every bucket holds a small, fixed number of cells (e.g., 8). Each cell has:
 
 - a **fingerprint** (a short hash of the original element)
 - a **counter** (how many times it's been added)
@@ -300,10 +271,10 @@ Each segment contains `B` buckets. Every bucket holds a small, fixed number of c
 So instead of one giant table, we split it into `d` isolated parts.
 
 ```svgbob
-                d-left Counting Bloom Filter Memory Layout
-                          (d=2 segments, B=4 buckets each)
+            d-left Counting Bloom Filter Memory Layout
+                (d=2 subtables, B=4 buckets each)
 
-  Segment 0:                          Segment 1:
+  Subtable 0:                          Subtable 1:
   ┌─────────────────────────────┐    ┌─────────────────────────────┐
   │ Bucket 0                    │    │ Bucket 0                    │
   │ ┌─────────┬─────────┬─────┐ │    │ ┌─────────┬─────────┬─────┐ │
@@ -329,23 +300,17 @@ So instead of one giant table, we split it into `d` isolated parts.
   │ │cnt: 2   │         │     │ │    │ │         │         │     │ │
   │ └─────────┴─────────┴─────┘ │    │ └─────────┴─────────┴─────┘ │
   └─────────────────────────────┘    └─────────────────────────────┘
-
-  Key features:
-  • Each cell stores: fingerprint (fp) + counter (cnt)
-  • Insertion chooses least loaded bucket across all segments
-  • Fingerprint is permuted differently per segment
-  • Load balancing reduces hotspots and collisions
 ```
 
 ### Why d-left?
 
-This structure is more complex than a flat CBF, but it packs data more tightly and handles collisions better. Each segment manages its own space, and load balancing improves thanks to the "pick the least loaded" rule.
+This structure is more complex than a flat CBF, but it packs data more tightly and handles collisions better. Each subtable manages its own space, and load balancing improves thanks to the "pick the least loaded" rule.
 
 ### Insertion
 
 1. First, hash the element once to get the **true fingerprint**.
-2. Each segment applies its own **deterministic permutation** to the fingerprint. This maps the fingerprint to a bucket in that segment and modifies the fingerprint slightly to avoid clashes. I explain it later.
-3. Now we have `d` candidate buckets — one per segment.
+2. Each subtable applies its own **deterministic permutation** to the fingerprint. This maps the fingerprint to a bucket in that subtable and modifies the fingerprint slightly to avoid clashes. I explain it later.
+3. Now we have `d` candidate buckets — one per subtable.
 4. From those, pick the bucket with the fewest used cells.
 5. If a cell with the modified fingerprint already exists there, increment its counter.
 6. Otherwise, insert a new cell with the fingerprint and counter set to 1.
@@ -354,14 +319,14 @@ Here's how dlCBF insertion works:
 
 ```mermaid
 graph TD
-    A["Element: 'apple'<br/>Generate fingerprint: 0x4A2C"] --> B["Segment 1<br/>Permute: 0x4A2C → 0x7B1D<br/>Bucket: hash(0x7B1D) % B = 3<br/>Load: 2 cells"]
+    A["Element: 'apple'<br/>Generate fingerprint: 0x4A2C"] --> B["Subtable 1<br/>Permute: 0x4A2C → 0x7B1D<br/>Bucket: hash(0x7B1D) % B = 3<br/>Load: 2 cells"]
     
-    A --> C["Segment 2<br/>Permute: 0x4A2C → 0x9E8F<br/>Bucket: hash(0x9E8F) % B = 7<br/>Load: 1 cell"]
+    A --> C["Subtable 2<br/>Permute: 0x4A2C → 0x9E8F<br/>Bucket: hash(0x9E8F) % B = 7<br/>Load: 1 cell"]
     
-    B --> D["Candidate buckets:<br/>Segment 1 bucket 3: 2 cells<br/>Segment 2 bucket 7: 1 cell ⭐"]
+    B --> D["Candidate buckets:<br/>Subtable 1 bucket 3: 2 cells<br/>Subtable 2 bucket 7: 1 cell ⭐"]
     C --> D
     
-    D --> E["✅ Choose least loaded<br/>Segment 2, bucket 7"]
+    D --> E["Choose least loaded<br/>Subtable 2, bucket 7"]
     
     E --> F["Check if fingerprint 0x9E8F<br/>already exists in bucket 7"]
     
@@ -374,7 +339,6 @@ graph TD
     I --> J
     
     style A fill:#5d5fef,color:#f8f9fa
-    style E fill:#22c55e,color:#212529
     style J fill:#22c55e,color:#212529
     style G fill:#f59e0b,color:#212529
 ```
@@ -388,18 +352,18 @@ To remove an element:
 
 ### Membership Check
 
-Same logic: use the original fingerprint, permute it per segment, and check each candidate bucket. If any bucket contains a matching fingerprint with a positive counter, the element is **possibly present**.
+Same logic: use the original fingerprint, permute it per subtable, and check each candidate bucket. If any bucket contains a matching fingerprint with a positive counter, the element is **possibly present**.
 
 ### About Permutations (Two-Phase Hashing)
 
 One subtle but powerful part of dlCBF is **how it avoids ambiguous deletions and collisions**.
 
 - **Phase 1**: Generate a fingerprint from the element.
-- **Phase 2**: Each segment applies its own deterministic permutation to the fingerprint. This affects both the bucket index and the fingerprint value inside that segment.
+- **Phase 2**: Each subtable applies its own deterministic permutation to the fingerprint. This affects both the bucket index and the fingerprint value inside that subtable.
 
-So instead of computing `d` separate hashes, we just compute one hash and shuffle it differently in each segment. This helps avoid situations where two elements look the same across all segments and buckets — a common cause of incorrect deletions.
+So instead of computing `d` separate hashes, we just compute one hash and shuffle it differently in each subtable. This helps avoid situations where two elements look the same across all subtables and buckets — a common cause of incorrect deletions.
 
-By doing this simple fingerprint transformation per segment, dlCBF lowers the chance of "hot buckets" and overlapping fingerprints, making the structure more reliable.
+By doing this simple fingerprint transformation per subtable, dlCBF lowers the chance of "hot buckets" and overlapping fingerprints, making the structure more reliable.
 
 ## Moving Forward
 
