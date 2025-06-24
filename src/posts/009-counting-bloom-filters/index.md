@@ -29,15 +29,18 @@ A Bloom filter consists of two core components:
 - A fixed-size **bit array**
 - A set of **hash functions**
 
-Each time you insert an element, it is hashed `k` times to determine `k` bit positions in the array. Those bits are then set to `1`. However, since the bit array is shared across all elements, multiple elements may overlap and set the same bits.
+Each time you insert an element, it is hashed `k` times to determine `k` bit positions in the array, and those bits are set to `1`. Since the bit array is shared across all elements, multiple elements may overlap and set the same bits — this is expected and what makes Bloom filters space-efficient.
 
-This is expected — and it's what makes Bloom filters space-efficient. But it also leads to a key limitation: **you can't tell which element set a given bit**.
+But this sharing creates a fundamental problem: **you can't tell which element set a given bit**. If you try to delete an element by resetting its `k` bits to `0`, you may accidentally unset bits that are still needed by other elements, breaking one of the Bloom filter's key guarantees: **no false negatives**.
 
-If you try to delete an element by resetting its `k` bits to `0`, you may accidentally unset bits that are still needed by other elements. This would break one of the Bloom filter's key guarantees: **no false negatives**. After such a deletion, a previously inserted element might no longer be recognized as present.
+Let's see this in action with a simple example. Suppose we have a Bloom filter with 11 bits and we want to insert two elements:
 
-> It's similar to erasing your tag from a public graffiti wall — you might end up scrubbing off someone else's mark too, and now no one can tell they were ever there.
+- **Element A** hashes to positions 2, 5, and 8
+- **Element B** hashes to positions 5, 7, and 10
 
-### Step 1: Inserting Elements
+Notice that both elements share position 5 — this is where the trouble begins.
+
+First, we insert both elements. Element A sets bits at positions 2, 5, and 8. Then Element B tries to set bits at positions 5, 7, and 10. Position 5 is already set from Element A, so it remains `1`, while positions 7 and 10 are newly set. Our final bit array looks like: `[0,0,1,0,0,1,0,1,1,0,1]`.
 
 ```mermaid
 graph TD
@@ -55,7 +58,7 @@ graph TD
     style C fill:#22c55e,color:#212529
 ```
 
-### Step 2: Attempting Deletion (The Problem)
+Now, let's attempt to delete Element A. The naive approach would be to reset its bits at positions 2, 5, and 8 back to `0`. This seems straightforward, but here's the problem: when we reset position 5, we're also removing Element B's contribution to that position. After this "deletion," our bit array becomes: `[0,0,0,0,0,0,0,1,0,0,1]`.
 
 ```mermaid
 graph TD
@@ -71,7 +74,7 @@ graph TD
     style D fill:#dc2626,color:#f8f9fa
 ```
 
-### Step 3: The False Negative
+The corruption becomes evident when we later check for Element B. We hash it to positions 5, 7, and 10, but now position 5 is `0`. Since not all of Element B's positions are set, the Bloom filter incorrectly reports that Element B is not present — a **false negative**. This is catastrophic because Element B was never deleted; it's still supposed to be in the set.
 
 ```mermaid
 graph TD
@@ -89,7 +92,9 @@ graph TD
     style E fill:#dc2626,color:#f8f9fa
 ```
 
-This is why deletion is fundamentally unsafe in standard Bloom filters.
+> It's similar to erasing your tag from a public graffiti wall — you might end up scrubbing off someone else's mark too, and now no one can tell they were ever there.
+
+This is why deletion is fundamentally unsafe in standard Bloom filters — any attempt to remove an element risks corrupting the filter's state and creating false negatives for other elements.
 
 ## Easy Workarounds (That Actually Don't Work)
 
