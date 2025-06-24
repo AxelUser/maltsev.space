@@ -6,6 +6,12 @@
 <link>https://www.maltsev.space/</link>
 <atom:link href="https://www.maltsev.space/rss.xml" rel="self" type="application/rss+xml"/>
 <item>
+<title>Grokking Bloom Filters: Counting Bloom Filter</title>
+<link>https://www.maltsev.space//blog/009-counting-bloom-filters</link>
+<description>Bloom filters can't remove elements — unless you let them count.</description>
+<pubDate>Tue, 24 Jun 2025 00:00:00 GMT</pubDate>
+<guid isPermaLink="true">https://www.maltsev.space//blog/009-counting-bloom-filters</guid>
+</item><item>
 <title>Grokking Bloom Filters: The Classic Bloom Filter Demystified</title>
 <link>https://www.maltsev.space//blog/008-bloom-filters-pt1</link>
 <description>How a tiny data structure cuts memory usage by 90% — while helping systems instantly check if data exists.</description>

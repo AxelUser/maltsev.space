@@ -3,21 +3,25 @@
 	
 	<url>
 		<loc>https://www.maltsev.space</loc>
-		<lastmod>2025-06-19</lastmod>
+		<lastmod>2025-06-24</lastmod>
 	</url>
 	<url>
 		<loc>https://www.maltsev.space/about</loc>
-		<lastmod>2025-06-19</lastmod>
+		<lastmod>2025-06-24</lastmod>
 	</url>
 	<url>
 		<loc>https://www.maltsev.space/blog</loc>
-		<lastmod>2025-06-19</lastmod>
+		<lastmod>2025-06-24</lastmod>
 	</url>
 	<url>
 		<loc>https://www.maltsev.space/art</loc>
-		<lastmod>2025-06-19</lastmod>
+		<lastmod>2025-06-24</lastmod>
 	</url>
 	
+	<url>
+		<loc>https://www.maltsev.space/blog/009-counting-bloom-filters</loc>
+		<lastmod>2025-06-24</lastmod>
+	</url>
 	<url>
 		<loc>https://www.maltsev.space/blog/008-bloom-filters-pt1</loc>
 		<lastmod>2025-06-09</lastmod>
