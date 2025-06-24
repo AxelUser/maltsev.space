@@ -1,18 +1,31 @@
 <script lang="ts">
+	import '../../../svgbob.css';
 	import Link from '$lib/components/ui/link/link.svelte';
 	import Card from '$lib/components/ui/card/card.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { SEO } from '$lib/components';
 	import { config } from '$lib/config';
+	import mermaid from 'mermaid';
+	import { onMount } from 'svelte';
+
+	onMount(() => {
+		mermaid.initialize({
+			theme: 'dark'
+		});
+
+		mermaid.run({
+			querySelector: '.mermaid'
+		});
+	});
 
 	const { data } = $props();
 
 	const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
-	const heroImage = data?.heroUrl;
+	const heroImage = $derived(data?.heroUrl);
 
-	const publishedTime = data.date ? new Date(data.date).toISOString() : undefined;
+	const publishedTime = $derived(data.date ? new Date(data.date).toISOString() : undefined);
 
-	const allKeywords = [...(data.keywords || []), ...(data.tags || [])];
+	const allKeywords = $derived([...(data.keywords || []), ...(data.tags || [])]);
 </script>
 
 <SEO

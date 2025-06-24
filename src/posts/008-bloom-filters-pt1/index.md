@@ -15,18 +15,6 @@ hero: /images/blog/008-bloom-filters-pt1/hero.jpg
 
 <script>
   import { SimpleBloomFilter, ParameterCalculator } from '$lib/components/visualization/bloom-filters';
-  import mermaid from 'mermaid';
-	import { onMount } from 'svelte';
-
-	onMount(() => {
-		mermaid.initialize({
-			theme: 'dark'
-		});
-
-		mermaid.run({
-			querySelector: '.mermaid'
-		});
-	});
 </script>
 
 There's a special category of data structures known as probabilistic data structures — and I have a soft spot for some of them. One of my absolute favorites is the Bloom filter. It's a beautifully simple concept that tackles a surprisingly common challenge: how can we quickly check whether something belongs to a set — without eating up loads of memory?

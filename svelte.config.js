@@ -7,6 +7,7 @@ import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import rehypeKatexSvelte from 'rehype-katex-svelte';
 import remarkMath from 'remark-math';
+import remarkSVGBob from 'remark-svgbob';
 
 const lightTheme = 'material-theme-palenight';
 const darkTheme = 'github-dark';
@@ -33,12 +34,15 @@ const autolinkHeadingsOptions = {
 /** @type {import('mdsvex').MdsvexOptions} */
 const mdsvexOptions = {
 	extensions: ['.md', '.svx'],
-	remarkPlugins: [[remarkToc, { tight: true, maxDepth: 3 }], remarkMath],
+	remarkPlugins: [[remarkToc, { tight: true, maxDepth: 3 }], remarkMath, remarkSVGBob],
 	rehypePlugins: [slug, [autolinkHeadings, autolinkHeadingsOptions], rehypeKatexSvelte],
 	highlight: {
 		highlighter: async (code, lang = 'text') => {
 			if (lang === 'mermaid') {
 				return `{@html \`<pre class="mermaid">${code}</pre>\`}`;
+			}
+			if (lang === 'svgbob') {
+				return `{@html \`<pre class="svgbob">${code}</pre>\`}`;
 			}
 
 			const html = escapeSvelte(
