@@ -1,5 +1,5 @@
 ---
-date: "2025-06-22"
+date: "2025-06-24"
 tags:
  - "Algorithms"
 keywords:
@@ -8,7 +8,7 @@ keywords:
  - "Counting Bloom filters"
 title: "Grokking Bloom Filters: Counting Bloom Filter"
 preview: "Bloom filters can't remove elements — unless you let them count."
-draft: true
+draft: false
 hero: /images/blog/009-counting-bloom-filters/hero.jpg
 ---
 
