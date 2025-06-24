@@ -316,6 +316,8 @@ So instead of one giant table, we split it into `d` isolated parts.
 
 This structure is more complex than a flat CBF, but it packs data more tightly and handles collisions better. Each subtable manages its own space, and load balancing improves thanks to the "pick the least loaded" rule.
 
+> Think of it like driving on a busy 6-lane road approaching an intersection. Three lanes can turn left, and the other three can turn right. In a regular CBF, it's as if there's only one lane for your direction — everyone turning left has to squeeze into the same lane, creating a traffic jam. But with d-left CBF, you have multiple lanes (subtables) going in your direction. When you need to turn (insert an element), you look at all the lanes that can make your turn and choose the one with the least traffic (fewest occupied cells). This way, cars turning in the same direction spread out across multiple lanes, reducing congestion.
+
 ### Insertion
 
 1. First, hash the element once to get the **true fingerprint**.
