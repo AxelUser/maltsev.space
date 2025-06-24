@@ -124,7 +124,7 @@ The core strength of Bloom filters lies in their simplicity: a bit array and som
 
 That's where **Counting Bloom Filters (CBFs)** come in.
 
-Originally proposed by [Fan et al.](http://staff.ustc.edu.cn/~xiangyangli/paper/Journal/False-Negative-Bloom-TKDE.pdf), CBFs replace the bit array with an array of **small integer counters** — typically 4-bit values. These allow us to track how many elements have set each position.
+Originally proposed by [Fan et al.](https://www.cs.princeton.edu/courses/archive/spr05/cos598E/bib/p254-fan.pdf) as a solution for scalable web cache, CBFs replace the bit array with an array of **small integer counters** — typically 4-bit values. These allow us to track how many elements have set each position.
 
 ```svgbob
 Classic Bloom Filter (1-bit array):
