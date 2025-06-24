@@ -12,6 +12,7 @@ export const load: PageLoad = async ({ params }) => {
 			preview: post.metadata?.preview as string | undefined,
 			keywords: post.metadata?.keywords as string[] | undefined,
 			tags: post.metadata?.tags as string[] | undefined,
+			draft: !!post.metadata?.draft,
 			slug: params.slug
 		};
 	} catch (err) {

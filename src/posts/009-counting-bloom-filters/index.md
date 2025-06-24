@@ -8,7 +8,7 @@ keywords:
  - "Counting Bloom filters"
 title: "Grokking Bloom Filters: Counting Bloom Filter"
 preview: "Bloom filters can't remove elements — unless you let them count."
-draft: false
+draft: true
 hero: /images/blog/009-counting-bloom-filters/hero.jpg
 ---
 
@@ -29,28 +29,26 @@ A Bloom filter consists of two core components:
 - A fixed-size **bit array**
 - A set of **hash functions**
 
-Each time you insert an element, it is hashed `k` times to determine `k` bit positions in the array, and those bits are set to `1`. Since the bit array is shared across all elements, multiple elements may overlap and set the same bits — this is expected and what makes Bloom filters space-efficient.
+Each time you insert an element, it is hashed at most `k` times to determine `k` bit positions in the array, and those bits are set to `1`. Since the bit array is shared across all elements, multiple elements may overlap and set the same bits — this is expected and what makes Bloom filters space-efficient.
 
 But this sharing creates a fundamental problem: **you can't tell which element set a given bit**. If you try to delete an element by resetting its `k` bits to `0`, you may accidentally unset bits that are still needed by other elements, breaking one of the Bloom filter's key guarantees: **no false negatives**.
 
-Let's see this in action with a simple example. Suppose we have a Bloom filter with 11 bits and we want to insert two elements:
+Let's see this in action. Suppose we have a Bloom filter with 10 bits and we want to insert two elements:
 
-- **Element A** hashes to positions 2, 5, and 8
-- **Element B** hashes to positions 5, 7, and 10
+- **Element A** hashes to positions 0, 5, and 8
+- **Element B** hashes to positions 5, 7, and 9
 
 Notice that both elements share position 5 — this is where the trouble begins.
 
-First, we insert both elements. Element A sets bits at positions 2, 5, and 8. Then Element B tries to set bits at positions 5, 7, and 10. Position 5 is already set from Element A, so it remains `1`, while positions 7 and 10 are newly set. Our final bit array looks like: `[0,0,1,0,0,1,0,1,1,0,1]`.
+First, we insert both elements. Element A sets bits at positions 0, 5, and 8. Then Element B tries to set bits at positions 5, 7, and 9. Position 5 is already set from Element A, so it remains `1`, while positions 7 and 9 are newly set.
 
 ```mermaid
 graph TD
-    A["Insert Element A<br/>Hash positions: 2, 5, 8"] --> A1["Set bits:<br/>bit[2] = 1<br/>bit[5] = 1<br/>bit[8] = 1"]
+    A["Insert Element A<br/>Hash positions: 0, 5, 8"] --> A1["Set bits:<br/>bit[0] = 1<br/>bit[5] = 1<br/>bit[8] = 1"]
     
-    A1 --> A2["Bit array after A:<br/>[0,0,1,0,0,1,0,0,1,0,0]"]
+    B["Insert Element B<br/>Hash positions: 5, 7, 9"] --> B1["Set bits:<br/>bit[5] = 1 (already set)<br/>bit[7] = 1<br/>bit[9] = 1"]
     
-    B["Insert Element B<br/>Hash positions: 5, 7, 10"] --> B1["Set bits:<br/>bit[5] = 1 (already set)<br/>bit[7] = 1<br/>bit[10] = 1"]
-    
-    A2 --> C["Final bit array:<br/>[0,0,1,0,0,1,0,1,1,0,1]<br/>Positions set: 2, 5, 7, 8, 10"]
+    A1 --> C["Positions set: 0, 5, 7, 8, 9"]
     B1 --> C
     
     style A fill:#22d3ee,color:#212529
@@ -58,15 +56,29 @@ graph TD
     style C fill:#22c55e,color:#212529
 ```
 
-Now, let's attempt to delete Element A. The naive approach would be to reset its bits at positions 2, 5, and 8 back to `0`. This seems straightforward, but here's the problem: when we reset position 5, we're also removing Element B's contribution to that position. After this "deletion," our bit array becomes: `[0,0,0,0,0,0,0,1,0,0,1]`.
+Our final bit array looks like:
+
+```svgbob
+      shared bit
+           |
+ A         |   B A B
+ |         |   | | |
+ v         v   v v v
+┌─┬─┬─┬─┬─┬─┬─┬─┬─┬─┐
+│1│0│0│0│0│1│0│1│1│1│
+└─┴─┴─┴─┴─┴─┴─┴─┴─┴─┘
+ 0 1 2 3 4 5 6 7 8 9
+```
+
+Now, let's attempt to delete Element A. The naive approach would be to reset its bits at positions 0, 5, and 8 back to `0`. This seems straightforward, but here's the problem: when we reset position 5, we're also removing Element B's contribution to that position. After this "deletion," our bit array becomes: `[0,0,0,0,0,0,0,1,0,1]`.
 
 ```mermaid
 graph TD
-    A["Current state:<br/>[0,0,1,0,0,1,0,1,1,0,1]<br/>Both A and B inserted"] --> B["❌ Attempt to delete Element A<br/>Reset positions: 2, 5, 8"]
+    A["Current state:<br/>[1,0,0,0,0,1,0,1,1,1]<br/>Both A and B inserted"] --> B["❌ Attempt to delete Element A<br/>Reset positions: 0, 5, 8"]
     
-    B --> C["Naive deletion:<br/>bit[2] = 0<br/>bit[5] = 0 ⚠️ (shared with B!)<br/>bit[8] = 0"]
+    B --> C["Naive deletion:<br/>bit[0] = 0<br/>bit[5] = 0 ⚠️ (shared with B!)<br/>bit[8] = 0"]
     
-    C --> D["Corrupted bit array:<br/>[0,0,0,0,0,0,0,1,0,0,1]<br/>Only positions 7, 10 remain set"]
+    C --> D["Corrupted bit array:<br/>[0,0,0,0,0,0,0,1,0,1]<br/>Only positions 7, 9 remain set"]
     
     style A fill:#495057,color:#f8f9fa
     style B fill:#dc2626,color:#f8f9fa
@@ -74,13 +86,13 @@ graph TD
     style D fill:#dc2626,color:#f8f9fa
 ```
 
-The corruption becomes evident when we later check for Element B. We hash it to positions 5, 7, and 10, but now position 5 is `0`. Since not all of Element B's positions are set, the Bloom filter incorrectly reports that Element B is not present — a **false negative**. This is catastrophic because Element B was never deleted; it's still supposed to be in the set.
+The corruption becomes evident when we later check for Element B. We hash it to positions 5, 7, and 9, but now position 5 is `0`. Since not all of Element B's positions are set, the Bloom filter incorrectly reports that Element B is not present — a **false negative**. This is catastrophic because Element B was never deleted; it's still supposed to be in the set.
 
 ```mermaid
 graph TD
-    A["Corrupted state:<br/>[0,0,0,0,0,0,0,1,0,0,1]<br/>Element A 'deleted'"] --> B["💥 Check Element B<br/>Hash positions: 5, 7, 10"]
+    A["Corrupted state:<br/>[0,0,0,0,0,0,0,1,0,1]<br/>Element A 'deleted'"] --> B["💥 Check Element B<br/>Hash positions: 5, 7, 9"]
     
-    B --> C["Check each position:<br/>bit[5] = 0 ❌<br/>bit[7] = 1 ✓<br/>bit[10] = 1 ✓"]
+    B --> C["Check each position:<br/>bit[5] = 0 ❌<br/>bit[7] = 1 ✓<br/>bit[9] = 1 ✓"]
     
     C --> D{"All bits set?"}
     

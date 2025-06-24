@@ -4,4 +4,5 @@ export interface PostPreview {
 	preview: string;
 	slug: string;
 	tags: string[];
+	draft: boolean;
 }
