@@ -146,25 +146,28 @@ Counting Bloom Filter (4-bit counters):
    0     1     2     3     4     5     6     7     8     9
 ```
 
-### How It Works
+### How Counting Bloom Filters Work
 
-- **Insertion**: Hash the element to `k` positions, and increment the counters at those positions.
-- **Membership check**: Just like in a standard Bloom filter — all counters must be non-zero.
-- **Deletion**: Hash the element again, and decrement those same counters.
+CBFs operate using three fundamental operations, same as the classic Bloom filter, but each building on the counter-based structure.
 
-As long as each counter accurately reflects how many elements touched a position, we can safely remove individual elements without affecting others.
+#### Insertion of an Element
 
-#### Step 1: Inserting Elements to the CBF
+When inserting an element into a CBF:
+
+1. **Hash the element** to determine `k` positions in the counter array
+2. **Increment each counter** at those `k` positions by 1
+
+The key insight is that **multiple elements may share the same positions** — but now we track exactly how many elements contributed to each position through the counter values.
 
 ```mermaid
 graph TD
-    A["Insert Element A<br/>Hash positions: 1, 4, 7"] --> A1["Increment counters:<br/>counter[1] = 1<br/>counter[4] = 1<br/>counter[7] = 1"]
+    A["Insert Element A<br/>Hash positions: 1, 4, 7"] --> A1["Increment counters:<br/>counter[1] = 0+1 = 1<br/>counter[4] = 0+1 = 1<br/>counter[7] = 0+1 = 1"]
     
     A1 --> A2["Counter array after A:<br/>[0,1,0,0,1,0,0,1,0,0]"]
     
-    B["Insert Element B<br/>Hash positions: 4, 6, 9"] --> B1["Increment counters:<br/>counter[4] = 2 (shared!)<br/>counter[6] = 1<br/>counter[9] = 1"]
+    B["Insert Element B<br/>Hash positions: 4, 6, 9"] --> B1["Increment counters:<br/>counter[4] = 1+1 = 2 (shared!)<br/>counter[6] = 0+1 = 1<br/>counter[9] = 0+1 = 1"]
     
-    A2 --> C["Final counter array:<br/>[0,1,0,0,2,0,1,1,0,1]<br/>Position 4 shared: count = 2"]
+    A2 --> C["Final counter array:<br/>[0,1,0,0,2,0,1,1,0,1]<br/>Position 4 shared by both elements"]
     B1 --> C
     
     style A fill:#3b82f6,color:#f8f9fa
@@ -172,39 +175,41 @@ graph TD
     style C fill:#22c55e,color:#212529
 ```
 
-#### Step 2: Safe Deletion
+#### Membership Query Operation
+
+To check if an element exists in the CBF:
+
+1. **Hash the element** using the same `k` hash functions to get `k` positions
+2. **Check all counters** at those positions
+3. **Return the result**:
+   - If **all counters > 0**: Element is **possibly present**
+   - If **any counter = 0**: Element is **definitely not present**
+
+The query operation is identical to a standard Bloom filter, just checking counters instead of bits.
+
+#### Deletion of an Element
+
+The deletion operation is just the opposite of the insertion operation:
+
+1. **Hash the element** to get the same `k` positions used during insertion
+2. **Decrement each counter** at those positions by 1
+
+The result is that other elements sharing those positions remain unaffected because their contributions are still counted.
 
 ```mermaid
 graph TD
     A["Current state:<br/>[0,1,0,0,2,0,1,1,0,1]<br/>Both A and B inserted"] --> B["Delete Element A<br/>Hash positions: 1, 4, 7"]
     
-    B --> C["Decrement counters:<br/>counter[1] = 0<br/>counter[4] = 1 (2→1, still > 0)<br/>counter[7] = 0"]
+    B --> C["Decrement counters:<br/>counter[1] = 1-1 = 0<br/>counter[4] = 2-1 = 1 (B still contributes!)<br/>counter[7] = 1-1 = 0"]
     
-    C --> D["✅ Updated counter array:<br/>[0,0,0,0,1,0,1,0,0,1]<br/>Element B's data preserved!"]
+    C --> D["✅ Updated counter array:<br/>[0,0,0,0,1,0,1,0,0,1]<br/>Element B's data preserved"]
     
     style A fill:#495057,color:#f8f9fa
     style B fill:#3b82f6,color:#f8f9fa
     style D fill:#495057,color:#f8f9fa
 ```
 
-#### Step 3: Successful Check
-
-```mermaid
-graph TD
-    A["Updated state:<br/>[0,0,0,0,1,0,1,0,0,1]<br/>Element A deleted safely"] --> B["Check Element B<br/>Hash positions: 4, 6, 9"]
-    
-    B --> C["Check each counter:<br/>counter[4] = 1 ✅<br/>counter[6] = 1 ✅<br/>counter[9] = 1 ✅"]
-    
-    C --> D{"All counters > 0?"}
-    
-    D -->|"Yes, all > 0"| E["✅ SUCCESS!<br/>Element B still present<br/>No false negative"]
-    
-    style A fill:#495057,color:#f8f9fa
-    style B fill:#3b82f6,color:#f8f9fa
-    style E fill:#22c55e,color:#212529
-```
-
-This small change enables **insert**, **check**, and **delete** operations — all while preserving the basic Bloom filter structure.
+This counter-based approach enables **insert**, **query**, and **delete** operations while preserving the probabilistic guarantees of the original Bloom filter structure. However, it's not without its own challenges.
 
 ### Handling Counter Overflow and Underflow
 
