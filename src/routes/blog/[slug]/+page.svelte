@@ -8,17 +8,21 @@
 	import mermaid from 'mermaid';
 	import { onMount } from 'svelte';
 
+	const { data } = $props();
+
 	onMount(() => {
 		mermaid.initialize({
 			theme: 'dark'
 		});
-
-		mermaid.run({
-			querySelector: '.mermaid'
-		});
 	});
 
-	const { data } = $props();
+	$effect(() => {
+		if (data.content) {
+			mermaid.run({
+				querySelector: '.mermaid'
+			});
+		}
+	});
 
 	const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
 	const heroImage = $derived(data?.heroUrl);
