@@ -12,6 +12,10 @@ draft: false
 hero: /images/blog/009-counting-bloom-filters/hero.jpg
 ---
 
+<script>
+	import { Scrollbox } from '$lib/components';
+</script>
+
 Bloom filters are incredibly space-efficient probabilistic data structures, perfect for answering a simple question: "Is this element in the set — no or maybe?"
 
 But as we discussed in [deep dive into Bloom filters](/blog/008-bloom-filters-pt1), there's a big limitation: **they don't support deletion**.
@@ -143,6 +147,8 @@ That's where **Counting Bloom Filters (CBFs)** come in.
 
 Originally proposed by [Fan et al.](https://www.cs.princeton.edu/courses/archive/spr05/cos598E/bib/p254-fan.pdf) as a solution for scalable web cache, CBFs replace the bit array with an array of **small integer counters** — typically 4-bit values. These allow us to track how many elements have set each position.
 
+<Scrollbox>
+
 ```svgbob
 Classic Bloom Filter (1-bit array):
 ┌─┬─┬─┬─┬─┬─┬─┬─┬─┬─┐
@@ -157,6 +163,8 @@ Counting Bloom Filter (4-bit counters):
 └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
    0     1     2     3     4     5     6     7     8     9
 ```
+
+</Scrollbox>
 
 ### How Counting Bloom Filters Work
 
@@ -292,6 +300,8 @@ Each subtable contains `B` buckets. Every bucket holds a small, fixed number of 
 
 So instead of one giant table, we split it into `d` isolated parts.
 
+<Scrollbox>
+
 ```svgbob
             d-left Counting Bloom Filter Memory Layout
                 (d=2 subtables, B=4 buckets each)
@@ -323,6 +333,8 @@ So instead of one giant table, we split it into `d` isolated parts.
   │ └─────────┴─────────┴─────┘ │    │ └─────────┴─────────┴─────┘ │
   └─────────────────────────────┘    └─────────────────────────────┘
 ```
+
+</Scrollbox>
 
 ### Why d-left?
 

@@ -41,9 +41,6 @@ const mdsvexOptions = {
 			if (lang === 'mermaid') {
 				return `{@html \`<pre class="mermaid">${code}</pre>\`}`;
 			}
-			if (lang === 'svgbob') {
-				return `{@html \`<pre class="svgbob">${code}</pre>\`}`;
-			}
 
 			const html = escapeSvelte(
 				highlighter.codeToHtml(code, {
