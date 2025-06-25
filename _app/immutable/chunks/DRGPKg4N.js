@@ -1,0 +1,304 @@
+import{t as m,a as s,n as b}from"./CEYJ1X-9.js";import"./DPOUz0k3.js";import{c as k,r as w,s as e,f as v,n as B}from"./C93sEKZr.js";import{h as i}from"./DKD9a3x9.js";import{a as _}from"./B7vlkj6g.js";var C=m('<div class="scrollbox svelte-e7vp9s"><!></div>');function p(o,r){var t=C(),l=k(t);_(l,()=>r.children),w(t),s(o,t)}const u={date:"2025-06-24",tags:["Algorithms"],keywords:["Bloom filters","Probabilistic data structures","Counting Bloom filters"],title:"Grokking Bloom Filters: Counting Bloom Filter",preview:"Bloom filters can't remove elements — unless you let them count.",draft:!1,hero:"/images/blog/009-counting-bloom-filters/hero.jpg"},{date:Y,tags:P,keywords:X,title:M,preview:q,draft:O,hero:j}=u;var F=b(`<svg xmlns="http://www.w3.org/2000/svg" width="672" height="208" class="svgbob"><style>.svgbob line, .svgbob path, .svgbob circle, .svgbob rect, .svgbob polygon {
+  stroke: black;
+  stroke-width: 2;
+  stroke-opacity: 1;
+  fill-opacity: 1;
+  stroke-linecap: round;
+  stroke-linejoin: miter;
+}
+
+.svgbob text {
+  white-space: pre;
+  fill: black;
+  font-family: Iosevka Fixed, monospace;
+  font-size: 14px;
+}
+
+.svgbob rect.backdrop {
+  stroke: none;
+  fill: transparent;
+}
+
+.svgbob .broken {
+  stroke-dasharray: 8;
+}
+
+.svgbob .filled {
+  fill: black;
+}
+
+.svgbob .bg_filled {
+  fill: transparent;
+  stroke-width: 1;
+}
+
+.svgbob .nofill {
+  fill: transparent;
+}
+
+.svgbob .end_marked_arrow {
+  marker-end: url(#arrow);
+}
+
+.svgbob .start_marked_arrow {
+  marker-start: url(#arrow);
+}
+
+.svgbob .end_marked_diamond {
+  marker-end: url(#diamond);
+}
+
+.svgbob .start_marked_diamond {
+  marker-start: url(#diamond);
+}
+
+.svgbob .end_marked_circle {
+  marker-end: url(#circle);
+}
+
+.svgbob .start_marked_circle {
+  marker-start: url(#circle);
+}
+
+.svgbob .end_marked_open_circle {
+  marker-end: url(#open_circle);
+}
+
+.svgbob .start_marked_open_circle {
+  marker-start: url(#open_circle);
+}
+
+.svgbob .end_marked_big_open_circle {
+  marker-end: url(#big_open_circle);
+}
+
+.svgbob .start_marked_big_open_circle {
+  marker-start: url(#big_open_circle);
+}</style><defs><marker id="arrow" viewBox="-2 -2 8 8" refX="4" refY="2" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><polygon points="0,0 0,4 4,2 0,0"></polygon></marker><marker id="diamond" viewBox="-2 -2 8 8" refX="4" refY="2" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><polygon points="0,2 2,0 4,2 2,4 0,2"></polygon></marker><marker id="circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><circle cx="4" cy="4" r="2" class="filled"></circle></marker><marker id="open_circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><circle cx="4" cy="4" r="2" class="bg_filled"></circle></marker><marker id="big_open_circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><circle cx="4" cy="4" r="3" class="bg_filled"></circle></marker></defs><rect class="backdrop" x="0" y="0" width="672" height="208"></rect><text x="2" y="12">Classic</text><text x="66" y="12">Bloom</text><text x="114" y="12">Filter</text><path d="M 176,0 A 16,16 0,0,0 176,16" class="nofill"></path><text x="178" y="12">1</text><line x1="184" y1="8" x2="192" y2="8" class="solid"></line><text x="194" y="12">bit</text><text x="10" y="44">0</text><text x="26" y="44">0</text><text x="42" y="44">1</text><text x="58" y="44">0</text><text x="74" y="44">0</text><text x="90" y="44">1</text><text x="106" y="44">0</text><text x="122" y="44">1</text><text x="138" y="44">1</text><text x="154" y="44">0</text><text x="10" y="76">0</text><text x="26" y="76">1</text><text x="42" y="76">2</text><text x="58" y="76">3</text><text x="74" y="76">4</text><text x="90" y="76">5</text><text x="106" y="76">6</text><text x="122" y="76">7</text><text x="138" y="76">8</text><text x="154" y="76">9</text><text x="226" y="12">array</text><path d="M 264,0 A 16,16 0,0,1 264,16" class="nofill"></path><text x="274" y="12">:</text><text x="186" y="44">←</text><text x="202" y="44">each</text><text x="242" y="44">cell</text><line x1="280" y1="38" x2="288" y2="38" class="solid"></line><line x1="280" y1="42" x2="288" y2="42" class="solid"></line><text x="298" y="44">1</text><text x="314" y="44">bit</text><text x="2" y="108">Counting</text><text x="74" y="108">Bloom</text><text x="122" y="108">Filter</text><path d="M 184,96 A 16,16 0,0,0 184,112" class="nofill"></path><text x="186" y="108">4</text><line x1="192" y1="104" x2="200" y2="104" class="solid"></line><text x="202" y="108">bit</text><text x="234" y="108">counters</text><path d="M 296,96 A 16,16 0,0,1 296,112" class="nofill"></path><text x="306" y="108">:</text><text x="26" y="140">0</text><text x="74" y="140">1</text><text x="122" y="140">0</text><text x="170" y="140">0</text><text x="218" y="140">2</text><text x="266" y="140">0</text><text x="314" y="140">1</text><text x="362" y="140">1</text><text x="410" y="140">0</text><text x="458" y="140">1</text><text x="10" y="156">0000</text><text x="58" y="156">0001</text><text x="106" y="156">0000</text><text x="154" y="156">0000</text><text x="202" y="156">0010</text><text x="250" y="156">0000</text><text x="298" y="156">0001</text><text x="346" y="156">0001</text><text x="394" y="156">0000</text><text x="442" y="156">0001</text><text x="26" y="188">0</text><text x="74" y="188">1</text><text x="122" y="188">2</text><text x="170" y="188">3</text><text x="218" y="188">4</text><text x="266" y="188">5</text><text x="314" y="188">6</text><text x="362" y="188">7</text><text x="410" y="188">8</text><text x="458" y="188">9</text><text x="506" y="156">←</text><text x="522" y="156">each</text><text x="562" y="156">cell</text><line x1="600" y1="150" x2="608" y2="150" class="solid"></line><line x1="600" y1="154" x2="608" y2="154" class="solid"></line><text x="618" y="156">4</text><text x="634" y="156">bits</text><g><line x1="4" y1="24" x2="164" y2="24" class="solid"></line><line x1="4" y1="24" x2="4" y2="56" class="solid"></line><line x1="20" y1="24" x2="20" y2="56" class="solid"></line><line x1="36" y1="24" x2="36" y2="56" class="solid"></line><line x1="52" y1="24" x2="52" y2="56" class="solid"></line><line x1="68" y1="24" x2="68" y2="56" class="solid"></line><line x1="84" y1="24" x2="84" y2="56" class="solid"></line><line x1="100" y1="24" x2="100" y2="56" class="solid"></line><line x1="116" y1="24" x2="116" y2="56" class="solid"></line><line x1="132" y1="24" x2="132" y2="56" class="solid"></line><line x1="148" y1="24" x2="148" y2="56" class="solid"></line><line x1="164" y1="24" x2="164" y2="56" class="solid"></line><line x1="4" y1="56" x2="164" y2="56" class="solid"></line></g><g><line x1="4" y1="120" x2="484" y2="120" class="solid"></line><line x1="4" y1="120" x2="4" y2="168" class="solid"></line><line x1="52" y1="120" x2="52" y2="168" class="solid"></line><line x1="100" y1="120" x2="100" y2="168" class="solid"></line><line x1="148" y1="120" x2="148" y2="168" class="solid"></line><line x1="196" y1="120" x2="196" y2="168" class="solid"></line><line x1="244" y1="120" x2="244" y2="168" class="solid"></line><line x1="292" y1="120" x2="292" y2="168" class="solid"></line><line x1="340" y1="120" x2="340" y2="168" class="solid"></line><line x1="388" y1="120" x2="388" y2="168" class="solid"></line><line x1="436" y1="120" x2="436" y2="168" class="solid"></line><line x1="484" y1="120" x2="484" y2="168" class="solid"></line><line x1="4" y1="168" x2="484" y2="168" class="solid"></line></g></svg>`),A=b(`<svg xmlns="http://www.w3.org/2000/svg" width="552" height="480" class="svgbob"><style>.svgbob line, .svgbob path, .svgbob circle, .svgbob rect, .svgbob polygon {
+  stroke: black;
+  stroke-width: 2;
+  stroke-opacity: 1;
+  fill-opacity: 1;
+  stroke-linecap: round;
+  stroke-linejoin: miter;
+}
+
+.svgbob text {
+  white-space: pre;
+  fill: black;
+  font-family: Iosevka Fixed, monospace;
+  font-size: 14px;
+}
+
+.svgbob rect.backdrop {
+  stroke: none;
+  fill: transparent;
+}
+
+.svgbob .broken {
+  stroke-dasharray: 8;
+}
+
+.svgbob .filled {
+  fill: black;
+}
+
+.svgbob .bg_filled {
+  fill: transparent;
+  stroke-width: 1;
+}
+
+.svgbob .nofill {
+  fill: transparent;
+}
+
+.svgbob .end_marked_arrow {
+  marker-end: url(#arrow);
+}
+
+.svgbob .start_marked_arrow {
+  marker-start: url(#arrow);
+}
+
+.svgbob .end_marked_diamond {
+  marker-end: url(#diamond);
+}
+
+.svgbob .start_marked_diamond {
+  marker-start: url(#diamond);
+}
+
+.svgbob .end_marked_circle {
+  marker-end: url(#circle);
+}
+
+.svgbob .start_marked_circle {
+  marker-start: url(#circle);
+}
+
+.svgbob .end_marked_open_circle {
+  marker-end: url(#open_circle);
+}
+
+.svgbob .start_marked_open_circle {
+  marker-start: url(#open_circle);
+}
+
+.svgbob .end_marked_big_open_circle {
+  marker-end: url(#big_open_circle);
+}
+
+.svgbob .start_marked_big_open_circle {
+  marker-start: url(#big_open_circle);
+}</style><defs><marker id="arrow" viewBox="-2 -2 8 8" refX="4" refY="2" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><polygon points="0,0 0,4 4,2 0,0"></polygon></marker><marker id="diamond" viewBox="-2 -2 8 8" refX="4" refY="2" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><polygon points="0,2 2,0 4,2 2,4 0,2"></polygon></marker><marker id="circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><circle cx="4" cy="4" r="2" class="filled"></circle></marker><marker id="open_circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><circle cx="4" cy="4" r="2" class="bg_filled"></circle></marker><marker id="big_open_circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><circle cx="4" cy="4" r="3" class="bg_filled"></circle></marker></defs><rect class="backdrop" x="0" y="0" width="552" height="480"></rect><text x="98" y="12">d</text><line x1="104" y1="8" x2="112" y2="8" class="solid"></line><text x="114" y="12">left</text><text x="154" y="12">Counting</text><text x="226" y="12">Bloom</text><text x="274" y="12">Filter</text><text x="330" y="12">Memory</text><text x="386" y="12">Layout</text><path d="M 136,16 A 16,16 0,0,0 136,32" class="nofill"></path><text x="138" y="28">d</text><line x1="144" y1="22" x2="152" y2="22" class="solid"></line><line x1="144" y1="26" x2="152" y2="26" class="solid"></line><text x="154" y="28">2</text><text x="170" y="28">subtables,</text><text x="258" y="28">B</text><line x1="264" y1="22" x2="272" y2="22" class="solid"></line><line x1="264" y1="26" x2="272" y2="26" class="solid"></line><text x="274" y="28">4</text><text x="290" y="28">buckets</text><text x="354" y="28">each</text><path d="M 384,16 A 16,16 0,0,1 384,32" class="nofill"></path><text x="18" y="60">Subtable</text><text x="90" y="60">0:</text><text x="34" y="92">Bucket</text><text x="90" y="92">0</text><text x="42" y="124">fp:0xA2C</text><text x="122" y="124">fp:0x7F1</text><text x="210" y="124">...</text><text x="42" y="140">cnt:</text><text x="82" y="140">1</text><text x="122" y="140">cnt:</text><text x="162" y="140">2</text><text x="34" y="188">Bucket</text><text x="90" y="188">1</text><text x="42" y="220">fp:0x5B8</text><text x="138" y="220">empty</text><text x="210" y="220">...</text><text x="42" y="236">cnt:</text><text x="82" y="236">1</text><text x="34" y="284">Bucket</text><text x="90" y="284">2</text><text x="58" y="316">empty</text><text x="138" y="316">empty</text><text x="210" y="316">...</text><text x="34" y="380">Bucket</text><text x="90" y="380">3</text><text x="42" y="412">fp:0x8E6</text><text x="138" y="412">empty</text><text x="210" y="412">...</text><text x="42" y="428">cnt:</text><text x="82" y="428">2</text><text x="314" y="60">Subtable</text><text x="386" y="60">1:</text><text x="314" y="92">Bucket</text><text x="370" y="92">0</text><text x="322" y="124">fp:0x3E9</text><text x="418" y="124">empty</text><text x="490" y="124">...</text><text x="322" y="140">cnt:</text><text x="362" y="140">1</text><text x="314" y="188">Bucket</text><text x="370" y="188">1</text><text x="322" y="220">fp:0x9D4</text><text x="402" y="220">fp:0x1C7</text><text x="490" y="220">...</text><text x="322" y="236">cnt:</text><text x="362" y="236">3</text><text x="402" y="236">cnt:</text><text x="442" y="236">1</text><text x="314" y="284">Bucket</text><text x="370" y="284">2</text><text x="322" y="316">fp:0x6A1</text><text x="418" y="316">empty</text><text x="490" y="316">...</text><text x="322" y="332">cnt:</text><text x="362" y="332">1</text><text x="314" y="380">Bucket</text><text x="370" y="380">3</text><text x="338" y="412">empty</text><text x="418" y="412">empty</text><text x="490" y="412">...</text><g><line x1="20" y1="72" x2="260" y2="72" class="solid"></line><line x1="20" y1="72" x2="20" y2="456" class="solid"></line><line x1="260" y1="72" x2="260" y2="456" class="solid"></line><line x1="20" y1="168" x2="260" y2="168" class="solid"></line><line x1="20" y1="264" x2="260" y2="264" class="solid"></line><line x1="20" y1="360" x2="260" y2="360" class="solid"></line><line x1="20" y1="456" x2="260" y2="456" class="solid"></line></g><g><line x1="36" y1="104" x2="244" y2="104" class="solid"></line><line x1="36" y1="104" x2="36" y2="152" class="solid"></line><line x1="116" y1="104" x2="116" y2="152" class="solid"></line><line x1="196" y1="104" x2="196" y2="152" class="solid"></line><line x1="244" y1="104" x2="244" y2="152" class="solid"></line><line x1="36" y1="152" x2="244" y2="152" class="solid"></line></g><g><line x1="36" y1="200" x2="244" y2="200" class="solid"></line><line x1="36" y1="200" x2="36" y2="248" class="solid"></line><line x1="116" y1="200" x2="116" y2="248" class="solid"></line><line x1="196" y1="200" x2="196" y2="248" class="solid"></line><line x1="244" y1="200" x2="244" y2="248" class="solid"></line><line x1="36" y1="248" x2="244" y2="248" class="solid"></line></g><g><line x1="36" y1="296" x2="244" y2="296" class="solid"></line><line x1="36" y1="296" x2="36" y2="344" class="solid"></line><line x1="116" y1="296" x2="116" y2="344" class="solid"></line><line x1="196" y1="296" x2="196" y2="344" class="solid"></line><line x1="244" y1="296" x2="244" y2="344" class="solid"></line><line x1="36" y1="344" x2="244" y2="344" class="solid"></line></g><g><line x1="36" y1="392" x2="244" y2="392" class="solid"></line><line x1="36" y1="392" x2="36" y2="440" class="solid"></line><line x1="116" y1="392" x2="116" y2="440" class="solid"></line><line x1="196" y1="392" x2="196" y2="440" class="solid"></line><line x1="244" y1="392" x2="244" y2="440" class="solid"></line><line x1="36" y1="440" x2="244" y2="440" class="solid"></line></g><g><line x1="300" y1="72" x2="540" y2="72" class="solid"></line><line x1="300" y1="72" x2="300" y2="456" class="solid"></line><line x1="540" y1="72" x2="540" y2="456" class="solid"></line><line x1="300" y1="168" x2="540" y2="168" class="solid"></line><line x1="300" y1="264" x2="540" y2="264" class="solid"></line><line x1="300" y1="360" x2="540" y2="360" class="solid"></line><line x1="300" y1="456" x2="540" y2="456" class="solid"></line></g><g><line x1="316" y1="104" x2="524" y2="104" class="solid"></line><line x1="316" y1="104" x2="316" y2="152" class="solid"></line><line x1="396" y1="104" x2="396" y2="152" class="solid"></line><line x1="476" y1="104" x2="476" y2="152" class="solid"></line><line x1="524" y1="104" x2="524" y2="152" class="solid"></line><line x1="316" y1="152" x2="524" y2="152" class="solid"></line></g><g><line x1="316" y1="200" x2="524" y2="200" class="solid"></line><line x1="316" y1="200" x2="316" y2="248" class="solid"></line><line x1="396" y1="200" x2="396" y2="248" class="solid"></line><line x1="476" y1="200" x2="476" y2="248" class="solid"></line><line x1="524" y1="200" x2="524" y2="248" class="solid"></line><line x1="316" y1="248" x2="524" y2="248" class="solid"></line></g><g><line x1="316" y1="296" x2="524" y2="296" class="solid"></line><line x1="316" y1="296" x2="316" y2="344" class="solid"></line><line x1="396" y1="296" x2="396" y2="344" class="solid"></line><line x1="476" y1="296" x2="476" y2="344" class="solid"></line><line x1="524" y1="296" x2="524" y2="344" class="solid"></line><line x1="316" y1="344" x2="524" y2="344" class="solid"></line></g><g><line x1="316" y1="392" x2="524" y2="392" class="solid"></line><line x1="316" y1="392" x2="316" y2="440" class="solid"></line><line x1="396" y1="392" x2="396" y2="440" class="solid"></line><line x1="476" y1="392" x2="476" y2="440" class="solid"></line><line x1="524" y1="392" x2="524" y2="440" class="solid"></line><line x1="316" y1="440" x2="524" y2="440" class="solid"></line></g></svg>`),T=m(`<p>Bloom filters are incredibly space-efficient probabilistic data structures, perfect for answering a simple question: “Is this element in the set — no or maybe?”</p> <p>But as we discussed in <a href="/blog/008-bloom-filters-pt1">deep dive into Bloom filters</a>, there’s a big limitation: <strong>they don’t support deletion</strong>.</p> <p>In this part of the series, we’ll tackle that problem. We’ll explore how we can extend Bloom filters to allow element removal — and what trade-offs come with that.</p> <h2 id="contents"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#contents">#</a>Contents</h2> <ul><li><a href="#why-deletion-is-hard">Why Deletion Is Hard</a></li> <li><a href="#easy-workarounds-that-actually-dont-work">Easy Workarounds (That Actually Don’t Work)</a> <ul><li><a href="#rebuilding-the-filter">Rebuilding the Filter</a></li> <li><a href="#using-a-tombstone-filter">Using a Tombstone Filter</a></li></ul></li> <li><a href="#counting-bloom-filters">Counting Bloom Filters</a> <ul><li><a href="#how-counting-bloom-filters-work">How Counting Bloom Filters Work</a></li> <li><a href="#handling-counter-overflow-and-underflow">Handling Counter Overflow and Underflow</a></li> <li><a href="#removing-a-non-existent-element">Removing a Non-Existent Element</a></li> <li><a href="#is-it-worth-it">Is It Worth It?</a></li></ul></li> <li><a href="#d-left-counting-bloom-filter">d-left Counting Bloom Filter</a> <ul><li><a href="#core-idea">Core Idea</a></li> <li><a href="#why-d-left">Why d-left?</a></li> <li><a href="#insertion">Insertion</a></li> <li><a href="#deletion">Deletion</a></li> <li><a href="#membership-check">Membership Check</a></li> <li><a href="#about-permutations-two-phase-hashing">About Permutations (Two-Phase Hashing)</a></li></ul></li> <li><a href="#moving-forward">Moving Forward</a></li></ul> <h2 id="why-deletion-is-hard"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#why-deletion-is-hard">#</a>Why Deletion Is Hard</h2> <p>To understand why deletion doesn’t work in a classic Bloom filter, let’s quickly revisit how it operates.</p> <p>A Bloom filter consists of two core components:</p> <ul><li>A fixed-size <strong>bit array</strong></li> <li>A set of <strong>hash functions</strong></li></ul> <p>Each time you insert an element, it is hashed at most <code>k</code> times to determine <code>k</code> bit positions in the array, and those bits are set to <code>1</code>. Since the bit array is shared across all elements, multiple elements may overlap and set the same bits — this is expected and what makes Bloom filters space-efficient.</p> <p>But this sharing creates a fundamental problem: <strong>you can’t tell which element set a given bit</strong>. If you try to delete an element by resetting its <code>k</code> bits to <code>0</code>, you may accidentally unset bits that are still needed by other elements, breaking one of the Bloom filter’s key guarantees: <strong>no false negatives</strong>.</p> <p>Let’s see this in action. Suppose we have a Bloom filter with 10 bits and we want to insert two elements:</p> <ul><li><strong>Element A</strong> hashes to positions 0, 5, and 8</li> <li><strong>Element B</strong> hashes to positions 5, 7, and 9</li></ul> <p>Notice that both elements share position 5 — this is where the trouble begins.</p> <p>First, we insert both elements. Element A sets bits at positions 0, 5, and 8. Then Element B tries to set bits at positions 5, 7, and 9. Position 5 is already set from Element A, so it remains <code>1</code>, while positions 7 and 9 are newly set.</p> <!> <p>Our final bit array looks like:</p> <svg xmlns="http://www.w3.org/2000/svg" width="176" height="160" class="svgbob"><style>.svgbob line, .svgbob path, .svgbob circle, .svgbob rect, .svgbob polygon {
+  stroke: black;
+  stroke-width: 2;
+  stroke-opacity: 1;
+  fill-opacity: 1;
+  stroke-linecap: round;
+  stroke-linejoin: miter;
+}
+
+.svgbob text {
+  white-space: pre;
+  fill: black;
+  font-family: Iosevka Fixed, monospace;
+  font-size: 14px;
+}
+
+.svgbob rect.backdrop {
+  stroke: none;
+  fill: transparent;
+}
+
+.svgbob .broken {
+  stroke-dasharray: 8;
+}
+
+.svgbob .filled {
+  fill: black;
+}
+
+.svgbob .bg_filled {
+  fill: transparent;
+  stroke-width: 1;
+}
+
+.svgbob .nofill {
+  fill: transparent;
+}
+
+.svgbob .end_marked_arrow {
+  marker-end: url(#arrow);
+}
+
+.svgbob .start_marked_arrow {
+  marker-start: url(#arrow);
+}
+
+.svgbob .end_marked_diamond {
+  marker-end: url(#diamond);
+}
+
+.svgbob .start_marked_diamond {
+  marker-start: url(#diamond);
+}
+
+.svgbob .end_marked_circle {
+  marker-end: url(#circle);
+}
+
+.svgbob .start_marked_circle {
+  marker-start: url(#circle);
+}
+
+.svgbob .end_marked_open_circle {
+  marker-end: url(#open_circle);
+}
+
+.svgbob .start_marked_open_circle {
+  marker-start: url(#open_circle);
+}
+
+.svgbob .end_marked_big_open_circle {
+  marker-end: url(#big_open_circle);
+}
+
+.svgbob .start_marked_big_open_circle {
+  marker-start: url(#big_open_circle);
+}</style><defs><marker id="arrow" viewBox="-2 -2 8 8" refX="4" refY="2" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><polygon points="0,0 0,4 4,2 0,0"></polygon></marker><marker id="diamond" viewBox="-2 -2 8 8" refX="4" refY="2" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><polygon points="0,2 2,0 4,2 2,4 0,2"></polygon></marker><marker id="circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><circle cx="4" cy="4" r="2" class="filled"></circle></marker><marker id="open_circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><circle cx="4" cy="4" r="2" class="bg_filled"></circle></marker><marker id="big_open_circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><circle cx="4" cy="4" r="3" class="bg_filled"></circle></marker></defs><rect class="backdrop" x="0" y="0" width="176" height="160"></rect><text x="50" y="12">shared</text><line x1="92" y1="16" x2="92" y2="68" class="solid"></line><text x="10" y="44">A</text><text x="122" y="44">B</text><text x="138" y="44">A</text><text x="154" y="44">B</text><line x1="12" y1="48" x2="12" y2="68" class="solid"></line><line x1="124" y1="48" x2="124" y2="68" class="solid"></line><line x1="140" y1="48" x2="140" y2="68" class="solid"></line><line x1="156" y1="48" x2="156" y2="68" class="solid"></line><polygon points="8,68 16,68 12,80" class="filled"></polygon><polygon points="88,68 96,68 92,80" class="filled"></polygon><polygon points="120,68 128,68 124,80" class="filled"></polygon><polygon points="136,68 144,68 140,80" class="filled"></polygon><polygon points="152,68 160,68 156,80" class="filled"></polygon><text x="10" y="108">1</text><text x="26" y="108">0</text><text x="42" y="108">0</text><text x="58" y="108">0</text><text x="74" y="108">0</text><text x="90" y="108">1</text><text x="106" y="108">0</text><text x="122" y="108">1</text><text x="138" y="108">1</text><text x="154" y="108">1</text><text x="10" y="140">0</text><text x="26" y="140">1</text><text x="42" y="140">2</text><text x="58" y="140">3</text><text x="74" y="140">4</text><text x="90" y="140">5</text><text x="106" y="140">6</text><text x="122" y="140">7</text><text x="138" y="140">8</text><text x="154" y="140">9</text><text x="106" y="12">bit</text><g><line x1="4" y1="88" x2="164" y2="88" class="solid"></line><line x1="4" y1="88" x2="4" y2="120" class="solid"></line><line x1="20" y1="88" x2="20" y2="120" class="solid"></line><line x1="36" y1="88" x2="36" y2="120" class="solid"></line><line x1="52" y1="88" x2="52" y2="120" class="solid"></line><line x1="68" y1="88" x2="68" y2="120" class="solid"></line><line x1="84" y1="88" x2="84" y2="120" class="solid"></line><line x1="100" y1="88" x2="100" y2="120" class="solid"></line><line x1="116" y1="88" x2="116" y2="120" class="solid"></line><line x1="132" y1="88" x2="132" y2="120" class="solid"></line><line x1="148" y1="88" x2="148" y2="120" class="solid"></line><line x1="164" y1="88" x2="164" y2="120" class="solid"></line><line x1="4" y1="120" x2="164" y2="120" class="solid"></line></g></svg> <p>Now, let’s attempt to delete Element A. The naive approach would be to reset its bits at positions 0, 5, and 8 back to <code>0</code>. This seems straightforward, but here’s the problem: when we reset position 5, we’re also removing Element B’s contribution to that position. After this “deletion,” our bit array becomes: <code>[0,0,0,0,0,0,0,1,0,1]</code>.</p> <!> <p>The corruption becomes evident when we later check for Element B. We hash it to positions 5, 7, and 9, but now position 5 is <code>0</code>. Since not all of Element B’s positions are set, the Bloom filter incorrectly reports that Element B is not present — a <strong>false negative</strong>. This is catastrophic because Element B was never deleted; it’s still supposed to be in the set.</p> <!> <blockquote><p>It’s similar to erasing your tag from a public graffiti wall — you might end up scrubbing off someone else’s mark too, and now no one can tell they were ever there.</p></blockquote> <p>This is why deletion is fundamentally unsafe in standard Bloom filters — any attempt to remove an element risks corrupting the filter’s state and creating false negatives for other elements.</p> <h2 id="easy-workarounds-that-actually-dont-work"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#easy-workarounds-that-actually-dont-work">#</a>Easy Workarounds (That Actually Don’t Work)</h2> <p>Before diving into data structure modifications, let’s look at a few simple workarounds for deletion.</p> <h3 id="rebuilding-the-filter"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#rebuilding-the-filter">#</a>Rebuilding the Filter</h3> <p>In many use cases, full deletion support isn’t necessary. Instead, you can periodically <strong>rebuild</strong> the Bloom filter from scratch — daily, weekly, or based on certain metrics like false positive rate. This works especially well if:</p> <ul><li>You can tolerate brief downtime or rebuild in the background.</li> <li>The data set is relatively stable or changes in batches.</li></ul> <p>This is often the simplest and safest approach.</p> <h3 id="using-a-tombstone-filter"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#using-a-tombstone-filter">#</a>Using a Tombstone Filter</h3> <p>Another workaround is to maintain a second Bloom filter — a <strong>tombstone filter</strong> — to track deletions. When you remove an element, you insert it into the tombstone filter.</p> <p>To check for membership:</p> <ol><li>Check the main Bloom filter.</li> <li>If it’s a <strong>possible match</strong>, check the tombstone filter.</li> <li>If it also matches there, treat it as deleted.</li></ol> <p>The problem? If the tombstone filter gives a <strong>false positive</strong>, you’ll wrongly conclude that an element was deleted — effectively creating a <strong>false negative</strong>. This defeats the main strength of Bloom filters.</p> <p>So while this method technically adds delete support, it weakens the guarantees and is rarely worth the risk.</p> <h2 id="counting-bloom-filters"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#counting-bloom-filters">#</a>Counting Bloom Filters</h2> <p>The core strength of Bloom filters lies in their simplicity: a bit array and some hash functions. This makes them fast and compact — but also limited. In particular, the bit array can’t tell <strong>which elements</strong> contributed to setting each bit.</p> <p>That’s where <strong>Counting Bloom Filters (CBFs)</strong> come in.</p> <p>Originally proposed by <a href="https://www.cs.princeton.edu/courses/archive/spr05/cos598E/bib/p254-fan.pdf" rel="nofollow">Fan et al.</a> as a solution for scalable web cache, CBFs replace the bit array with an array of <strong>small integer counters</strong> — typically 4-bit values. These allow us to track how many elements have set each position.</p> <!> <h3 id="how-counting-bloom-filters-work"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#how-counting-bloom-filters-work">#</a>How Counting Bloom Filters Work</h3> <p>CBFs operate using three fundamental operations, same as the classic Bloom filter, but each building on the counter-based structure.</p> <h4 id="insertion-of-an-element"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#insertion-of-an-element">#</a>Insertion of an Element</h4> <p>When inserting an element into a CBF:</p> <ol><li><strong>Hash the element</strong> to determine <code>k</code> positions in the counter array</li> <li><strong>Increment each counter</strong> at those <code>k</code> positions by 1</li></ol> <p>The key insight is that <strong>multiple elements may share the same positions</strong> — but now we track exactly how many elements contributed to each position through the counter values.</p> <!> <h4 id="membership-query-operation"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#membership-query-operation">#</a>Membership Query Operation</h4> <p>To check if an element exists in the CBF:</p> <ol><li><strong>Hash the element</strong> using the same <code>k</code> hash functions to get <code>k</code> positions</li> <li><strong>Check all counters</strong> at those positions</li> <li><strong>Return the result</strong>: <ul><li>If <strong>all counters > 0</strong>: Element is <strong>possibly present</strong></li> <li>If <strong>any counter = 0</strong>: Element is <strong>definitely not present</strong></li></ul></li></ol> <p>The query operation is identical to a standard Bloom filter, just checking counters instead of bits.</p> <h4 id="deletion-of-an-element"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#deletion-of-an-element">#</a>Deletion of an Element</h4> <p>The deletion operation is just the opposite of the insertion operation:</p> <ol><li><strong>Hash the element</strong> to get the same <code>k</code> positions used during insertion</li> <li><strong>Decrement each counter</strong> at those positions by 1</li></ol> <p>The result is that other elements sharing those positions remain unaffected because their contributions are still counted.</p> <!> <p>This counter-based approach enables <strong>insert</strong>, <strong>query</strong>, and <strong>delete</strong> operations while preserving the probabilistic guarantees of the original Bloom filter structure. However, it’s not without its own challenges.</p> <h3 id="handling-counter-overflow-and-underflow"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#handling-counter-overflow-and-underflow">#</a>Handling Counter Overflow and Underflow</h3> <p>When implementing a CBF, you need to be mindful of counter limits. Most implementations use 4-bit counters, which means each counter can represent values from 0 to 15.</p> <h4 id="overflow-during-insertion"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#overflow-during-insertion">#</a>Overflow During Insertion</h4> <p>If a counter is already at its maximum value (e.g., 15) and you try to increment it, the result will either:</p> <ul><li>Wrap around to 0 (in case of overflow), or</li> <li>Overwrite memory incorrectly (if not handled properly)</li></ul> <p>To prevent this, insertions should <strong>skip incrementing</strong> counters that are already at their maximum value.</p> <h4 id="underflow-during-deletion"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#underflow-during-deletion">#</a>Underflow During Deletion</h4> <p>Similarly, if a counter is at <code>0</code> and you try to decrement it, you risk corrupting the filter — especially if that position was never associated with the element being removed. Deletion code should <strong>never decrement</strong> a zero counter.</p> <p>This raises a deeper issue: if the counter is <code>0</code>, the element likely wasn’t inserted — and deleting it can silently damage the filter. That brings us to a more subtle and dangerous scenario…</p> <h3 id="removing-a-non-existent-element"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#removing-a-non-existent-element">#</a>Removing a Non-Existent Element</h3> <p>Counting Bloom Filters only work reliably if deletions are performed on elements that were actually inserted. If you delete an element that was never added, you can unintentionally corrupt the state of the filter.</p> <p>Let’s walk through a simple example:</p> <ul><li>Element <strong>A</strong> hashes to positions <code>1, 5, 7, 9</code></li> <li>Element <strong>B</strong> hashes to positions <code>1, 3, 7, 8</code></li></ul> <p>Now suppose you insert <strong>A</strong> — this increments the counters at positions <code>1, 5, 7, 9</code>.</p> <p>Then, without inserting <strong>B</strong>, you try to delete it. This decrements counters at <code>1, 3, 7, 8</code>.</p> <p>Here’s what goes wrong:</p> <ul><li>Counters at positions <code>1</code> and <code>7</code> (shared with A) are decremented — possibly to zero.</li> <li>When you later check for <strong>A</strong>, it may appear absent, even though it was never deleted.</li> <li>Counters at positions <code>5</code> and <code>9</code> remain set — creating an inconsistent state.</li></ul> <p>This creates a <strong>false negative</strong>, something Bloom filters are explicitly designed to avoid. And the worst part? There’s no way to detect this corruption after the fact.</p> <h3 id="is-it-worth-it"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#is-it-worth-it">#</a>Is It Worth It?</h3> <p>Counting Bloom Filters provide a straightforward way to support deletions: just replace bits with small counters. The core algorithm remains nearly identical to the classic Bloom filter — simple and efficient.</p> <p>But this simplicity comes at a cost:</p> <ul><li>Requires more memory — typically 4× larger due to 4-bit counters.</li> <li>Vulnerable to accidental false negatives if deletions aren’t handled carefully.</li> <li>Doesn’t track which elements contributed to a counter — so overlapping deletions are still a risk.</li></ul> <p>CBFs were proposed back in 2000 as a practical workaround, and they still hold up in simple scenarios. But if memory is tight or deletion accuracy is critical, modern alternatives like <strong>Cuckoo Filters</strong> offer better guarantees.</p> <p>Before we get there, let’s look at one more variation that builds on this concept — the <strong>d-left Counting Bloom Filter</strong>.</p> <h2 id="d-left-counting-bloom-filter"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#d-left-counting-bloom-filter">#</a>d-left Counting Bloom Filter</h2> <p>This data structure is quite different from classic Bloom and Counting Bloom Filters, but it gives us useful ideas that eventually lead to Cuckoo Filters — especially I love the point when it comes to handling collisions.</p> <h3 id="core-idea"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#core-idea">#</a>Core Idea</h3> <p>The <a href="https://people.eecs.berkeley.edu/~sylvia/cs268-2014/papers/countingbloom.pdf" rel="nofollow">d-left Counting Bloom Filter (dlCBF)</a> replaces the flat array of counters with a multi-part structure — or simply, <code>d</code> separate hash tables (subtables).</p> <p>Each subtable contains <code>B</code> buckets. Every bucket holds a small, fixed number of cells (e.g., 8). Each cell has:</p> <ul><li>a <strong>fingerprint</strong> (a short hash of the original element)</li> <li>a <strong>counter</strong> (how many times it’s been added)</li></ul> <p>So instead of one giant table, we split it into <code>d</code> isolated parts.</p> <!> <h3 id="why-d-left"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#why-d-left">#</a>Why d-left?</h3> <p>This structure is more complex than a flat CBF, but it packs data more tightly and handles collisions better. Each subtable manages its own space, and load balancing improves thanks to the “pick the least loaded” rule.</p> <blockquote><p>Think of it like driving on a busy 6-lane road approaching an intersection. Three lanes can turn left, and the other three can turn right. In a regular CBF, it’s as if there’s only one lane for your direction — everyone turning left has to squeeze into the same lane, creating a traffic jam. But with d-left CBF, you have multiple lanes (subtables) going in your direction. When you need to turn (insert an element), you look at all the lanes that can make your turn and choose the one with the least traffic (fewest occupied cells). This way, cars turning in the same direction spread out across multiple lanes, reducing congestion.</p></blockquote> <h3 id="insertion"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#insertion">#</a>Insertion</h3> <ol><li>First, hash the element once to get the <strong>true fingerprint</strong>.</li> <li>Each subtable applies its own <strong>deterministic permutation</strong> to the fingerprint. This maps the fingerprint to a bucket in that subtable and modifies the fingerprint slightly to avoid clashes. I explain it later.</li> <li>Now we have <code>d</code> candidate buckets — one per subtable.</li> <li>From those, pick the bucket with the fewest used cells.</li> <li>If a cell with the modified fingerprint already exists there, increment its counter.</li> <li>Otherwise, insert a new cell with the fingerprint and counter set to 1.</li></ol> <p>Here’s how dlCBF insertion works:</p> <!> <h3 id="deletion"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#deletion">#</a>Deletion</h3> <p>To remove an element:</p> <ul><li>Use the same process to find candidate buckets and fingerprints.</li> <li>Locate the matching cell and decrement its counter.</li></ul> <h3 id="membership-check"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#membership-check">#</a>Membership Check</h3> <p>Same logic: use the original fingerprint, permute it per subtable, and check each candidate bucket. If any bucket contains a matching fingerprint with a positive counter, the element is <strong>possibly present</strong>.</p> <h3 id="about-permutations-two-phase-hashing"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#about-permutations-two-phase-hashing">#</a>About Permutations (Two-Phase Hashing)</h3> <p>One subtle but powerful part of dlCBF is <strong>how it avoids ambiguous deletions and collisions</strong>.</p> <ul><li><strong>Phase 1</strong>: Generate a fingerprint from the element.</li> <li><strong>Phase 2</strong>: Each subtable applies its own deterministic permutation to the fingerprint. This affects both the bucket index and the fingerprint value inside that subtable.</li></ul> <p>So instead of computing <code>d</code> separate hashes, we just compute one hash and shuffle it differently in each subtable. This helps avoid situations where two elements look the same across all subtables and buckets — a common cause of incorrect deletions.</p> <p>By doing this simple fingerprint transformation per subtable, dlCBF lowers the chance of “hot buckets” and overlapping fingerprints, making the structure more reliable.</p> <h2 id="moving-forward"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#moving-forward">#</a>Moving Forward</h2> <p>Counting Bloom Filters are a natural extension of the classic Bloom Filter — they add support for deletions with minimal structural changes. On paper, it’s a neat solution. But in practice, CBFs are not always the most efficient choice, especially today.</p> <p>It’s a bit sad, honestly. There’s no simple way to preserve the elegance of the original Bloom Filter and still get reliable deletions. Every attempt to fix that tends to compromise either performance or memory efficiency.</p> <p>That said, the alternatives — like Cuckoo Filters and the newer Ribbon Filters — are surprisingly elegant in their own right. They’re more complex under the hood, but if you’re working with modern libraries, that complexity is abstracted away. For most real-world use cases where deletions matter, these filters are excellent, first-class replacements for classic Bloom Filters.</p>`,1);function E(o){var r=T(),t=e(v(r),30);i(t,()=>`<pre class="mermaid">graph TD
+    A["Insert Element A<br/>Hash positions: 0, 5, 8"] --> A1["Set bits:<br/>bit[0] = 1<br/>bit[5] = 1<br/>bit[8] = 1"]
+    
+    B["Insert Element B<br/>Hash positions: 5, 7, 9"] --> B1["Set bits:<br/>bit[5] = 1 (already set)<br/>bit[7] = 1<br/>bit[9] = 1"]
+    
+    A1 --> C["Positions set: 0, 5, 7, 8, 9"]
+    B1 --> C
+    
+    style A fill:#22d3ee,color:#212529
+    style B fill:#22d3ee,color:#212529
+    style C fill:#22c55e,color:#212529</pre>`);var l=e(t,8);i(l,()=>`<pre class="mermaid">graph TD
+    A["Current state:<br/>[1,0,0,0,0,1,0,1,1,1]<br/>Both A and B inserted"] --> B["❌ Attempt to delete Element A<br/>Reset positions: 0, 5, 8"]
+    
+    B --> C["Naive deletion:<br/>bit[0] = 0<br/>bit[5] = 0 ⚠️ (shared with B!)<br/>bit[8] = 0"]
+    
+    C --> D["Corrupted bit array:<br/>[0,0,0,0,0,0,0,1,0,1]<br/>Only positions 7, 9 remain set"]
+    
+    style A fill:#495057,color:#f8f9fa
+    style B fill:#dc2626,color:#f8f9fa
+    style C fill:#f59e0b,color:#212529
+    style D fill:#dc2626,color:#f8f9fa</pre>`);var c=e(l,4);i(c,()=>`<pre class="mermaid">graph TD
+    A["Corrupted state:<br/>[0,0,0,0,0,0,0,1,0,1]<br/>Element A 'deleted'"] --> B["💥 Check Element B<br/>Hash positions: 5, 7, 9"]
+    
+    B --> C["Check each position:<br/>bit[5] = 0 ❌<br/>bit[7] = 1 ✓<br/>bit[9] = 1 ✓"]
+    
+    C --> D{"All bits set?"}
+    
+    D -->|"No, bit[5] = 0"| E["FALSE NEGATIVE!<br/>Element B appears absent<br/>but was never deleted"]
+    
+    style A fill:#dc2626,color:#f8f9fa
+    style B fill:#f59e0b,color:#212529
+    style D fill:#f59e0b,color:#212529
+    style E fill:#dc2626,color:#f8f9fa</pre>`);var d=e(c,38);p(d,{children:(n,f)=>{var a=F();s(n,a)}});var x=e(d,14);i(x,()=>`<pre class="mermaid">graph TD
+    A["Insert Element A<br/>Hash positions: 1, 4, 7"] --> A1["Increment counters:<br/>counter[1] = 0+1 = 1<br/>counter[4] = 0+1 = 1<br/>counter[7] = 0+1 = 1"]
+    
+    A1 --> A2["Counter array after A:<br/>[0,1,0,0,1,0,0,1,0,0]"]
+    
+    B["Insert Element B<br/>Hash positions: 4, 6, 9"] --> B1["Increment counters:<br/>counter[4] = 1+1 = 2 (shared!)<br/>counter[6] = 0+1 = 1<br/>counter[9] = 0+1 = 1"]
+    
+    A2 --> C["Final counter array:<br/>[0,1,0,0,2,0,1,1,0,1]<br/>Position 4 shared by both elements"]
+    B1 --> C
+    
+    style A fill:#3b82f6,color:#f8f9fa
+    style B fill:#3b82f6,color:#f8f9fa
+    style C fill:#22c55e,color:#212529</pre>`);var h=e(x,18);i(h,()=>`<pre class="mermaid">graph TD
+    A["Current state:<br/>[0,1,0,0,2,0,1,1,0,1]<br/>Both A and B inserted"] --> B["Delete Element A<br/>Hash positions: 1, 4, 7"]
+    
+    B --> C["Decrement counters:<br/>counter[1] = 1-1 = 0<br/>counter[4] = 2-1 = 1 (B still contributes!)<br/>counter[7] = 1-1 = 0"]
+    
+    C --> D["✅ Updated counter array:<br/>[0,0,0,0,1,0,1,0,0,1]<br/>Element B's data preserved"]
+    
+    style A fill:#495057,color:#f8f9fa
+    style B fill:#3b82f6,color:#f8f9fa
+    style D fill:#495057,color:#f8f9fa</pre>`);var y=e(h,66);p(y,{children:(n,f)=>{var a=A();s(n,a)}});var g=e(y,14);i(g,()=>`<pre class="mermaid">graph TD
+    A["Element: 'apple'<br/>Generate fingerprint: 0x4A2C"] --> B["Subtable 1<br/>Permute: 0x4A2C → 0x7B1D<br/>Bucket: hash(0x7B1D) % B = 3<br/>Load: 2 cells"]
+    
+    A --> C["Subtable 2<br/>Permute: 0x4A2C → 0x9E8F<br/>Bucket: hash(0x9E8F) % B = 7<br/>Load: 1 cell"]
+    
+    B --> D["Candidate buckets:<br/>Subtable 1 bucket 3: 2 cells<br/>Subtable 2 bucket 7: 1 cell ⭐"]
+    C --> D
+    
+    D --> E["Choose least loaded<br/>Subtable 2, bucket 7"]
+    
+    E --> F["Check if fingerprint 0x9E8F<br/>already exists in bucket 7"]
+    
+    F --> G{"Fingerprint<br/>exists?"}
+    
+    G -->|Yes| H["Increment existing<br/>counter"]
+    G -->|No| I["Insert new cell with<br/>fingerprint: 0x9E8F<br/> and counter: 1"]
+    
+    H --> J["✅ Insertion complete"]
+    I --> J
+    
+    style A fill:#5d5fef,color:#f8f9fa
+    style J fill:#22c55e,color:#212529
+    style G fill:#f59e0b,color:#212529</pre>`),B(28),s(o,r)}const N=Object.freeze(Object.defineProperty({__proto__:null,default:E,metadata:u},Symbol.toStringTag,{value:"Module"}));export{N as _};
