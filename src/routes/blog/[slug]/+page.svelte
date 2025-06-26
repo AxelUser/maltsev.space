@@ -3,8 +3,9 @@
 	import Link from '$lib/components/ui/link/link.svelte';
 	import Card from '$lib/components/ui/card/card.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { SEO } from '$lib/components';
+	import { SEO, SeriesBanner } from '$lib/components';
 	import { config } from '$lib/config';
+	import { bio } from '$lib/bio';
 	import mermaid from 'mermaid';
 	import { onMount } from 'svelte';
 
@@ -62,9 +63,11 @@
 		/>
 		<div class="hero-content">
 			<hgroup>
-				<p class="publish-date">
-					<span>Published at <time datetime="2024-06-15">{data.date}</time></span>
-				</p>
+				<div class="post-meta">
+					<time datetime="2024-06-15" class="publish-date">{data.date}</time>
+					<span class="meta-separator">•</span>
+					<span class="author-name">by {bio.fullName}</span>
+				</div>
 				<h1 class="space-title">{data.title}</h1>
 				{#if data.preview}
 					<p class="post-preview">{data.preview}</p>
@@ -77,9 +80,11 @@
 <article>
 	{#if !heroImage}
 		<hgroup>
-			<p class="publish-date">
-				<span>Published at <time datetime="2024-06-15">{data.date}</time></span>
-			</p>
+			<div class="post-meta">
+				<time datetime="2024-06-15" class="publish-date">{data.date}</time>
+				<span class="meta-separator">•</span>
+				<span class="author-name">by {bio.fullName}</span>
+			</div>
 			<h1 class="space-title">{data.title}</h1>
 			{#if data.preview}
 				<p class="post-preview">{data.preview}</p>
@@ -90,6 +95,10 @@
 	<div class="post-navigation top-navigation">
 		<Button href="/blog">← Back to all posts</Button>
 	</div>
+
+	{#if data.series && data.series.length > 0}
+		<SeriesBanner posts={data.series} />
+	{/if}
 
 	<div class="prose">
 		{@render data.content()}
@@ -215,12 +224,28 @@
 		gap: var(--gap);
 	}
 
-	.publish-date {
+	.post-meta {
+		display: flex;
+		align-items: center;
+		gap: var(--gap-small);
+		margin-bottom: var(--gap);
 		font-size: var(--font-size-1);
-		color: var(--accent);
-		font-weight: var(--font-weight-6);
-		margin-bottom: var(--gap-small);
-		display: block;
+		color: var(--text-2);
+		font-weight: var(--font-weight-5);
+	}
+
+	.publish-date {
+		color: inherit;
+	}
+
+	.meta-separator {
+		color: var(--text-3);
+		opacity: 0.6;
+	}
+
+	.author-name {
+		color: inherit;
+		opacity: 0.9;
 	}
 
 	.post-preview {
@@ -236,6 +261,10 @@
 		.hero-content hgroup,
 		article > hgroup {
 			text-align: center;
+		}
+
+		.post-meta {
+			justify-content: center;
 		}
 	}
 </style>

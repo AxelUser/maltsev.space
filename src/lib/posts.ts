@@ -18,7 +18,8 @@ function getPosts(
 				title: metadata.title ?? raise(`Title is missing in post ${slug}`),
 				preview: metadata.preview ?? raise(`Preview is missing in post ${slug}`),
 				tags: metadata.tags ?? raise(`Tags are missing in post ${slug}`),
-				draft: metadata.draft ?? false
+				draft: metadata.draft ?? false,
+				series: metadata.series
 			} as PostPreview;
 		})
 		.filter((post) => {
@@ -35,4 +36,15 @@ function getPosts(
 	return top ? sortedPosts.slice(0, top) : sortedPosts;
 }
 
-export { getPosts };
+function getSeries(series: string): PostPreview[] {
+	const posts = getPosts();
+	return posts
+		.filter((post) => post.series === series)
+		.sort((a, b) => {
+			const dateA = new Date(a.date);
+			const dateB = new Date(b.date);
+			return dateA.getTime() - dateB.getTime();
+		});
+}
+
+export { getPosts, getSeries };
