@@ -3,7 +3,7 @@
 	import Link from '$lib/components/ui/link/link.svelte';
 	import Card from '$lib/components/ui/card/card.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { SEO } from '$lib/components';
+	import { SEO, SeriesBanner } from '$lib/components';
 	import { config } from '$lib/config';
 	import mermaid from 'mermaid';
 	import { onMount } from 'svelte';
@@ -90,6 +90,10 @@
 	<div class="post-navigation top-navigation">
 		<Button href="/blog">← Back to all posts</Button>
 	</div>
+
+	{#if data.series && data.series.length > 0}
+		<SeriesBanner posts={data.series} />
+	{/if}
 
 	<div class="prose">
 		{@render data.content()}

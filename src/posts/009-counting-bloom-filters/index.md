@@ -8,6 +8,7 @@ keywords:
  - "Counting Bloom filters"
 title: "Grokking Bloom Filters: Counting Bloom Filter"
 preview: "Bloom filters can't remove elements — unless you let them count."
+series: "Grokking Bloom Filters"
 draft: false
 hero: /images/blog/009-counting-bloom-filters/hero.jpg
 ---
