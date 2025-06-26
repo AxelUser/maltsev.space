@@ -37,9 +37,10 @@ function getPosts(
 }
 
 function getSeries(series: string): PostPreview[] {
+	if (!series) return [];
 	const posts = getPosts();
 	return posts
-		.filter((post) => post.series === series)
+		.filter((post) => post.series && post.series === series)
 		.sort((a, b) => {
 			const dateA = new Date(a.date);
 			const dateB = new Date(b.date);
