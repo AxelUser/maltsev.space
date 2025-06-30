@@ -32,6 +32,7 @@ This post is a deep dive — it's long, and we'll take our time walking through 
 
 A Bloom filter is a space-efficient probabilistic data structure designed to test whether an element belongs to a set. The key insight behind Bloom filters is their fundamental trade-off: they can guarantee with absolute certainty that an element is _not_ in the set, but when they report that an element _is_ present, there's a small chance this may be a false positive. This asymmetry makes them especially useful as a first-line filter in systems where false positives are acceptable, but false negatives are not.
 
+> [!info]
 > If you're not familiar with the terms _false positive_ and _false negative_, here's a quick translation:
 >
 > - A **false positive** means the system says "yes, it's here" when actually it's not.
@@ -45,6 +46,7 @@ Bloom filters may report false positives — claiming an element is present when
 
 The algorithm behind Bloom filters is elegantly built on three main components: a fixed-size bit array, multiple independent hash functions, and straightforward insertion and lookup operations. An empty Bloom filter starts as a bit array of `m` bits, all initialized to 0, and comes equipped with `k` different hash functions that map each element to exact `k` positions within the array. For optimal performance, these hash functions should ideally be independent and uniformly distributed.
 
+> [!info] Hash functions?
 > A hash function is a function that takes an input (like a string or number) and deterministically maps it to a number within a fixed range — in this case, some positions in the bit array.  
 > When we say that hash functions should be **independent**, we mean that knowing the output of one hash function doesn't help you guess or calculate the output of another — each one works on its own, like rolling different dice.  
 > And when we say they are **uniformly distributed**, we mean that they spread their results evenly across all possible positions, so no part of the resulting bit array gets overloaded with too many bits set.  
@@ -153,7 +155,9 @@ As you may have already noticed, we have **INSERT** and **CHECK** operations in 
 
 The root of the problem is that multiple elements may hash to the same bit positions. When you attempt to delete an element by resetting its bits back to `0`, you risk clearing bits that may still be in use by other elements. Since Bloom filters are designed to avoid **false negatives**, any operation that might accidentally remove evidence of another element's presence would break this guarantee.
 
-As one researcher [puts it nicely:](https://www.math.umd.edu/~immortal/CMSC420/notes/bloomfilters.pdf):
+As one researcher [puts it nicely:](https://www.math.umd.edu/~immortal/CMSC420/notes/bloomfilters.pdf)
+
+> [!quote]
 > "There is no deletion basically because the only reasonable way to delete would be to hash the key and then set those corresponding bits to 0, but this could cause false negatives for other keys."
 
 Let's visualize this. Imagine a Bloom filter as a shared apartment building where multiple tenants (elements) occupy overlapping rooms (bit positions).
@@ -332,7 +336,7 @@ $$
 
 Everything seems fine... until one day your Bloom filter quietly becomes _less random than you expect_. This happens when `h2(x)` and `m` (the Bloom filter size) are not **coprime**.
 
->**What does "coprime" mean?**
+> [!info] What does "coprime" mean?
 >Two numbers are coprime if they don't share any common divisors except 1.
 >For example:
 >
@@ -463,7 +467,8 @@ Where once again:
 - `n` is the number of inserted elements
 - `m` is the size of the bit array
 
->It's worth noting that this formula is an approximation. According to [detailed mathematical analysis](https://cglab.ca/~morin/publications/ds/bloom-submitted.pdf), the actual false positive rate is strictly larger than this approximation for any k ≥ 2.
+> [!warning]
+> It's worth noting that this formula is an approximation. According to [detailed mathematical analysis](https://cglab.ca/~morin/publications/ds/bloom-submitted.pdf), the actual false positive rate is strictly larger than this approximation for any k ≥ 2.
 
 ### How Parameters Affect Performance
 

@@ -234,7 +234,6 @@ html {
 	}
 }
 
-/* Add extra small device breakpoint */
 @media (--xs-n-below) {
 	.space-title {
 		font-size: var(--font-size-4);
@@ -380,4 +379,195 @@ html {
 	color: var(--accent);
 	border-bottom: none !important;
 	text-decoration: none;
+}
+
+/* Custom Callouts (https://github.com/lin-stephanie/rehype-callouts) */
+
+.callout {
+	border-radius: var(--radius-2);
+	margin: var(--gap) 0;
+	padding: 0;
+	background: color-mix(in srgb, var(--rc-color) 3%, var(--surface-1));
+	border: 1px solid color-mix(in srgb, var(--surface-3) 30%, transparent);
+	border-left: 4px solid var(--rc-color);
+	overflow: hidden;
+	transition: all var(--transition-fast);
+}
+
+.callout:hover {
+	background: color-mix(in srgb, var(--rc-color) 5%, var(--surface-1));
+	border-left-color: color-mix(in srgb, var(--rc-color) 120%, var(--rc-color));
+}
+
+.callout-title {
+	display: flex;
+	align-items: center;
+	gap: var(--gap-small);
+	padding: var(--gap-small) var(--gap);
+	margin: 0;
+	font-weight: var(--font-weight-6);
+	font-size: var(--font-size-2);
+	background: transparent;
+	color: var(--text-1);
+}
+
+.callout-title-icon {
+	flex-shrink: 0;
+	width: 18px;
+	height: 18px;
+	color: var(--rc-color);
+}
+
+.callout-title-text {
+	flex: 1;
+	font-family: var(--font-system-ui);
+}
+
+.callout-content {
+	padding: 0 var(--gap) var(--gap) var(--gap);
+	color: var(--text-2);
+	line-height: var(--font-lineheight-3);
+}
+
+.callout-content > *:first-child {
+	margin-top: 0;
+}
+
+.callout-content > *:last-child {
+	margin-bottom: 0;
+}
+
+.callout-content p {
+	margin: 0 0 var(--gap-small) 0;
+}
+
+.callout-content p:last-child {
+	margin-bottom: 0;
+}
+
+.callout[data-collapsible='true'] {
+	cursor: pointer;
+}
+
+.callout-fold-icon {
+	width: 16px;
+	height: 16px;
+	color: var(--text-2);
+	transition: transform var(--transition-fast);
+	margin-left: auto;
+}
+
+details.callout[open] .callout-fold-icon {
+	transform: rotate(90deg);
+}
+
+details.callout summary.callout-title::-webkit-details-marker {
+	display: none;
+}
+
+details.callout summary.callout-title {
+	list-style: none;
+}
+
+/* Callout type colors */
+[data-callout='note'] {
+	--rc-color: var(--brand);
+}
+
+[data-callout='info'] {
+	--rc-color: var(--accent);
+}
+
+[data-callout='tip'] {
+	--rc-color: var(--cyan-4);
+}
+
+[data-callout='success'] {
+	--rc-color: var(--green-5);
+}
+
+[data-callout='warning'] {
+	--rc-color: var(--orange-5);
+}
+
+[data-callout='danger'],
+[data-callout='error'] {
+	--rc-color: var(--red-5);
+}
+
+[data-callout='important'] {
+	--rc-color: var(--purple-5);
+}
+
+[data-callout='quote'] {
+	--rc-color: var(--text-2);
+	font-style: italic;
+}
+
+@media (prefers-color-scheme: light) {
+	[data-callout='tip'] {
+		--rc-color: var(--cyan-6);
+	}
+
+	[data-callout='success'] {
+		--rc-color: var(--green-6);
+	}
+
+	[data-callout='warning'] {
+		--rc-color: var(--orange-6);
+	}
+
+	[data-callout='danger'],
+	[data-callout='error'] {
+		--rc-color: var(--red-6);
+	}
+
+	[data-callout='important'] {
+		--rc-color: var(--purple-6);
+	}
+}
+
+[color-scheme='light'] [data-callout='tip'] {
+	--rc-color: var(--cyan-6);
+}
+
+[color-scheme='light'] [data-callout='success'] {
+	--rc-color: var(--green-6);
+}
+
+[color-scheme='light'] [data-callout='warning'] {
+	--rc-color: var(--orange-6);
+}
+
+[color-scheme='light'] [data-callout='danger'],
+[color-scheme='light'] [data-callout='error'] {
+	--rc-color: var(--red-6);
+}
+
+[color-scheme='light'] [data-callout='important'] {
+	--rc-color: var(--purple-6);
+}
+
+/* Responsive adjustments for callouts */
+@media (--md-n-below) {
+	.callout {
+		margin: var(--gap-small) 0;
+		border-left-width: 3px;
+	}
+
+	.callout-title {
+		padding: var(--gap-small);
+		font-size: var(--font-size-1);
+	}
+
+	.callout-content {
+		padding: 0 var(--gap-small) var(--gap-small) var(--gap-small);
+	}
+}
+
+@media (--sm-n-below) {
+	.callout-title-icon {
+		width: 16px;
+		height: 16px;
+	}
 }
