@@ -1,14 +1,14 @@
 ---
-date: "2025-06-28"
+date: "2025-07-02"
 tags:
  - "Algorithms"
 keywords:
  - "Cuckoo filters"
  - "Probabilistic data structures"
 title: "Cuckoo Filters: Better Than Bloom Filters?"
-preview: "Cuckoo filters are a space-efficient probabilistic data structure that can answer the question: 'Is this element in the set — no or maybe?'"
+preview: "Meet the data structure that refuses trade-offs: identical footprint to Bloom, fewer false positives, and deletion that works without overhead. Grab all three!"
 series: "Grokking Bloom Filters"
-draft: true
+draft: false
 hero: /images/blog/010-cuckoo-filters/hero.jpg
 ---
 
@@ -20,7 +20,7 @@ In this article, I’ll describe a memory-efficient and deletion-friendly soluti
 
 ## Contents
 
-##  Cuckoo Filters
+## What are Cuckoo Filters?
 
 Cuckoo Filters are a clever step forward in the world of probabilistic data structures. [Introduced by Fan et al. in 2014](https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf), they were designed to overcome some of the major limitations of [classic Bloom Filters](https://maltsev.space/blog/008-bloom-filters-pt1), especially around memory efficiency and the lack of support for deletions.
 
@@ -109,8 +109,8 @@ graph TD
 Here's how the bucket choices are calculated:
 
 ```typescript
-const h1 = hash1(key); // Primary bucket
-const h2 = hash2(key); // Alternate bucket
+const h1 = hash1(key) % bucketCount; // Primary bucket
+const h2 = hash2(key) % bucketCount; // Alternate bucket
 ```
 
 Insertion picks either `h1` or `h2`, depending on which one has space. If both are full, one is chosen (often randomly), and the current occupant is kicked out and reinserted into its alternate bucket.
@@ -129,13 +129,30 @@ Now here’s the challenge: the classic Cuckoo Hashing algorithm relies on knowi
 
 To solve this, Fan et al. used a [clever modification of Cuckoo Hashing](https://www.cs.cmu.edu/~dga/papers/silt-sosp2011.pdf), called **partial-key Cuckoo Hashing**.
 
-The core idea remains the same: each element still has two possible buckets, just like in regular Cuckoo Hashing. But instead of computing both directly from the key, the second bucket is derived from the first bucket and the fingerprint, using a simple **XOR** operation.
+$$
+\begin{aligned}
+\operatorname{fp} &= \operatorname{fingerprint}(x) \\
+b_1 &= H(x) \bmod m \\
+b_2 &= \left( b_1 \oplus H(\operatorname{fp}) \right) \bmod m
+\end{aligned}
+$$
+
+Where:
+
+- $x$ is the key
+- $H$ is a hash function
+- $m$ is the bucket count
+- $\oplus$ denotes the XOR operation
+
+The code usually is very straightforward:
 
 ```typescript
 const fp = fingerprint(key)
-const b1 = hash(key)
-const b2 = b1 ^ hash(fp)
+const b1 = hash(key) % bucketCount
+const b2 = (b1 ^ hash(fp)) % bucketCount
 ```
+
+The core idea remains the same: each element still has two possible buckets, just like in regular Cuckoo Hashing. But instead of computing both directly from the key, the second bucket is derived from the first bucket and the fingerprint, using a simple bitwise **XOR** operation.
 
 > [!note]
 > **XOR**, short for "exclusive OR", is a simple binary operation: it compares two bits and returns `1` if they’re different, `0` if they’re the same. So:
@@ -152,7 +169,7 @@ b2 ^ hash(fp) == b1
 ```
 
 That means if you know one bucket and the fingerprint, you can always calculate the other bucket, in either direction.
-That’s what makes it awesome: the Cuckoo Filter doesn’t need to store or look up the original key at all. **Everything it needs to manage insertions, lookups, and evictions is right there in the table.**
+That’s what makes it awesome: the Cuckoo Filter doesn’t need to store or look up the original key at all. Everything it needs to manage insertions, lookups, and evictions is right there in the table.
 
 ## Basic Operations
 
@@ -172,7 +189,7 @@ To check if an element *might* be in the filter, you just need to check two buck
 ```typescript
 const fp = fingerprint('apple');
 const i1 = hash('apple') % bucketCount;
-const i2 = i1 ^ hash(fp);
+const i2 = (i1 ^ hash(fp)) % bucketCount;
 
 return buckets[i1].contains(fp) || buckets[i2].contains(fp);
 ```
@@ -200,7 +217,7 @@ To insert a new element:
 ```typescript
 const fp = fingerprint('apple');
 let i1 = hash('apple') % bucketCount;
-let i2 = i1 ^ hash(fp);
+let i2 = (i1 ^ hash(fp)) % bucketCount;
 
 if (buckets[i1].insert(fp) || buckets[i2].insert(fp)) return true;
 
@@ -210,7 +227,7 @@ let i = Math.random() < 0.5 ? i1 : i2;
 for (let n = 0; n < MAX_KICKS; n++) {
     const evictedFp = buckets[i].swapRandom(currentFp);
     currentFp = evictedFp;
-    i = i ^ hash(evictedFp);
+    i = (i ^ hash(evictedFp)) % bucketCount;
     if (buckets[i].insert(evictedFp)) return true;
 }
 
@@ -234,7 +251,7 @@ Here’s where Cuckoo Filters shine compared to Bloom Filters — **deletion doe
 ```typescript
 const fp = fingerprint('apple');
 const i1 = hash('apple') % bucketCount;
-const i2 = i1 ^ hash(fp);
+const i2 = (i1 ^ hash(fp)) % bucketCount;
 
 return buckets[i1].delete(fp) || buckets[i2].delete(fp);
 ```
