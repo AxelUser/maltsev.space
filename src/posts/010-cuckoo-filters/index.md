@@ -16,14 +16,15 @@ Bloom Filters are brilliant, they use minimal memory to support approximate memb
 
 Counting Bloom Filters (CBF) and d-left Counting Bloom Filters are supposed to solve this issue, but they come at a cost of greater memory overhead, **1.5** to **4** times more than classic Bloom Filters do.
 
-In this article, I’ll describe a memory-efficient and deletion-friendly solution.
+In this article, I’ll describe a memory-efficient and deletion-friendly solution. Meet the Cuckoo Filters!
 
-## Meet the Cuckoo Filters
+## Contents
+
+##  Cuckoo Filters
 
 Cuckoo Filters are a clever step forward in the world of probabilistic data structures. [Introduced by Fan et al. in 2014](https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf), they were designed to overcome some of the major limitations of [classic Bloom Filters](https://maltsev.space/blog/008-bloom-filters-pt1), especially around memory efficiency and the lack of support for deletions.
 
 What sets them apart is the internal structure. While Bloom Filters use a flat bit array, Cuckoo Filters adopt a more flexible **hash-table** layout with buckets and slots, and that subtle shift unlocks new capabilities. At first glance, they might remind you of the [d-left Counting Bloom Filters](https://maltsev.space/blog/009-counting-bloom-filters#d-left-counting-bloom-filter) we discussed earlier, since both use a hash-table-like structure, but with quite impressive mechanics.
-💡
 
 > [!NOTE]
 > If you’re unfamiliar with hash tables, here’s the short version: a hash table is a data structure that lets you store values and look them up efficiently using a key. Under the hood, it works like an array of **buckets**. A bucket can contain one or more key-value pairs in its **slots**. When you insert a key-value pair, the key is hashed — turned into a number — to figure out which bucket to use. A good hash function ensures that even similar keys produce very different hash values, which helps spread data evenly across buckets.
@@ -31,22 +32,22 @@ What sets them apart is the internal structure. While Bloom Filters use a flat b
 To help visualize the difference, let’s compare their memory layouts:
 
 ```svgbob
-Classic Bloom Filter
+                      Classic Bloom Filter
 
-(each cell = 1 bit)
-┌─┬─┬─┬─┬─┬─┬─┬─┬─┐
-│1│0│1│0│1│0│1│1│0│
-└─┴─┴─┴─┴─┴─┴─┴─┴─┘
- 0 1 2 3 4 5 6 7 8
+                      (each cell = 1 bit)
+┌───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┐
+│   1   │   0   │   1   │   0   │   1   │   0   │   1   │   1   │
+└───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┘
+    0       1       2       3       4       5       6       7
 
-Cuckoo Filter
+                        Cuckoo Filter
 
-(4 buckets × 2 slots, each slot = 8-bit fingerprint)
-┌────────────┬────────────┬────────────┬────────────┐
-│ fp: 0xA7   │ fp: 0x1C   │ fp: 0xFF   │   empty    │
-│ fp: 0x2B   │   empty    │ fp: 0x3D   │ fp: 0xA7   │
-└────────────┴────────────┴────────────┴────────────┘
-   Bucket 0     Bucket 1     Bucket 2     Bucket 3
+      (4 buckets × 2 slots, each slot = 8-bit fingerprint)
+┌───────────────┬───────────────┬───────────────┬───────────────┐
+│ [slot 0] 0xA7 │ [slot 0] 0x1C │ [slot 0] 0xFF │ [slot 0] null │
+│ [slot 1] 0x2B │ [slot 1] null │ [slot 1] 0x3D │ [slot 1] 0xA7 │
+└───────────────┴───────────────┴───────────────┴───────────────┘
+    Bucket 0        Bucket 1        Bucket 2        Bucket 3
 ```
 
 - In a Bloom Filter, every bit position is shared by multiple elements. Once a bit is set to `1`, there's no way to know who set it.
@@ -76,6 +77,35 @@ When inserting a new element:
 
 This behavior is inspired by the cuckoo bird, which famously lays its eggs in other birds' nests, displacing the existing ones — hence the name.
 
+```mermaid
+graph TD
+    A["New Element: 'orange'"] --> B["Calculate h1('orange') = Bucket 2<br/>Calculate h2('orange') = Bucket 5"]
+    
+    B --> C{"Check Bucket 2<br/>and Bucket 5"}
+    C -->|"Both full"| D["Pick random bucket: Bucket 2<br/>Evict existing element: 'apple'"]
+    C -->|"Space available"| E["Insert 'orange'<br/>✓ Success"]
+    
+    D --> F["Insert 'orange' into Bucket 2<br/>Now need to relocate 'apple'"]
+    F --> G["Calculate alternate for 'apple'<br/>h2('apple') = Bucket 7"]
+    
+    G --> H{"Check Bucket 7"}
+    H -->|"Space available"| I["Insert 'apple' into Bucket 7<br/>✓ Chain resolved"]
+    H -->|"Full"| J["Evict element from Bucket 7<br/>Continue eviction chain..."]
+    
+    J --> K["Repeat process until:<br/>• Empty slot found<br/>• Max kicks reached<br/>• Cycle detected"]
+    
+    K --> L["Success: All elements placed"]
+    K --> M["Failure: Table too full<br/>Need to resize"]
+    
+    style A fill:#5d5fef,color:#f8f9fa
+    style E fill:#22d3ee,color:#212529
+    style I fill:#22d3ee,color:#212529
+    style L fill:#22d3ee,color:#212529
+    style M fill:#dc2626,color:#f8f9fa
+    style C fill:#f59e0b,color:#212529
+    style H fill:#f59e0b,color:#212529
+```
+
 Here's how the bucket choices are calculated:
 
 ```typescript
@@ -102,7 +132,7 @@ To solve this, Fan et al. used a [clever modification of Cuckoo Hashing](https:/
 The core idea remains the same: each element still has two possible buckets, just like in regular Cuckoo Hashing. But instead of computing both directly from the key, the second bucket is derived from the first bucket and the fingerprint, using a simple **XOR** operation.
 
 ```typescript
-const f = fingerprint(key)
+const fp = fingerprint(key)
 const b1 = hash(key)
 const b2 = b1 ^ hash(fp)
 ```
@@ -175,11 +205,13 @@ let i2 = i1 ^ hash(fp);
 if (buckets[i1].insert(fp) || buckets[i2].insert(fp)) return true;
 
 // Eviction loop
+let currentFp = fp;
 let i = Math.random() < 0.5 ? i1 : i2;
 for (let n = 0; n < MAX_KICKS; n++) {
- const evictedFp = buckets[i].swapRandom(fp);
- i = i ^ hash(evictedFp);
- if (buckets[i].insert(evictedFp)) return true;
+    const evictedFp = buckets[i].swapRandom(currentFp);
+    currentFp = evictedFp;
+    i = i ^ hash(evictedFp);
+    if (buckets[i].insert(evictedFp)) return true;
 }
 
 // Table is too full
@@ -292,7 +324,7 @@ Now let’s see a bad example when `m` is 12 (not a power of two):
 | 3 | `xor1 = i1 ^ f` | 15 | 1111 | XOR before modulo |
 | 4 | `i2 = xor1 % 12` | 3 | 0011 | The second bucket used at insert |
 | 5 | `xor2 = i2 ^ f` | 10 | 1010 | Recompute i1 before modulo |
-| 6 | `i1' = raw2 mod 12` | **10** | 1010 | Should return to 6, but does not |
+| 6 | `i1' = xor2 % 12` | **10** | 1010 | Should return to 6, but does not |
 
 ## Load Factor in Cuckoo Filter
 
