@@ -410,4 +410,4 @@ Counting Bloom Filters are a natural extension of the classic Bloom Filter — t
 
 It's a bit sad, honestly. There's no simple way to preserve the elegance of the original Bloom Filter and still get reliable deletions. Every attempt to fix that tends to compromise either performance or memory efficiency.
 
-That said, the alternatives — like Cuckoo Filters and the newer Ribbon Filters — are surprisingly elegant in their own right. They're more complex under the hood, but if you're working with modern libraries, that complexity is abstracted away. For most real-world use cases where deletions matter, these filters are excellent, first-class replacements for classic Bloom Filters.
+That said, the alternatives — like [Cuckoo Filters](https://maltsev.space/blog/010-cuckoo-filters) and the newer Ribbon Filters — are surprisingly elegant in their own right. They're more complex under the hood, but if you're working with modern libraries, that complexity is abstracted away. For most real-world use cases where deletions matter, these filters are excellent, first-class replacements for classic Bloom Filters.

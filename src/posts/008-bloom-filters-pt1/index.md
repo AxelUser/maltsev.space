@@ -194,7 +194,7 @@ graph TD
     style P fill:#f59e0b,color:#212529
 ```
 
-Of course, for a quick and dirty workaround, an engineer might introduce a second "blacklist" Bloom filter to track deletions. When checking membership, an element would only be considered present if it's in the main filter **and** not in the deletion filter. But this comes with its own trade-offs — and we'll cover better solutions later.
+Of course, for a quick and dirty workaround, an engineer might introduce a second "blacklist" Bloom filter to track deletions. When checking membership, an element would only be considered present if it's in the main filter **and** not in the deletion filter. But sometimes this comes with its own trade-offs — and I'll cover better solutions later, like [Counting Bloom Filters](https://maltsev.space/blog/009-counting-bloom-filters) and [Cuckoo Filters](https://maltsev.space/blog/010-cuckoo-filters).
 
 ### Can It Scale?
 
