@@ -259,6 +259,27 @@ return buckets[i1].delete(fp) || buckets[i2].delete(fp);
 > [!warning]
 > While deletions are supported, deleting an element that was **never inserted** may still remove a matching fingerprint from another item, just like in Counting Bloom Filters.
 
+## Load Factor in Cuckoo Filter
+
+In any open-addressing hash table, you keep an eye on a simple but important ratio:
+
+$$
+\text{load factor } (\alpha) \;=\; 
+\frac{\text{number of stored items }\,n}
+     {\text{number of available slots }\,m}
+$$
+
+The **load factor (α)** is the fraction of storage slots that are already in use. It first appeared in ordinary hash tables, where you measure how many key/value pairs are sitting in the array of buckets. A low α means plenty of free space, so lookups and inserts are cheap. As α creeps toward 1.0, collisions pile up, probes get longer, and you eventually have to resize the table.
+
+Cuckoo Filters inherit the same idea, but each *bucket* holds several short fingerprints. You count *all* occupied fingerprint slots and divide by the total number of slots across every bucket:
+
+$$
+\alpha_{\text{CF}} \;=\;
+\frac{\text{occupied slots}}{\text{buckets} \times \text{slots per bucket}}
+$$
+
+With 4-slot buckets, you can usually push α as high as ≈0.95 before inserts start to fail.
+
 ## What Are the Benefits?
 
 Cuckoo Filters come with several practical advantages, especially when you're aiming for **low false positive rates**.
@@ -343,26 +364,6 @@ Now let’s see a bad example when `m` is 12 (not a power of two):
 | 5 | `xor2 = i2 ^ f` | 10 | 1010 | Recompute i1 before modulo |
 | 6 | `i1' = xor2 % 12` | **10** | 1010 | Should return to 6, but does not |
 
-## Load Factor in Cuckoo Filter
-
-In any open-addressing hash table, you keep an eye on a simple but important ratio:
-
-$$
-\text{load factor } (\alpha) \;=\; 
-\frac{\text{number of stored items }\,n}
-     {\text{number of available slots }\,m}
-$$
-
-The **load factor (α)** is the fraction of storage slots that are already in use. It first appeared in ordinary hash tables, where you measure how many key/value pairs are sitting in the array of buckets. A low α means plenty of free space, so lookups and inserts are cheap. As α creeps toward 1.0, collisions pile up, probes get longer, and you eventually have to resize the table.
-
-Cuckoo Filters inherit the same idea, but each *bucket* holds several short fingerprints. You count *all* occupied fingerprint slots and divide by the total number of slots across every bucket:
-
-$$
-\alpha_{\text{CF}} \;=\;
-\frac{\text{occupied slots}}{\text{buckets} \times \text{slots per bucket}}
-$$
-
-With 4-slot buckets, you can usually push α as high as ≈0.95 before inserts start to fail.
 
 ## Fingerprint Size and Error Rate
 
