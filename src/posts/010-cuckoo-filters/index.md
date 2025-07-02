@@ -12,26 +12,47 @@ draft: true
 hero: /images/blog/010-cuckoo-filters/hero.jpg
 ---
 
-Bloom Filters are brilliant, they use minimal memory to support approximate membership query operations, i.e., answering what elements may be represented in a set, or what absolutely not. Their simplicity is both their strength and weakness. As I’ve described in a previous article about Counting Bloom Filter, it’s not trivial to support deletion and preserve their guarantees of absence of false-negative results, i.e., telling what elements are not in a set.
+Bloom Filters are brilliant, they use minimal memory to support approximate membership query operations, i.e., answering what elements may be represented in a set, or what absolutely not. Their simplicity is both their strength and weakness. As I’ve described in a [previous article about Counting Bloom Filter](https://maltsev.space/blog/009-counting-bloom-filters), it’s not trivial to support deletion and preserve their guarantees of absence of false-negative results, i.e., telling what elements are not in a set.
 
-Counting Bloom Filters (CBF) and d-left Counting Bloom Filters are supposed to solve this issue, but they come at a cost of greater memory overhead, 1.5 to 4 times more than classic Bloom Filters do.
+Counting Bloom Filters (CBF) and d-left Counting Bloom Filters are supposed to solve this issue, but they come at a cost of greater memory overhead, **1.5** to **4** times more than classic Bloom Filters do.
 
-In this article, I’ll describe a memory-efficient and deletion-friendly solution. Meet the Cuckoo Filters!
+In this article, I’ll describe a memory-efficient and deletion-friendly solution.
 
-## Contents
+## Meet the Cuckoo Filters
 
-## Overview
+Cuckoo Filters are a clever step forward in the world of probabilistic data structures. [Introduced by Fan et al. in 2014](https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf), they were designed to overcome some of the major limitations of [classic Bloom Filters](https://maltsev.space/blog/008-bloom-filters-pt1), especially around memory efficiency and the lack of support for deletions.
 
-Cuckoo Filters are a clever step forward in the world of probabilistic data structures. Introduced by Fan et al. in 2014, they were designed to overcome some of the major limitations of classic Bloom Filters, especially around memory efficiency and the lack of support for deletions.
+What sets them apart is the internal structure. While Bloom Filters use a flat bit array, Cuckoo Filters adopt a more flexible **hash-table** layout with buckets and slots, and that subtle shift unlocks new capabilities. At first glance, they might remind you of the [d-left Counting Bloom Filters](https://maltsev.space/blog/009-counting-bloom-filters#d-left-counting-bloom-filter) we discussed earlier, since both use a hash-table-like structure, but with quite impressive mechanics.
+💡
 
-At first glance, they might remind you of the d-left Counting Bloom Filters we discussed earlier, since both use a hash-table-like structure. But there’s a twist.
+> [!NOTE]
+> If you’re unfamiliar with hash tables, here’s the short version: a hash table is a data structure that lets you store values and look them up efficiently using a key. Under the hood, it works like an array of **buckets**. A bucket can contain one or more key-value pairs in its **slots**. When you insert a key-value pair, the key is hashed — turned into a number — to figure out which bucket to use. A good hash function ensures that even similar keys produce very different hash values, which helps spread data evenly across buckets.
 
-> [!tip]
-> If you’re unfamiliar with hash tables, here’s the short version: a hash table is a data structure that lets you store values and look them up efficiently using a key.
->
-> Under the hood, it works like an array of **buckets**. A bucket can contain one or more key-value pairs in its **slots**.
->
-> When you insert a key-value pair, the key is hashed — turned into a number — to figure out which bucket to use. A good hash function ensures that even similar keys produce very different hash values, which helps spread data evenly across buckets.
+To help visualize the difference, let’s compare their memory layouts:
+
+```svgbob
+Classic Bloom Filter
+
+(each cell = 1 bit)
+┌─┬─┬─┬─┬─┬─┬─┬─┬─┐
+│1│0│1│0│1│0│1│1│0│
+└─┴─┴─┴─┴─┴─┴─┴─┴─┘
+ 0 1 2 3 4 5 6 7 8
+
+Cuckoo Filter
+
+(4 buckets × 2 slots, each slot = 8-bit fingerprint)
+┌────────────┬────────────┬────────────┬────────────┐
+│ fp: 0xA7   │ fp: 0x1C   │ fp: 0xFF   │   empty    │
+│ fp: 0x2B   │   empty    │ fp: 0x3D   │ fp: 0xA7   │
+└────────────┴────────────┴────────────┴────────────┘
+   Bucket 0     Bucket 1     Bucket 2     Bucket 3
+```
+
+- In a Bloom Filter, every bit position is shared by multiple elements. Once a bit is set to `1`, there's no way to know who set it.
+- In a Cuckoo Filter, we store compact hashes of the original item, which are called **fingerprints**.
+
+Let’s see how Cuckoo Filters work under the hood and the main concepts used in their design.
 
 ## Cuckoo Hashing and Cuckoo Tables
 
@@ -44,7 +65,9 @@ Classic hash tables handle this with techniques like:
 
 Cuckoo Hashing, however, takes a very different approach.
 
-In Cuckoo Hashing, each element has **two possible buckets** where it can be stored. These are determined by two different hash functions. When inserting a new element:
+In Cuckoo Hashing, each element has **two possible buckets** where it can be stored. Two different hash functions determine these. 
+
+When inserting a new element:
 
 1. You first try placing it in one of its two candidate buckets.
 2. If both are full, the algorithm **evicts** a randomly selected existing element from one of them.
@@ -70,11 +93,11 @@ Hash tables work differently from Bloom Filters, Cuckoo Filters, and other appro
 
 But Cuckoo Filter aims to beat Bloom Filter at its own game—fast, compact membership checks with low memory use. Storing full keys would waste space and defeat that purpose. So what’s the alternative?
 
-In the article about **Counting Bloom Filters**, I mentioned a variant called the **d-left Counting Bloom Filter**. Quick refresher: it’s a hash-table-like structure that doesn’t store full keys either. Instead, it stores **fingerprints** — small, fixed-size pieces of a hashed key, like 1 byte (8 bits). Fingerprints are compact and help keep the structure lightweight, so they are an excellent choice for the Cuckoo Filter.
+In the article about **Counting Bloom Filters**, I mentioned a variant called the **d-left Counting Bloom Filter**. TL;DR: it’s a hash-table-like structure that doesn’t store full keys either. Instead, it stores **fingerprints** — small, fixed-size pieces of a hashed key, like 1 byte (8 bits). Fingerprints are compact and help keep the structure lightweight, so they are an excellent choice for the Cuckoo Filter.
 
 Now here’s the challenge: the classic Cuckoo Hashing algorithm relies on knowing the **entire key** when moving elements around. But in a Cuckoo Filter, we **don’t store the key at all**, only the fingerprint. That means the original eviction logic won’t work out of the box.
 
-To solve this, Fan et al. proposed a clever twist on Cuckoo Hashing — even before they introduced the Cuckoo Filter itself. It's called **partial-key Cuckoo Hashing**.
+To solve this, Fan et al. used a [clever modification of Cuckoo Hashing](https://www.cs.cmu.edu/~dga/papers/silt-sosp2011.pdf), called **partial-key Cuckoo Hashing**.
 
 The core idea remains the same: each element still has two possible buckets, just like in regular Cuckoo Hashing. But instead of computing both directly from the key, the second bucket is derived from the first bucket and the fingerprint, using a simple **XOR** operation.
 
@@ -84,7 +107,7 @@ const b1 = hash(key)
 const b2 = b1 ^ hash(fp)
 ```
 
-> [!tip]
+> [!note]
 > **XOR**, short for "exclusive OR", is a simple binary operation: it compares two bits and returns `1` if they’re different, `0` if they’re the same. So:
 >
 > - `0 ^ 0 = 0`
@@ -124,7 +147,7 @@ const i2 = i1 ^ hash(fp);
 return buckets[i1].contains(fp) || buckets[i2].contains(fp);
 ```
 
-> [!info]
+> [!tip]
 > Don’t forget that, just like a Bloom filter, this is a **probabilistic check**. You may get a false positive, but never a false negative.
 
 ### Insertion
@@ -201,12 +224,13 @@ For example, this empirical analysis is provided by the authors *(all filters si
 
 So, not only do Cuckoo Filters match the false positive rate of Bloom Filters, but they often beat them by **using less memory**.
 
-> [!tip] **Wait — what’s “semi-sorting”?**
+> [!note] **Wait — what’s “semi-sorting”?**
+>
 > In the standard Cuckoo-Filter setup, a bucket holds **4 fingerprints of 4 bits each** — 16 bits total. But look-ups only check “does this fingerprint exist?”, so the *order* of those four values doesn’t matter.
 >
 > The authors sorted each bucket’s fingerprints and listed every possible sorted pattern — just **3876 unique combinations**, far fewer than the 65536 raw bit-patterns. A bucket now stores a **12-bit index** into that pre-computed table instead of the full 16 bits.
 >
-> Savings are roughly **1 bit per element** with zero hit to query speed and only a tiny extra cost when inserting or deleting due to encoding/decoding gymnastics.
+> Savings are ****roughly **1 bit per element** with zero hit to query speed and only a tiny extra cost when inserting or deleting due to encoding/decoding gymnastics.
 
 One of the biggest wins is that Cuckoo Filters support **native deletions:** no workarounds, no tombstones or full rebuilds. To delete an element, you just locate its fingerprint in one of the two candidate buckets and remove it. Simple as that.
 
@@ -246,7 +270,7 @@ i_2 &= \left( i_1 \oplus H\!\left(\operatorname{fp}(x)\right) \right) \bmod m
 \end{aligned}
 $$
 
-The paper *Birdwatching: False Negatives in Cuckoo Filters* shows that this rule is **provably safe only when the bucket count m equals 2ᵏ**. If m is not a power of two, the final `mod m` strips high-order bits from the XOR result, breaking the reversible link between `i1` and `i2`. During long eviction chains, a fingerprint can slide into a third, illegal bucket and later disappear from both legal locations, so we can get a false negative result. The authors measured up to a **10 % false-negative rate at 95 % load** in such filters.
+The paper [*Birdwatching: False Negatives in Cuckoo Filters*](https://people.bu.edu/staro/cuckoo_filter_workshop_paper.pdf) shows that this rule is **provably safe only when the bucket count m equals 2ᵏ**. If m is not a power of two, the final `mod m` strips high-order bits from the XOR result, breaking the reversible link between `i1` and `i2`. During long eviction chains, a fingerprint can slide into a third, illegal bucket and later disappear from both legal locations, so we can get a false negative result. The authors measured up to a **10 % false-negative rate at 95 % load** in such filters.
 
 Let’s see it in action. First, I’ll go through a good example when `m` is 16 (a power of two):
 
@@ -275,7 +299,7 @@ Now let’s see a bad example when `m` is 12 (not a power of two):
 In any open-addressing hash table, you keep an eye on a simple but important ratio:
 
 $$
-\text{load factor } (\alpha) \;=\;
+\text{load factor } (\alpha) \;=\; 
 \frac{\text{number of stored items }\,n}
      {\text{number of available slots }\,m}
 $$
@@ -297,7 +321,7 @@ Unlike a Bloom filter, a Cuckoo Filter’s fingerprint length is chosen almost s
 
 During a negative lookup, we compare the query fingerprint with the at most `2b` fingerprints that live in the two candidate buckets (`b` slots each).
 
-Each comparison matches by pure chance with probability $2^{-f}$, the upper bound on the false-positive probability ε is
+Each comparison matches by pure chance with probability $2^{-f}$, the **upper bound** on the false-positive probability ε is
 
 $$
 \epsilon \le \frac{2\,b}{2^{f}} \tag{1}
@@ -309,23 +333,37 @@ Where:
 - **`ε`** is the desired false positive rate
 - **`b`** is bucket size (typically 4)
 
-Rearranging (1) gives the **fingerprint size lower bound**
+Rearranging (1) gives the **fingerprint size lower bound**
 
 $$
-f \ge \left\lceil \log_{2}\!\frac{1}{\epsilon} + \log_{2}(2b) \right\rceil \tag{2}
+\varepsilon \le \frac{2b}{2^{f}}\;\;\Longrightarrow\;\;f \ge \log_{2}\!\frac{2b}{\varepsilon}        \;=\;        \log_{2}\!\frac{1}{\varepsilon}        + \log_{2}(2b) \tag{2}
 $$
 
-In practice, 13 bits (ε≈0.1%) or 10 bits (ε≈1%) are sufficient when **`b = 4`.**
+And because *f* must be an **integer number of bits**, we round up
+
+$$
+f \ge \left\lceil \log_{2}\!\frac{1}{\epsilon} + \log_{2}(2b) \right\rceil \tag{3}
+$$
+
+In practice, you can choose between **8 bits**, which are nicely aligned to 1 byte, or **12 bits,** as in the original paper. I also saw that some libraries are using **16 bits** per fingerprint. Those are sufficient when **`b = 4`.**
+
+| fingerprint length (f) | $\varepsilon_{\text{bound}} = 8/2^{f}$ |
+| --- | --- |
+| **8 bits** | $8/256 = 0.03125 \;(\;3.13\%\;)$ |
+| **12 bits** | $8/4096 = 0.001953\;(\;0.195\%\;)$ |
+| **16 bits** | $8/65 536 = 0.00012207\;(\;0.0122\%\;)$ |
 
 ## Final thoughts
 
-I still remember the light-bulb moment when I first saw a Cuckoo Filter delete an element without ballooning the data structure. “Wait, you can keep Bloom-style compactness *and* erase things?”—that felt like cheating in the best possible way. The secret sauce is XOR. I’ve always loved that bit-flip operator: it looks so simple, almost sneaky, yet its “reverse yourself to undo” trick borders on magic.
+I still remember how excited I was when I learned that a Cuckoo Filter could delete elements without blowing up the data structure like other Bloom filter variants. What also surprised me was how those bucket-hopping insertions seemed unreliable on paper, but they work remarkably well in practice.
+And that clever XOR trick! I’ve always had a soft spot for the bit-flip operator. Back when I studied Boolean algebra, XOR felt confusing and weirdly unnecessary. But once I understood that it could reverse itself to undo an operation, it felt like magic.
 
-So here’s the short take-away: a Cuckoo Filter gives you Bloom-level space, real deletions, and two quick bucket checks for every lookup. In return, inserts get fussier—too high a load (around 95 %), and they can fail unless you resize. If you can keep an eye on that load factor, it’s usually worth the trade.
+So here’s the short takeaway: Cuckoo Filters offer Bloom-level space efficiency, support real deletions, and need only two bucket checks per lookup. In return, inserts can get a bit tricky—once the filter reaches around 95% load, they might fail unless you resize. But if you keep an eye on the load factor, it’s a trade-off worth making.
 
-And if you are fascinated by XOR like I am, Cuckoo Filters aren’t the only one. There’s a whole family of “invertible Bloom filters” that push this idea even further. I can’t wait to explore those next!
+And if you’re into XOR like I am—good news! Cuckoo Filters aren’t the only ones using it. There’s a whole family of “invertible Bloom filters” that takes this idea even further. I’m really looking forward to exploring those next.
 
-## References
+## Academic Researches
 
-- [https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf](https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf)
-- [https://www.cs.cmu.edu/~dga/papers/silt-sosp2011.pdf](https://www.cs.cmu.edu/~dga/papers/silt-sosp2011.pdf)
+- [Cuckoo Filter: Practically Better Than Bloom](https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf)
+- [SILT: A Memory-Efficient, High-Performance Key-Value Store](https://www.cs.cmu.edu/~dga/papers/silt-sosp2011.pdf)
+- [Birdwatching: False Negatives In Cuckoo Filters](https://people.bu.edu/staro/cuckoo_filter_workshop_paper.pdf)
