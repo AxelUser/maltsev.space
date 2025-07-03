@@ -19,20 +19,20 @@
 		<link href="../_app/immutable/assets/0.B79WhaIa.css" rel="stylesheet">
 		<link href="../_app/immutable/assets/posts.BYtmJbQG.css" rel="stylesheet">
 		<link href="../_app/immutable/assets/7.BiTSSqz6.css" rel="stylesheet">
-		<link rel="modulepreload" href="../_app/immutable/entry/start.C6lEtxZC.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/Bg9XyIHb.js">
+		<link rel="modulepreload" href="../_app/immutable/entry/start.D6bxC_JS.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/C9LkSZE7.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/C93sEKZr.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/CYgJF_JY.js">
-		<link rel="modulepreload" href="../_app/immutable/entry/app.DPOCfUBF.js">
+		<link rel="modulepreload" href="../_app/immutable/entry/app.BXmOHjFZ.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/Dp1pzeXC.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/CEYJ1X-9.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/TDdWhIBO.js">
-		<link rel="modulepreload" href="../_app/immutable/nodes/0.BUH2YgcK.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/0.BJqjFkJ7.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/BAtPURNs.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/DPOUz0k3.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/B1Lznyga.js">
-		<link rel="modulepreload" href="../_app/immutable/nodes/7.BCta9JFu.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/CZKbbnH_.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/7.B0rZ8G9U.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/De878IgY.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/UdnIfJM_.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/a1pPPDLw.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/DNSHY1Ls.js">
@@ -249,19 +249,19 @@
 <span class="line"><span>|                                         |          |                |               |               |       |            |       |       |             |</span></span>
 <span class="line"><span>|          SimpleFactory_SequentialAccess | 10000000 | 374,137.631 us | 1,675.7705 us | 1,399.3442 us |  1.00 | 38000.0000 |     - |     - | 240000000 B |</span></span>
 <span class="line"><span>|          CachedFactory_SequentialAccess | 10000000 | 307,281.414 us | 1,939.4985 us | 1,719.3149 us |  0.82 |          - |     - |     - |           - |</span></span>
-<span class="line"><span>| CompiledGenericFactory_SequentialAccess | 10000000 | 144,997.830 us |   715.7528 us |   634.4962 us |  0.39 |          - |     - |     - |       334 B |</span></span></code></pre><!----> <p>Speed of invocation has been dramatically increased, compared to the previous dictionary-based solution. Now we may use this solution with interface defined earlier, gaining all benefits of generic type lookup, which give us the runtime itself.</p> <h2 id="conclusion"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#conclusion">#</a>Conclusion</h2> <p>All these solutions are powered by the knowledge of runtime internals, which may increase the difficulty of understanding how much benefits we receive. <strong>When messing with such hacks don’t hesitate to check the performance incrementally via benchmarking</strong>. I hope that my examples proves you, that this process isn’t much harder than writing a unit-tests, thanks to BenchmarkDotNet!</p> <p>All provided solutions are quite specialized for the task of caching values, which don’t depend on dynamic parameters. In other words all values can be initialized during the application start-up. If that is your case, you may use provided solutions and I hope you will improve the overall performance of your program.</p> <h2 id="references"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#references">#</a>References</h2> <ol><li><a href="https://codeblog.jonskeet.uk/2017/04/26/surprise-creating-an-instance-of-an-open-generic-type/" rel="nofollow">How to create open generic type at runtime</a></li> <li><a href="https://alexandrnikitin.github.io/blog/dotnet-generics-under-the-hood/" rel="nofollow">Generic types under the hood</a></li> <li><a href="https://benchmarkdotnet.org/" rel="nofollow">BenchmarkDotNet website</a></li></ol><!----></div> <footer class="post-footer svelte-yczkrf"><div class="post-navigation svelte-yczkrf"><!--[--><a href="/blog" class="button primary medium svelte-1edpa7d"><!---->← Back to all posts<!----></a><!--]--><!----></div> <div class="card default svelte-1bwdm5p"><div class="share-message svelte-yczkrf">Enjoyed this post? Share it with the universe!</div> <div class="share-buttons svelte-yczkrf"><a class="link default share-link twitter svelte-blzdii" target="_blank" rel="noopener noreferrer" href="https://twitter.com/intent/tweet?text=Unlocking%20the%20Power%20of%20Generics%3A%20Simulating%20Dictionary%20Behavior%20in%20C%23&amp;url=" aria-label="Share on Twitter"><!---->Twitter<!----> <!--[!--><!--]--></a><!----> <a class="link default share-link linkedin svelte-blzdii" target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/shareArticle?mini=true&amp;title=Unlocking%20the%20Power%20of%20Generics%3A%20Simulating%20Dictionary%20Behavior%20in%20C%23&amp;url=" aria-label="Share on LinkedIn"><!---->LinkedIn<!----> <!--[!--><!--]--></a><!----> <a class="link default share-link facebook svelte-blzdii" target="_blank" rel="noopener noreferrer" href="https://www.facebook.com/sharer/sharer.php?u=" aria-label="Share on Facebook"><!---->Facebook<!----> <!--[!--><!--]--></a><!----></div><!----> <!--[!--><!--]--></div><!----></footer></article><!----><!----></div></main> <footer class="svelte-1mbgpkc"><div class="space-container"><p class="space-text-small">© 2025 | Aleksey Maltsev</p></div></footer><!----></div><!----><!--]--> <!--[!--><!--]--><!--]-->
+<span class="line"><span>| CompiledGenericFactory_SequentialAccess | 10000000 | 144,997.830 us |   715.7528 us |   634.4962 us |  0.39 |          - |     - |     - |       334 B |</span></span></code></pre><!----> <p>Speed of invocation has been dramatically increased, compared to the previous dictionary-based solution. Now we may use this solution with interface defined earlier, gaining all benefits of generic type lookup, which give us the runtime itself.</p> <h2 id="conclusion"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#conclusion">#</a>Conclusion</h2> <p>All these solutions are powered by the knowledge of runtime internals, which may increase the difficulty of understanding how much benefits we receive. <strong>When messing with such hacks don’t hesitate to check the performance incrementally via benchmarking</strong>. I hope that my examples proves you, that this process isn’t much harder than writing a unit-tests, thanks to BenchmarkDotNet!</p> <p>All provided solutions are quite specialized for the task of caching values, which don’t depend on dynamic parameters. In other words all values can be initialized during the application start-up. If that is your case, you may use provided solutions and I hope you will improve the overall performance of your program.</p> <h2 id="references"><a class="header-anchor" aria-hidden="true" tabindex="-1" href="#references">#</a>References</h2> <ol><li><a href="https://codeblog.jonskeet.uk/2017/04/26/surprise-creating-an-instance-of-an-open-generic-type/" rel="nofollow">How to create open generic type at runtime</a></li> <li><a href="https://alexandrnikitin.github.io/blog/dotnet-generics-under-the-hood/" rel="nofollow">Generic types under the hood</a></li> <li><a href="https://benchmarkdotnet.org/" rel="nofollow">BenchmarkDotNet website</a></li></ol><!----></div> <footer class="post-footer svelte-yczkrf"><div class="post-navigation svelte-yczkrf"><!--[--><a href="/blog" class="button primary medium svelte-1edpa7d"><!---->← Back to all posts<!----></a><!--]--><!----></div> <!--[!--><!--]--> <div class="card default svelte-1bwdm5p"><div class="share-message svelte-yczkrf">Enjoyed this post? Share it with the universe!</div> <div class="share-buttons svelte-yczkrf"><a class="link default share-link twitter svelte-blzdii" target="_blank" rel="noopener noreferrer" href="https://twitter.com/intent/tweet?text=Unlocking%20the%20Power%20of%20Generics%3A%20Simulating%20Dictionary%20Behavior%20in%20C%23&amp;url=" aria-label="Share on Twitter"><!---->Twitter<!----> <!--[!--><!--]--></a><!----> <a class="link default share-link linkedin svelte-blzdii" target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/shareArticle?mini=true&amp;title=Unlocking%20the%20Power%20of%20Generics%3A%20Simulating%20Dictionary%20Behavior%20in%20C%23&amp;url=" aria-label="Share on LinkedIn"><!---->LinkedIn<!----> <!--[!--><!--]--></a><!----> <a class="link default share-link facebook svelte-blzdii" target="_blank" rel="noopener noreferrer" href="https://www.facebook.com/sharer/sharer.php?u=" aria-label="Share on Facebook"><!---->Facebook<!----> <!--[!--><!--]--></a><!----></div><!----> <!--[!--><!--]--></div><!----></footer></article><!----><!----></div></main> <footer class="svelte-1mbgpkc"><div class="space-container"><p class="space-text-small">© 2025 | Aleksey Maltsev</p></div></footer><!----></div><!----><!--]--> <!--[!--><!--]--><!--]-->
 			
 			<script>
 				{
-					__sveltekit_1lg0y7l = {
+					__sveltekit_1f0ap9s = {
 						base: new URL("..", location).pathname.slice(0, -1)
 					};
 
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("../_app/immutable/entry/start.C6lEtxZC.js"),
-						import("../_app/immutable/entry/app.DPOCfUBF.js")
+						import("../_app/immutable/entry/start.D6bxC_JS.js"),
+						import("../_app/immutable/entry/app.BXmOHjFZ.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element, {
 							node_ids: [0, 7],
