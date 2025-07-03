@@ -9,28 +9,28 @@
 	<div class="tech-orbit orbit-1">
 		<div class="tech-moon position-top">
 			<div class="tech-icon">
-				<SvelteIcon size="24px" />
+				<CSharpIcon size="24px" />
 			</div>
 		</div>
 	</div>
 	<div class="tech-orbit orbit-2">
 		<div class="tech-moon position-right">
 			<div class="tech-icon">
-				<ReactIcon size="24px" />
+				<KotlinIcon size="24px" />
 			</div>
 		</div>
 	</div>
 	<div class="tech-orbit orbit-3">
 		<div class="tech-moon position-bottom">
 			<div class="tech-icon">
-				<KotlinIcon size="24px" />
+				<ReactIcon size="24px" />
 			</div>
 		</div>
 	</div>
 	<div class="tech-orbit orbit-4">
 		<div class="tech-moon position-left">
 			<div class="tech-icon">
-				<CSharpIcon size="24px" />
+				<SvelteIcon size="24px" />
 			</div>
 		</div>
 	</div>
