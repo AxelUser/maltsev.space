@@ -109,6 +109,10 @@
 			<Button href="/blog">← Back to all posts</Button>
 		</div>
 
+		{#if data.series && data.series.length > 0}
+			<SeriesBanner posts={data.series} />
+		{/if}
+
 		<Card>
 			<div class="share-message">Enjoyed this post? Share it with the universe!</div>
 			<div class="share-buttons">
