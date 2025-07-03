@@ -14,7 +14,7 @@ hero: /images/blog/009-counting-bloom-filters/hero.jpg
 ---
 
 <script>
-	import { Scrollbox } from '$lib/components';
+    import { Scrollbox } from '$lib/components';
 </script>
 
 Bloom filters are incredibly space-efficient probabilistic data structures, perfect for answering a simple question: "Is this element in the set — no or maybe?"

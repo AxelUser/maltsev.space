@@ -12,6 +12,10 @@ draft: false
 hero: /images/blog/010-cuckoo-filters/hero.jpg
 ---
 
+<script>
+    import { Scrollbox } from '$lib/components';
+</script>
+
 Bloom Filters are brilliant, they use minimal memory to support approximate membership query operations, i.e., answering what elements may be represented in a set, or what absolutely not. Their simplicity is both their strength and weakness. As I’ve described in a [previous article about Counting Bloom Filter](https://maltsev.space/blog/009-counting-bloom-filters), it’s not trivial to support deletion and preserve their guarantees of absence of false-negative results, i.e., telling what elements are not in a set.
 
 Counting Bloom Filters (CBF) and d-left Counting Bloom Filters are supposed to solve this issue, but they come at a cost of greater memory overhead, **1.5** to **4** times more than classic Bloom Filters do.
@@ -31,6 +35,8 @@ What sets them apart is the internal structure. While Bloom Filters use a flat b
 
 To help visualize the difference, let’s compare their memory layouts:
 
+<Scrollbox>
+
 ```svgbob
                       Classic Bloom Filter
 
@@ -49,6 +55,8 @@ To help visualize the difference, let’s compare their memory layouts:
 └───────────────┴───────────────┴───────────────┴───────────────┘
     Bucket 0        Bucket 1        Bucket 2        Bucket 3
 ```
+
+</Scrollbox>
 
 - In a Bloom Filter, every bit position is shared by multiple elements. Once a bit is set to `1`, there's no way to know who set it.
 - In a Cuckoo Filter, we store compact hashes of the original item, which are called **fingerprints**.
@@ -344,6 +352,8 @@ The paper [*Birdwatching: False Negatives in Cuckoo Filters*](https://people.bu.
 
 Let’s see it in action. First, I’ll go through a good example when `m` is 16 (a power of two):
 
+<Scrollbox>
+
 | Step | Expression | Decimal | Binary | Comment |
 | --- | --- | --- | --- | --- |
 | 1 | `i1 = hash("apple") % 16` | 6 | 0110 | First bucket |
@@ -353,7 +363,11 @@ Let’s see it in action. First, I’ll go through a good example when `m` is 16
 | 5 | `xor2 = i2 ^ f` | 6 | 0110 | Recompute *i1* before modulo |
 | 6 | `i1' = xor2 % 16` | 6 | 0110 | Returns to the original bucket, great success |
 
+</Scrollbox>
+
 Now let’s see a bad example when `m` is 12 (not a power of two):
+
+<Scrollbox>
 
 | Step | Expression | Decimal | Binary | Comment |
 | --- | --- | --- | --- | --- |
@@ -364,6 +378,7 @@ Now let’s see a bad example when `m` is 12 (not a power of two):
 | 5 | `xor2 = i2 ^ f` | 10 | 1010 | Recompute i1 before modulo |
 | 6 | `i1' = xor2 % 12` | **10** | 1010 | Should return to 6, but does not |
 
+</Scrollbox>
 
 ## Fingerprint Size and Error Rate
 
@@ -386,7 +401,7 @@ Where:
 Rearranging (1) gives the **fingerprint size lower bound**
 
 $$
-\varepsilon \le \frac{2b}{2^{f}}\;\;\Longrightarrow\;\;f \ge \log_{2}\!\frac{2b}{\varepsilon}        \;=\;        \log_{2}\!\frac{1}{\varepsilon}        + \log_{2}(2b) \tag{2}
+\varepsilon \le \frac{2b}{2^{f}}\;\;\Longrightarrow\;\;f \ge \log_{2}\!\frac{2b}{\varepsilon} \;=\; \log_{2}\!\frac{1}{\varepsilon} + \log_{2}(2b) \tag{2}
 $$
 
 And because *f* must be an **integer number of bits**, we round up
