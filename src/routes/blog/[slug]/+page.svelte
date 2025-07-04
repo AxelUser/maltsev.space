@@ -11,6 +11,13 @@
 
 	const { data } = $props();
 
+	const heroImages = import.meta.glob('/src/posts/*/hero.{jpg,jpeg,png,webp,avif}', {
+		eager: true,
+		query: {
+			enhanced: true
+		}
+	}) as Record<string, { default: any }>;
+
 	onMount(() => {
 		mermaid.initialize({
 			theme: 'dark'
@@ -26,7 +33,12 @@
 	});
 
 	const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
-	const heroImage = $derived(data?.heroUrl);
+
+	const heroImage = $derived.by(() => {
+		if (!data?.slug) return null;
+		const matchingImage = Object.entries(heroImages).find(([path]) => path.includes(data.slug));
+		return matchingImage ? matchingImage[1].default : null;
+	});
 
 	const publishedTime = $derived(data.date ? new Date(data.date).toISOString() : undefined);
 
@@ -36,7 +48,7 @@
 <SEO
 	title={data.title}
 	description={data.preview || `Read about ${data.title} on ${config.websiteTitle}`}
-	image={heroImage}
+	image={heroImage?.src}
 	imageAlt={`${data.title} - Blog post hero image`}
 	url={`/blog/${data.slug}`}
 	type="article"
@@ -55,11 +67,12 @@
 
 {#if heroImage}
 	<div class="hero-background-container">
-		<img
+		<enhanced:img
 			src={heroImage}
 			alt="{data.title} hero image"
 			loading="lazy"
 			class="hero-background-image"
+			sizes="min(1536px, 100vw)"
 		/>
 		<div class="hero-content">
 			<hgroup>

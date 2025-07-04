@@ -59,6 +59,7 @@
 	},
 	"dependencies": {
 		"@fontsource/atkinson-hyperlegible": "^5.2.5",
+		"@sveltejs/enhanced-img": "^0.6.1",
 		"class-variance-authority": "^0.7.1",
 		"mermaid": "^11.6.0",
 		"posthog-js": "^1.242.2",
