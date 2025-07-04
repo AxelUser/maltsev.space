@@ -32,7 +32,7 @@
 
 	const fullTitle = title === config.websiteTitle ? title : `${title} | ${config.websiteTitle}`;
 	const fullUrl = url ? `${config.websiteUrl.replace(/\/$/, '')}${url}` : config.websiteUrl;
-	const fullImageUrl = image.startsWith('http')
+	const fullImageUrl = image?.startsWith('http')
 		? image
 		: `${config.websiteUrl.replace(/\/$/, '')}${image}`;
 

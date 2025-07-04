@@ -5,7 +5,7 @@ import postcssCustomMedia from 'postcss-custom-media';
 import { qrcode } from 'vite-plugin-qrcode';
 
 export default defineConfig({
-	plugins: [sveltekit(), qrcode(), enhancedImages()],
+	plugins: [enhancedImages(), sveltekit(), qrcode()],
 	css: {
 		postcss: {
 			plugins: [postcssCustomMedia()]
