@@ -12,7 +12,7 @@ export const load: PageLoad = async ({ params }) => {
 			title: post.metadata.title as string,
 			date: post.metadata.date as string,
 			heroUrl: post.metadata?.hero as string | undefined,
-			preview: post.metadata?.preview as string | undefined,
+			preview: post.metadata?.preview as string,
 			keywords: post.metadata?.keywords as string[] | undefined,
 			tags: post.metadata?.tags as string[] | undefined,
 			draft: !!post.metadata?.draft,

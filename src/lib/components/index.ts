@@ -10,6 +10,7 @@ export { default as SEO } from './seo/seo.svelte';
 export { default as PostsGrid } from './posts-grid.svelte';
 export { default as Scrollbox } from './scrollbox.svelte';
 export { default as SeriesBanner } from './series-banner.svelte';
+export { default as ArticleHero } from './article-hero.svelte';
 export * from './timeline';
 export * from './tag-cloud';
 export * from './icons';
