@@ -72,6 +72,7 @@
 			alt="{data.title} hero image"
 			loading="lazy"
 			class="hero-background-image"
+			sizes="min(1536px, 100vw)"
 		/>
 		<div class="hero-content">
 			<hgroup>
