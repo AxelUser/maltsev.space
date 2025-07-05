@@ -3,13 +3,14 @@
 	import Link from '$lib/components/ui/link/link.svelte';
 	import Card from '$lib/components/ui/card/card.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { SEO, SeriesBanner } from '$lib/components';
+	import { ArticleHero, SEO, SeriesBanner } from '$lib/components';
 	import { config } from '$lib/config';
 	import { bio } from '$lib/bio';
 	import mermaid from 'mermaid';
 	import { onMount } from 'svelte';
+	import type { PageProps } from './$types';
 
-	const { data } = $props();
+	const { data }: PageProps = $props();
 
 	const heroImages = import.meta.glob('/src/posts/*/hero.{jpg,jpeg,png,webp,avif}', {
 		eager: true,
@@ -65,46 +66,16 @@
 	/>
 </svelte:head>
 
-{#if heroImage}
-	<div class="hero-background-container">
-		<enhanced:img
-			src={heroImage}
-			alt="{data.title} hero image"
-			loading="lazy"
-			class="hero-background-image"
-			sizes="min(1536px, 100vw)"
-		/>
-		<div class="hero-content">
-			<hgroup>
-				<div class="post-meta">
-					<time datetime="2024-06-15" class="publish-date">{data.date}</time>
-					<span class="meta-separator">•</span>
-					<span class="author-name">by {bio.fullName}</span>
-				</div>
-				<h1 class="space-title">{data.title}</h1>
-				{#if data.preview}
-					<p class="post-preview">{data.preview}</p>
-				{/if}
-			</hgroup>
-		</div>
-	</div>
-{/if}
+<ArticleHero
+	title={data.title}
+	date={data.date}
+	preview={data.preview}
+	author={bio.fullName}
+	{heroImage}
+	placeholder={data.placeholderUrl}
+/>
 
 <article>
-	{#if !heroImage}
-		<hgroup>
-			<div class="post-meta">
-				<time datetime="2024-06-15" class="publish-date">{data.date}</time>
-				<span class="meta-separator">•</span>
-				<span class="author-name">by {bio.fullName}</span>
-			</div>
-			<h1 class="space-title">{data.title}</h1>
-			{#if data.preview}
-				<p class="post-preview">{data.preview}</p>
-			{/if}
-		</hgroup>
-	{/if}
-
 	<div class="post-navigation top-navigation">
 		<Button href="/blog">← Back to all posts</Button>
 	</div>
@@ -159,8 +130,6 @@
 </article>
 
 <style>
-	@import 'open-props/media';
-
 	article {
 		margin: 0 auto;
 		padding-bottom: var(--gap-large);
@@ -201,87 +170,5 @@
 		gap: var(--gap);
 		justify-content: center;
 		flex-wrap: wrap;
-	}
-
-	.hero-background-container {
-		position: relative;
-		width: 100%;
-		padding: var(--gap-large) 0;
-		margin-bottom: var(--gap);
-		color: var(--text-on-dark-bg, white);
-	}
-
-	.hero-background-image {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		opacity: 0.3;
-		z-index: -1;
-	}
-
-	.hero-content {
-		position: relative;
-		z-index: 1;
-		max-width: var(--max-width-prose, 70ch);
-		margin: 0 auto;
-		padding: 0;
-	}
-
-	.hero-content hgroup {
-		margin-bottom: 0;
-	}
-
-	article > hgroup {
-		margin-bottom: var(--gap);
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap);
-	}
-
-	.post-meta {
-		display: flex;
-		align-items: center;
-		gap: var(--gap-small);
-		margin-bottom: var(--gap);
-		font-size: var(--font-size-1);
-		color: var(--text-2);
-		font-weight: var(--font-weight-5);
-	}
-
-	.publish-date {
-		color: inherit;
-	}
-
-	.meta-separator {
-		color: var(--text-3);
-		opacity: 0.6;
-	}
-
-	.author-name {
-		color: inherit;
-		opacity: 0.9;
-	}
-
-	.post-preview {
-		font-size: var(--font-size-2);
-		color: var(--text-2);
-		font-style: italic;
-		line-height: 1.6;
-		margin-top: var(--gap);
-		display: block;
-	}
-
-	@media (--md-n-below) {
-		.hero-content hgroup,
-		article > hgroup {
-			text-align: center;
-		}
-
-		.post-meta {
-			justify-content: center;
-		}
 	}
 </style>
