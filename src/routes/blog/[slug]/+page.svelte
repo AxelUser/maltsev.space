@@ -8,8 +8,9 @@
 	import { bio } from '$lib/bio';
 	import mermaid from 'mermaid';
 	import { onMount } from 'svelte';
+	import type { PageProps } from './$types';
 
-	const { data } = $props();
+	const { data }: PageProps = $props();
 
 	const heroImages = import.meta.glob('/src/posts/*/hero.{jpg,jpeg,png,webp,avif}', {
 		eager: true,
@@ -71,6 +72,7 @@
 	preview={data.preview}
 	author={bio.fullName}
 	{heroImage}
+	placeholder={data.placeholderUrl}
 />
 
 <article>

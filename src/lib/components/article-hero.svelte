@@ -5,9 +5,18 @@
 		preview: string;
 		author: string;
 		heroImage: any;
+		placeholder?: string;
 	};
 
-	const { title, date, preview, author, heroImage }: Props = $props();
+	const {
+		title,
+		date,
+		preview,
+		author,
+		heroImage,
+		placeholder: placeholderBase64
+	}: Props = $props();
+	console.log('placeholderBase64', placeholderBase64);
 </script>
 
 <div class="hero-background-container">
