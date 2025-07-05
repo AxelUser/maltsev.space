@@ -1,4 +1,6 @@
 <script lang="ts">
+	import HeroPlanet from './hero-planet.svelte';
+
 	type Props = {
 		title: string;
 		date: string;
@@ -16,17 +18,43 @@
 		heroImage,
 		placeholder: placeholderBase64
 	}: Props = $props();
-	console.log('placeholderBase64', placeholderBase64);
+
+	let imageLoaded = $state(false);
+
+	$effect(() => {
+		if (!placeholderBase64) {
+			imageLoaded = true;
+		} else {
+			imageLoaded = false;
+		}
+	});
+
+	function handleImageLoad() {
+		imageLoaded = true;
+	}
+
+	function handleImageError() {
+		imageLoaded = false;
+	}
 </script>
 
 <div class="hero-background-container">
 	{#if heroImage}
+		<img
+			src={placeholderBase64}
+			alt="{title} hero image placeholder"
+			class="hero-image hero-placeholder-image"
+			class:loaded={imageLoaded}
+		/>
 		<enhanced:img
 			src={heroImage}
 			alt="{title} hero image"
 			loading="lazy"
-			class="hero-background-image"
+			class="hero-image hero-background-image"
+			class:loaded={imageLoaded}
 			sizes="min(1536px, 100vw)"
+			onload={handleImageLoad}
+			onerror={handleImageError}
 		/>
 	{/if}
 	<div class="hero-content">
@@ -55,15 +83,46 @@
 		color: var(--text-on-dark-bg, white);
 	}
 
-	.hero-background-image {
+	.hero-image {
 		position: absolute;
 		top: 0;
 		left: 0;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		opacity: 0.3;
+	}
+
+	.hero-background-image {
+		opacity: 0;
 		z-index: -1;
+		transition: opacity 0.3s ease-in-out;
+	}
+
+	.hero-background-image.loaded {
+		opacity: 0.3;
+	}
+
+	.hero-placeholder-image {
+		opacity: 0.3;
+		z-index: -2;
+		animation: pulse 2s ease-in-out infinite;
+	}
+
+	.hero-placeholder-image.loaded {
+		opacity: 0;
+		animation: none;
+	}
+
+	@keyframes pulse {
+		0% {
+			opacity: 0.2;
+		}
+		50% {
+			opacity: 0.4;
+		}
+		100% {
+			opacity: 0.2;
+		}
 	}
 
 	.hero-content {
