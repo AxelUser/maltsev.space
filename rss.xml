@@ -6,6 +6,12 @@
 <link>https://maltsev.space/</link>
 <atom:link href="https://maltsev.space/rss.xml" rel="self" type="application/rss+xml"/>
 <item>
+<title>Practical Bitwise Tricks in Everyday Code</title>
+<link>https://maltsev.space//blog/011-practical-bitwise-tricks</link>
+<description>An opinionated and short collection of bitwise tricks that make sense at an average 1x engineer's code.</description>
+<pubDate>Mon, 07 Jul 2025 00:00:00 GMT</pubDate>
+<guid isPermaLink="true">https://maltsev.space//blog/011-practical-bitwise-tricks</guid>
+</item><item>
 <title>Cuckoo Filters: Better Than Bloom Filters?</title>
 <link>https://maltsev.space//blog/010-cuckoo-filters</link>
 <description>Meet the data structure that refuses trade-offs: identical footprint to Bloom, fewer false positives, and deletion that works without overhead. Grab all three!</description>
