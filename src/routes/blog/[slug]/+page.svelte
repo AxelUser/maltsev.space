@@ -9,15 +9,8 @@
 	import mermaid from 'mermaid';
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
-
+	import { getPostHeroImage } from '$lib/utils';
 	const { data }: PageProps = $props();
-
-	const heroImages = import.meta.glob('/src/posts/*/hero.{jpg,jpeg,png,webp,avif}', {
-		eager: true,
-		query: {
-			enhanced: true
-		}
-	}) as Record<string, { default: any }>;
 
 	onMount(() => {
 		mermaid.initialize({
@@ -35,11 +28,7 @@
 
 	const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
 
-	const heroImage = $derived.by(() => {
-		if (!data?.slug) return null;
-		const matchingImage = Object.entries(heroImages).find(([path]) => path.includes(data.slug));
-		return matchingImage ? matchingImage[1].default : null;
-	});
+	const heroImage = $derived(getPostHeroImage(data.slug));
 
 	const publishedTime = $derived(data.date ? new Date(data.date).toISOString() : undefined);
 
