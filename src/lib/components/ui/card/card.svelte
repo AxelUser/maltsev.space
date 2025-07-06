@@ -18,23 +18,59 @@
 	type Props = SvelteHTMLElements['div'] &
 		VariantProps<typeof card> & {
 			coverImage?: string;
+			placeholder?: string;
 		};
 
 	const {
 		variant = 'default',
 		clickable = false,
 		coverImage,
+		placeholder: placeholderBase64,
 		class: className = '',
 		children,
 		...rest
 	}: Props = $props();
 
 	const cardClasses = $derived(card({ variant, clickable, class: className }));
+
+	let imageLoaded = $state(false);
+
+	$effect(() => {
+		if (!placeholderBase64) {
+			imageLoaded = true;
+		} else {
+			imageLoaded = false;
+		}
+	});
+
+	function handleImageLoad() {
+		imageLoaded = true;
+	}
+
+	function handleImageError() {
+		imageLoaded = false;
+	}
 </script>
 
 <div class={cardClasses} {...rest}>
 	{#if coverImage}
-		<div class="cover-image" style="background-image: url({coverImage})"></div>
+		{#if placeholderBase64}
+			<img
+				src={placeholderBase64}
+				class="cover-image placeholder-image"
+				class:loaded={imageLoaded}
+			/>
+		{/if}
+		<enhanced:img
+			src={coverImage}
+			alt="Cover image"
+			loading="lazy"
+			class="cover-image real-image"
+			class:loaded={imageLoaded}
+			sizes="min(800px, 30vw)"
+			onload={handleImageLoad}
+			onerror={handleImageError}
+		/>
 	{/if}
 	<div class="card-content">
 		{@render children?.()}
@@ -64,11 +100,43 @@
 		left: 0;
 		right: 0;
 		bottom: 0;
-		background-size: cover;
-		background-position: center;
-		background-repeat: no-repeat;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
 		opacity: 0.15;
+	}
+
+	.real-image {
+		opacity: 0;
 		z-index: 0;
+		transition: opacity 0.3s ease-in-out;
+	}
+
+	.real-image.loaded {
+		opacity: 0.15;
+	}
+
+	.placeholder-image {
+		opacity: 0.15;
+		z-index: -1;
+		animation: pulse 2s ease-in-out infinite;
+	}
+
+	.placeholder-image.loaded {
+		opacity: 0;
+		animation: none;
+	}
+
+	@keyframes pulse {
+		0% {
+			opacity: 0.1;
+		}
+		50% {
+			opacity: 0.2;
+		}
+		100% {
+			opacity: 0.1;
+		}
 	}
 
 	.card-content {

@@ -4,7 +4,7 @@
 	import '../../app.css';
 	import 'open-props/style';
 	import 'open-props/normalize';
-	import heroImage from './hero.jpg';
+	import heroImage from './hero.jpg?enhanced';
 
 	const { Story } = defineMeta({
 		title: 'UI/ContentCard',
