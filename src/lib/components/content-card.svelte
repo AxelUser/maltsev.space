@@ -73,7 +73,7 @@
 					alt={imageAlt || title}
 					loading="lazy"
 					sizes="min(800px, 50vw)"
-					class="enhanced-image"
+					class="real-image"
 					class:loaded={imageLoaded}
 					onload={handleImageLoad}
 					onerror={handleImageError}
@@ -145,14 +145,14 @@
 		transition: transform var(--transition-fast);
 	}
 
-	.enhanced-image {
+	.real-image {
 		opacity: 0;
 		transition:
 			opacity 0.3s ease-in-out,
 			transform var(--transition-fast);
 	}
 
-	.enhanced-image.loaded {
+	.real-image.loaded {
 		opacity: 1;
 	}
 
@@ -182,7 +182,7 @@
 		}
 	}
 
-	.content-card:hover .card-image .enhanced-image.loaded {
+	.content-card:hover .card-image .real-image.loaded {
 		transform: scale(1.05);
 	}
 

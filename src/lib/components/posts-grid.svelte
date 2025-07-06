@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PostPreview } from '$lib/types';
+	import { getPostHeroImage } from '$lib/utils';
 	import ContentCard from './content-card.svelte';
 
 	const { posts, activeTag, onTagClick } = $props<{
@@ -17,6 +18,9 @@
 			href={`/blog/${post.slug}`}
 			title={post.title}
 			description={post.preview}
+			imageDisplayMode="cover"
+			image={getPostHeroImage(post.slug)}
+			placeholder={post.placeholder}
 			{activeTag}
 			{onTagClick}
 		/>

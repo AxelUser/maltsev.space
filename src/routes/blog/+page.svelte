@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button, Badge } from '$lib/components/ui';
-	import { ContentCard, PageHeader, PostsGrid, SEO } from '$lib/components';
+	import { PageHeader, PostsGrid, SEO } from '$lib/components';
 	import { bio } from '$lib/bio';
 
 	const { data } = $props();

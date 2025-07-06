@@ -6,4 +6,5 @@ export interface PostPreview {
 	series: string;
 	tags: string[];
 	draft: boolean;
+	placeholder?: string;
 }

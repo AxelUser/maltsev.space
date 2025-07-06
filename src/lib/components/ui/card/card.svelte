@@ -103,7 +103,6 @@
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		opacity: 0.15;
 	}
 
 	.real-image {
@@ -113,11 +112,11 @@
 	}
 
 	.real-image.loaded {
-		opacity: 0.15;
+		opacity: 0.2;
 	}
 
 	.placeholder-image {
-		opacity: 0.15;
+		opacity: 0.2;
 		z-index: -1;
 		animation: pulse 2s ease-in-out infinite;
 	}
