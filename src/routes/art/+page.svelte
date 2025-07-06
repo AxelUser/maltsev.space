@@ -27,8 +27,6 @@
 					href="/art/{collection.id}"
 					title={collection.title}
 					description={collection.description}
-					image="/images/art/{collection.id}/{collection.cover}"
-					imageAlt="Cover for {collection.title} collection"
 					metadata="{collection.images.length} images"
 				/>
 			{/each}

@@ -8,6 +8,8 @@
 		date?: string;
 		image?: string;
 		imageAlt?: string;
+		imageDisplayMode?: 'cover' | 'top';
+		placeholder?: string;
 		tags?: string[];
 		activeTag?: string;
 		onTagClick?: (tag: string) => void;
@@ -21,18 +23,61 @@
 		date,
 		image,
 		imageAlt,
+		imageDisplayMode = 'top',
+		placeholder: placeholderBase64,
 		tags,
 		activeTag,
 		onTagClick,
 		metadata
 	}: Props = $props();
+
+	let imageLoaded = $state(false);
+
+	$effect(() => {
+		if (!placeholderBase64) {
+			imageLoaded = true;
+		} else {
+			imageLoaded = false;
+		}
+	});
+
+	function handleImageLoad() {
+		imageLoaded = true;
+	}
+
+	function handleImageError() {
+		imageLoaded = false;
+	}
 </script>
 
 <a {href} class="content-card-link">
-	<Card variant="neon" class="content-card" clickable={true}>
-		{#if image}
+	<Card
+		variant="neon"
+		class="content-card"
+		clickable={true}
+		coverImage={imageDisplayMode === 'cover' ? image : undefined}
+		placeholder={imageDisplayMode === 'cover' ? placeholderBase64 : undefined}
+	>
+		{#if image && imageDisplayMode === 'top'}
 			<div class="card-image">
-				<img src={image} alt={imageAlt || title} loading="lazy" />
+				{#if placeholderBase64}
+					<img
+						src={placeholderBase64}
+						alt={imageAlt || title}
+						class="placeholder-image"
+						class:loaded={imageLoaded}
+					/>
+				{/if}
+				<enhanced:img
+					src={image}
+					alt={imageAlt || title}
+					loading="lazy"
+					sizes="min(800px, 50vw)"
+					class="real-image"
+					class:loaded={imageLoaded}
+					onload={handleImageLoad}
+					onerror={handleImageError}
+				/>
 			</div>
 		{/if}
 
@@ -90,6 +135,7 @@
 		aspect-ratio: 16 / 9;
 		overflow: hidden;
 		border-radius: var(--radius-2) var(--radius-2) 0 0;
+		position: relative;
 	}
 
 	.card-image img {
@@ -99,7 +145,44 @@
 		transition: transform var(--transition-fast);
 	}
 
-	.content-card:hover .card-image img {
+	.real-image {
+		opacity: 0;
+		transition:
+			opacity 0.3s ease-in-out,
+			transform var(--transition-fast);
+	}
+
+	.real-image.loaded {
+		opacity: 1;
+	}
+
+	.placeholder-image {
+		position: absolute;
+		top: 0;
+		left: 0;
+		opacity: 1;
+		z-index: 1;
+		animation: pulse 2s ease-in-out infinite;
+	}
+
+	.placeholder-image.loaded {
+		opacity: 0;
+		animation: none;
+	}
+
+	@keyframes pulse {
+		0% {
+			opacity: 0.6;
+		}
+		50% {
+			opacity: 0.8;
+		}
+		100% {
+			opacity: 0.6;
+		}
+	}
+
+	.content-card:hover .card-image .real-image.loaded {
 		transform: scale(1.05);
 	}
 
