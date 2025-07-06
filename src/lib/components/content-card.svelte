@@ -8,6 +8,7 @@
 		date?: string;
 		image?: string;
 		imageAlt?: string;
+		imageDisplayMode?: 'cover' | 'top';
 		tags?: string[];
 		activeTag?: string;
 		onTagClick?: (tag: string) => void;
@@ -21,6 +22,7 @@
 		date,
 		image,
 		imageAlt,
+		imageDisplayMode = 'top',
 		tags,
 		activeTag,
 		onTagClick,
@@ -29,8 +31,13 @@
 </script>
 
 <a {href} class="content-card-link">
-	<Card variant="neon" class="content-card" clickable={true}>
-		{#if image}
+	<Card
+		variant="neon"
+		class="content-card"
+		clickable={true}
+		coverImage={imageDisplayMode === 'cover' ? image : undefined}
+	>
+		{#if image && imageDisplayMode === 'top'}
 			<div class="card-image">
 				<img src={image} alt={imageAlt || title} loading="lazy" />
 			</div>

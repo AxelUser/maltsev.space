@@ -27,6 +27,7 @@
 			date: { control: 'text' },
 			image: { control: 'text' },
 			imageAlt: { control: 'text' },
+			imageDisplayMode: { control: 'select', options: ['top', 'cover'] },
 			tags: { control: 'object' },
 			activeTag: { control: 'text' },
 			metadata: { control: 'text' },
@@ -49,6 +50,38 @@
 		imageAlt: 'Abstract visualization of bloom filters',
 		tags: ['Data Structures', 'Algorithms', 'Performance'],
 		metadata: 'Technical Article'
+	}}
+/>
+
+<Story
+	name="Image Top Placement"
+	args={{
+		href: '#',
+		title: 'Modern Frontend Development',
+		description:
+			'Explore the latest trends and best practices in frontend development. Learn about component architecture, state management, and performance optimization.',
+		date: '2025-01-06',
+		image: heroImage,
+		imageAlt: 'Modern frontend development workspace',
+		imageDisplayMode: 'top',
+		tags: ['Frontend', 'React', 'Performance'],
+		metadata: 'Development Guide'
+	}}
+/>
+
+<Story
+	name="Image Cover Placement"
+	args={{
+		href: '#',
+		title: 'Advanced CSS Techniques',
+		description:
+			'Discover advanced CSS techniques including custom properties, grid layouts, and modern animation patterns. Perfect for creating stunning user interfaces.',
+		date: '2025-01-06',
+		image: heroImage,
+		imageAlt: 'CSS code and design patterns',
+		imageDisplayMode: 'cover',
+		tags: ['CSS', 'Design', 'Animation'],
+		metadata: 'Design Tutorial'
 	}}
 />
 

@@ -15,11 +15,15 @@
 		}
 	});
 
-	type Props = SvelteHTMLElements['div'] & VariantProps<typeof card>;
+	type Props = SvelteHTMLElements['div'] &
+		VariantProps<typeof card> & {
+			coverImage?: string;
+		};
 
 	const {
 		variant = 'default',
 		clickable = false,
+		coverImage,
 		class: className = '',
 		children,
 		...rest
@@ -29,7 +33,12 @@
 </script>
 
 <div class={cardClasses} {...rest}>
-	{@render children?.()}
+	{#if coverImage}
+		<div class="cover-image" style="background-image: url({coverImage})"></div>
+	{/if}
+	<div class="card-content">
+		{@render children?.()}
+	</div>
 	{#if variant === 'neon'}
 		<div class="neon-border"></div>
 	{/if}
@@ -47,6 +56,24 @@
 		transition: all var(--animation-fade);
 		position: relative;
 		overflow: hidden;
+	}
+
+	.cover-image {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
+		opacity: 0.15;
+		z-index: 0;
+	}
+
+	.card-content {
+		position: relative;
+		z-index: 1;
 	}
 
 	.default {
