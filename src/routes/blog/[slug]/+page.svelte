@@ -10,6 +10,7 @@
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
 	import { getPostHeroImage } from '$lib/utils';
+	import PostsGrid from '$lib/components/posts-grid.svelte';
 	const { data }: PageProps = $props();
 
 	onMount(() => {
@@ -118,6 +119,13 @@
 	</footer>
 </article>
 
+{#if data.referencedPost && data.referencedPost.length > 0}
+	<div class="referenced-posts">
+		<h2>Want to read more?</h2>
+		<PostsGrid posts={data.referencedPost} />
+	</div>
+{/if}
+
 <style>
 	article {
 		margin: 0 auto;
@@ -159,5 +167,13 @@
 		gap: var(--gap);
 		justify-content: center;
 		flex-wrap: wrap;
+	}
+
+	.referenced-posts {
+		margin-top: var(--gap);
+		display: flex;
+		flex-direction: column;
+		gap: var(--gap-large);
+		align-items: center;
 	}
 </style>
