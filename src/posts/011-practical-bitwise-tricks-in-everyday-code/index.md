@@ -64,11 +64,14 @@ For example, if `var x = 6`, then:
 
 This works because shifting left fills in zeros on the right (doubling the value), while shifting right drops the least significant bit, i.e., halving it.
 
+> [!warning]
+> This is a very specific case. In most real-world code, you should stick with the `*` and `/` operators instead—they're clearer and modern [compilers optimize them just fine](https://tech.michaelaltfield.net/2009/12/02/gcc-optimizations-for-arithmetic-operations-using-bit-shifts/). But this example shows how bitwise shifts directly affect the decimal representation of a value. So better to know this.
+
 ## Case 2: Extracting Parts of a Big Value
 
-Go on with another widespread use case. Imagine you're working with a hashing function that gives you a 64-bit unsigned integer. But in your code, you actually need two 32-bit values instead. Maybe you want to use one for bucketing and the other for a cache key — whatever the case, you'd prefer to avoid hashing twice if you can just reuse the result.
+Go on with another widespread use case. Imagine you're working with a hashing function that gives you a 64-bit unsigned integer. But in your code, you actually need two 32-bit values instead. Maybe you want to use one for bucketing and the other for a cache key — whatever the case, you'd prefer to [avoid hashing twice](https://maltsev.space/blog/008-bloom-filters-pt1#wide-hash-split) if you can just reuse the result.
 
-So, how do we split that big 64-bit value into smaller chunks? 
+So, how do we split that big 64-bit value into smaller chunks?
 
 Again, the answer is **bitwise shifts and binary masks:**
 
@@ -88,7 +91,7 @@ So what exactly happens:
 
 ## Case 3: Modulo Operation for Power-of-Two Integers
 
-This little trick always appears in real-world systems, especially in hash tables and circular buffers.
+This little trick always appears in real-world systems, often in [hash tables](https://github.com/seiflotfy/cuckoofilter/blob/master/util.go#L38) and circular buffers.
 
 Let’s say you want to map a hashed value to an index in an array:
 
