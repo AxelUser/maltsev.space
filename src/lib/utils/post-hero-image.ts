@@ -1,4 +1,4 @@
-const heroImages = import.meta.glob('/src/posts/*/hero.{jpg,jpeg,png,webp,avif}', {
+const heroImages = import.meta.glob('/static/images/posts/*/hero.{jpg,jpeg,png,webp,avif}', {
 	eager: true,
 	query: {
 		enhanced: true

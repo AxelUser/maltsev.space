@@ -38,7 +38,7 @@
 <SEO
 	title={data.title}
 	description={data.preview || `Read about ${data.title} on ${config.websiteTitle}`}
-	image={heroImage?.src}
+	image={`/images/posts/${data.slug}/hero.jpg`}
 	imageAlt={`${data.title} - Blog post hero image`}
 	url={`/blog/${data.slug}`}
 	type="article"
