@@ -2,11 +2,11 @@ import sharp from 'sharp';
 import { rgbaToThumbHash, thumbHashToDataURL } from 'thumbhash';
 
 export async function generatePostHeroThumbhash(
-	path: string,
+	slug: string,
 	size: number
 ): Promise<string | undefined> {
 	try {
-		const { data, info } = await sharp(path)
+		const { data, info } = await sharp(`static/images/posts/${slug}/hero.jpg`)
 			.resize(size, size, { fit: 'inside' })
 			.ensureAlpha()
 			.raw()
@@ -18,7 +18,7 @@ export async function generatePostHeroThumbhash(
 
 		return thumbhashDataURL;
 	} catch (err) {
-		console.warn(`Could not generate thumbhash for ${path}:`, err);
+		console.warn(`Could not generate thumbhash for ${slug}:`, err);
 		return undefined;
 	}
 }

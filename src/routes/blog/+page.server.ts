@@ -7,7 +7,7 @@ export const load: PageServerLoad = async () => {
 	const posts = getPosts(null, dev ? 'all' : 'published');
 	const postsWithPlaceholders = await Promise.all(
 		posts.map(async (post) => {
-			post.placeholder = await generatePostHeroThumbhash(`src/posts/${post.slug}/hero.jpg`, 100);
+			post.placeholder = await generatePostHeroThumbhash(post.slug, 100);
 			return post;
 		})
 	);
