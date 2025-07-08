@@ -75,12 +75,12 @@ Use predefined typography classes:
 
 ## Layout
 
-Use the container class for consistent page layouts:
+Use the OneColumnLayout component for consistent page layouts:
 
 ```svelte
-<div class="space-container">
+<OneColumnLayout>
   <!-- Page content here -->
-</div>
+</OneColumnLayout>
 ```
 
 ## Responsive Design

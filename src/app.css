@@ -187,30 +187,13 @@ html {
 	margin-block: var(--gap);
 }
 
-.space-container {
-	max-width: var(--content-width);
-	margin-inline: auto;
-	padding-inline: var(--gap);
-}
-
 .katex-display > .katex {
 	max-width: 100% !important;
 	overflow-y: hidden !important;
 	white-space: normal !important;
 }
 
-@media (--xl-n-below) {
-	.space-container {
-		max-width: min(90%, 1000px);
-	}
-}
-
 @media (--md-n-below) {
-	.space-container {
-		max-width: 90%;
-		padding-inline: var(--gap-small);
-	}
-
 	.space-title {
 		font-size: var(--font-size-6);
 	}
