@@ -39,9 +39,7 @@
 	<Header />
 	<TwinklingStars />
 	<main>
-		<div class="space-container">
-			{@render children()}
-		</div>
+		{@render children()}
 	</main>
 
 	<Footer />

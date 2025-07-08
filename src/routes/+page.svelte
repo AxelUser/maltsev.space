@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Button, Link } from '$lib/components/ui';
-	import { HeroPlanet, TagCloud, ContentCard, SEO, PostsGrid } from '$lib/components';
+	import { HeroPlanet, TagCloud, SEO, PostsGrid } from '$lib/components';
 	import { bio } from '$lib/bio';
-	import { config } from '$lib/config';
-
-	import 'open-props/media';
+	import { OneColumnLayout } from '$lib/components/layouts';
 
 	let isVisible = $state(false);
 
@@ -25,44 +23,46 @@
 	keywords={['portfolio', 'blog', 'software engineering', 'distributed systems']}
 />
 
-<div class="hero" class:visible={isVisible}>
-	<h1>Howdy, I'm {bio.firstName}</h1>
-	<p class="slogan">Space is dangerous — use tabs</p>
+<OneColumnLayout>
+	<div class="hero" class:visible={isVisible}>
+		<h1>Howdy, I'm {bio.firstName}</h1>
+		<p class="slogan">Space is dangerous — use tabs</p>
 
-	<HeroPlanet />
+		<HeroPlanet />
 
-	<div class="cta-buttons">
-		<Button href="/blog">Read Blog</Button>
-		<Button href="/about" intent="secondary">About Me</Button>
+		<div class="cta-buttons">
+			<Button href="/blog">Read Blog</Button>
+			<Button href="/about" intent="secondary">About Me</Button>
+		</div>
 	</div>
-</div>
 
-<div class="info">
-	<section>
-		<h2 class="space-heading">Latest Articles</h2>
+	<div class="info">
+		<section>
+			<h2 class="space-heading">Latest Articles</h2>
 
-		<PostsGrid posts={data.posts} />
+			<PostsGrid posts={data.posts} />
 
-		<div class="view-all">
-			<Link href="/blog" hasArrow={true}>View All Posts</Link>
-		</div>
-	</section>
+			<div class="view-all">
+				<Link href="/blog" hasArrow={true}>View All Posts</Link>
+			</div>
+		</section>
 
-	<section class="about-grid">
-		<div class="about-text">
-			<h2 class="space-heading">About Me</h2>
-			<p>
-				Senior Software Engineer at Infobip with focus on distributed systems and highload
-				applications. Programming since 2014, previously at Veeam and SkbKontur.
-			</p>
-			<Link href="/about" hasArrow={true}>Learn more about me</Link>
-		</div>
-		<div class="skills-container">
-			<h3>Professional Interests:</h3>
-			<TagCloud tags={bio.interests} />
-		</div>
-	</section>
-</div>
+		<section class="about-grid">
+			<div class="about-text">
+				<h2 class="space-heading">About Me</h2>
+				<p>
+					Senior Software Engineer at Infobip with focus on distributed systems and highload
+					applications. Programming since 2014, previously at Veeam and SkbKontur.
+				</p>
+				<Link href="/about" hasArrow={true}>Learn more about me</Link>
+			</div>
+			<div class="skills-container">
+				<h3>Professional Interests:</h3>
+				<TagCloud tags={bio.interests} />
+			</div>
+		</section>
+	</div>
+</OneColumnLayout>
 
 <style lang="postcss">
 	@import 'open-props/media';

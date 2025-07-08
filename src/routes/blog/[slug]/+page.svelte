@@ -11,6 +11,7 @@
 	import type { PageProps } from './$types';
 	import { getPostHeroImage } from '$lib/utils';
 	import PostsGrid from '$lib/components/posts-grid.svelte';
+	import { OneColumnLayout } from '$lib/components/layouts';
 	const { data }: PageProps = $props();
 
 	onMount(() => {
@@ -56,30 +57,18 @@
 	/>
 </svelte:head>
 
-<ArticleHero
-	title={data.title}
-	date={data.date}
-	preview={data.preview}
-	author={bio.fullName}
-	{heroImage}
-	placeholder={data.placeholderUrl}
-/>
+<OneColumnLayout>
+	<ArticleHero
+		title={data.title}
+		date={data.date}
+		preview={data.preview}
+		author={bio.fullName}
+		{heroImage}
+		placeholder={data.placeholderUrl}
+	/>
 
-<article>
-	<div class="post-navigation top-navigation">
-		<Button href="/blog">← Back to all posts</Button>
-	</div>
-
-	{#if data.series && data.series.length > 0}
-		<SeriesBanner posts={data.series} />
-	{/if}
-
-	<div class="prose">
-		{@render data.content()}
-	</div>
-
-	<footer class="post-footer">
-		<div class="post-navigation">
+	<article>
+		<div class="post-navigation top-navigation">
 			<Button href="/blog">← Back to all posts</Button>
 		</div>
 
@@ -87,44 +76,58 @@
 			<SeriesBanner posts={data.series} />
 		{/if}
 
-		<Card>
-			<div class="share-message">Enjoyed this post? Share it with the universe!</div>
-			<div class="share-buttons">
-				<Link
-					href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(data.title)}&url=${encodeURIComponent(pageUrl)}`}
-					external={true}
-					class="share-link twitter"
-					aria-label="Share on Twitter"
-				>
-					Twitter
-				</Link>
-				<Link
-					href={`https://www.linkedin.com/shareArticle?mini=true&title=${encodeURIComponent(data.title)}&url=${encodeURIComponent(pageUrl)}`}
-					external={true}
-					class="share-link linkedin"
-					aria-label="Share on LinkedIn"
-				>
-					LinkedIn
-				</Link>
-				<Link
-					href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`}
-					external={true}
-					class="share-link facebook"
-					aria-label="Share on Facebook"
-				>
-					Facebook
-				</Link>
-			</div>
-		</Card>
-	</footer>
-</article>
+		<div class="prose">
+			{@render data.content()}
+		</div>
 
-{#if data.referencedPost && data.referencedPost.length > 0}
-	<div class="referenced-posts">
-		<h2>Want to read more?</h2>
-		<PostsGrid posts={data.referencedPost} />
-	</div>
-{/if}
+		<footer class="post-footer">
+			<div class="post-navigation">
+				<Button href="/blog">← Back to all posts</Button>
+			</div>
+
+			{#if data.series && data.series.length > 0}
+				<SeriesBanner posts={data.series} />
+			{/if}
+
+			<Card>
+				<div class="share-message">Enjoyed this post? Share it with the universe!</div>
+				<div class="share-buttons">
+					<Link
+						href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(data.title)}&url=${encodeURIComponent(pageUrl)}`}
+						external={true}
+						class="share-link twitter"
+						aria-label="Share on Twitter"
+					>
+						Twitter
+					</Link>
+					<Link
+						href={`https://www.linkedin.com/shareArticle?mini=true&title=${encodeURIComponent(data.title)}&url=${encodeURIComponent(pageUrl)}`}
+						external={true}
+						class="share-link linkedin"
+						aria-label="Share on LinkedIn"
+					>
+						LinkedIn
+					</Link>
+					<Link
+						href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`}
+						external={true}
+						class="share-link facebook"
+						aria-label="Share on Facebook"
+					>
+						Facebook
+					</Link>
+				</div>
+			</Card>
+		</footer>
+	</article>
+
+	{#if data.referencedPost && data.referencedPost.length > 0}
+		<div class="referenced-posts">
+			<h2>Want to read more?</h2>
+			<PostsGrid posts={data.referencedPost} />
+		</div>
+	{/if}
+</OneColumnLayout>
 
 <style>
 	article {
