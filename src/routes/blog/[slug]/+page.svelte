@@ -130,6 +130,8 @@
 </OneColumnLayout>
 
 <style>
+	@import 'open-props/media';
+
 	article {
 		margin: 0 auto;
 		padding-bottom: var(--gap-large);
@@ -178,5 +180,11 @@
 		flex-direction: column;
 		gap: var(--gap-large);
 		align-items: center;
+	}
+
+	@media (--md-n-below) {
+		.referenced-posts h2 {
+			font-size: var(--font-size-4);
+		}
 	}
 </style>
