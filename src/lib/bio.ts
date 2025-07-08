@@ -15,7 +15,7 @@ export const bio = {
 		'NoSQL'
 	],
 	social: {
-		email: 'alexey.maltsev.work@gmail.com',
+		email: 'aleksey@maltsev.space',
 		linkedIn: 'https://www.linkedin.com/in/dev-alexey-maltsev/',
 		github: 'https://github.com/AxelUser',
 		twitter: '@axel_user'

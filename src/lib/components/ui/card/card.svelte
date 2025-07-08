@@ -55,15 +55,16 @@
 <div class={cardClasses} {...rest}>
 	{#if coverImage}
 		{#if placeholderBase64}
+			<!-- svelte-ignore a11y_missing_attribute -->
 			<img
 				src={placeholderBase64}
 				class="cover-image placeholder-image"
 				class:loaded={imageLoaded}
 			/>
 		{/if}
+		<!-- svelte-ignore a11y_missing_attribute -->
 		<enhanced:img
 			src={coverImage}
-			alt="Cover image"
 			loading="lazy"
 			class="cover-image real-image"
 			class:loaded={imageLoaded}
