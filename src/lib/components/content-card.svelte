@@ -125,12 +125,6 @@
 		height: 100%;
 	}
 
-	.content-card {
-		height: 100%;
-		display: flex;
-		flex-direction: column;
-	}
-
 	.card-image {
 		aspect-ratio: 16 / 9;
 		overflow: hidden;
@@ -180,10 +174,6 @@
 		100% {
 			opacity: 0.6;
 		}
-	}
-
-	.content-card:hover .card-image .real-image.loaded {
-		transform: scale(1.05);
 	}
 
 	.card-content {
