@@ -3,6 +3,7 @@
 	import { config } from '$lib/config';
 	import { Rss, Menu, X } from '@lucide/svelte';
 	import { onMount } from 'svelte';
+	import { OneColumnLayout } from './layouts';
 
 	let mobileMenuOpen = $state(false);
 	let navContainer: HTMLDivElement;
@@ -33,7 +34,7 @@
 </script>
 
 <header>
-	<nav class="space-container">
+	<OneColumnLayout class="nav-bar">
 		<div class="logo">
 			<a href="/">{config.websiteTitle}</a>
 		</div>
@@ -71,7 +72,8 @@
 				{/if}
 			</button>
 		</div>
-	</nav>
+	</OneColumnLayout>
+
 	<div class="mobile-nav" class:active={mobileMenuOpen} bind:this={navContainer}>
 		<ul>
 			<li><a class="nav-link" href="/" onclick={() => (mobileMenuOpen = false)}>Home</a></li>
@@ -97,7 +99,7 @@
 		z-index: 10;
 	}
 
-	nav {
+	header :global(.nav-bar) {
 		display: flex;
 		align-items: center;
 		height: 100%;

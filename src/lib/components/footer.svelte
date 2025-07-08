@@ -1,13 +1,14 @@
 <script>
 	import { bio } from '$lib/bio';
+	import { OneColumnLayout } from '$lib/components/layouts';
 </script>
 
 <footer>
-	<div class="space-container">
+	<OneColumnLayout>
 		<p class="space-text-small">
 			© {new Date().getFullYear()} | {bio.fullName}
 		</p>
-	</div>
+	</OneColumnLayout>
 </footer>
 
 <style>

@@ -3,7 +3,8 @@ import { raise } from './utils';
 
 function getPosts(
 	top: number | null = null,
-	status: 'draft' | 'published' | 'all' = 'published'
+	status: 'draft' | 'published' | 'all' = 'published',
+	slugs: string[] | null = null
 ): PostPreview[] {
 	const paths = import.meta.glob('/src/posts/*/*.md', { eager: true });
 
@@ -25,6 +26,10 @@ function getPosts(
 		.filter((post) => {
 			if (status === 'all') return true;
 			return post.draft === (status === 'draft');
+		})
+		.filter((post) => {
+			if (slugs === null) return true;
+			return slugs.includes(post.slug);
 		});
 
 	const sortedPosts = posts.sort((a, b) => {

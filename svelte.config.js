@@ -9,6 +9,7 @@ import rehypeKatexSvelte from 'rehype-katex-svelte';
 import remarkMath from 'remark-math';
 import remarkSVGBob from 'remark-svgbob';
 import rehypeCallouts from 'rehype-callouts';
+import { remarkLinksToReferences } from './src/lib/plugins/remark-links-to-references.js';
 
 const lightTheme = 'material-theme-palenight';
 const darkTheme = 'github-dark';
@@ -35,7 +36,12 @@ const autolinkHeadingsOptions = {
 /** @type {import('mdsvex').MdsvexOptions} */
 const mdsvexOptions = {
 	extensions: ['.md', '.svx'],
-	remarkPlugins: [[remarkToc, { tight: true, maxDepth: 3 }], remarkMath, remarkSVGBob],
+	remarkPlugins: [
+		[remarkToc, { tight: true, maxDepth: 3 }],
+		remarkMath,
+		remarkSVGBob,
+		remarkLinksToReferences
+	],
 	rehypePlugins: [
 		slug,
 		[autolinkHeadings, autolinkHeadingsOptions],

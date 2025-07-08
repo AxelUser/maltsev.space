@@ -19,7 +19,7 @@ hero: /images/blog/009-counting-bloom-filters/hero.jpg
 
 Bloom filters are incredibly space-efficient probabilistic data structures, perfect for answering a simple question: "Is this element in the set — no or maybe?"
 
-But as we discussed in [deep dive into Bloom filters](/blog/008-bloom-filters-pt1), there's a big limitation: **they don't support deletion**.
+But as we discussed in [deep dive into Bloom filters](https://maltsev.space/blog/008-bloom-filters-pt1), there's a big limitation: **they don't support deletion**.
 
 In this part of the series, we'll tackle that problem. We'll explore how we can extend Bloom filters to allow element removal — and what trade-offs come with that.
 

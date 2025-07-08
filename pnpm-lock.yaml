@@ -47,6 +47,9 @@ importers:
       shiki:
         specifier: ^3.3.0
         version: 3.3.0
+      unist-util-visit:
+        specifier: ^5.0.0
+        version: 5.0.0
     devDependencies:
       '@chromatic-com/storybook':
         specifier: ^4

@@ -32,36 +32,34 @@
 	<meta name="description" content={data.collection.description} />
 </svelte:head>
 
-<main class="space-container">
-	<PageHeader title={data.collection.title} subtitle={data.collection.description} />
+<PageHeader title={data.collection.title} subtitle={data.collection.description} />
 
-	<div class="collection-meta">
-		<span class="image-count">{data.collection.images.length} images</span>
-	</div>
+<div class="collection-meta">
+	<span class="image-count">{data.collection.images.length} images</span>
+</div>
 
-	<div class="post-navigation top-navigation">
-		<Button href="/art">← Back to Gallery</Button>
-	</div>
+<div class="post-navigation top-navigation">
+	<Button href="/art">← Back to Gallery</Button>
+</div>
 
-	<div class="images-grid">
-		{#each data.collection.images as image, index}
-			<button
-				class="image-card"
-				onclick={() => openLightbox(index)}
-				aria-label="View {image} in lightbox"
-			>
-				<img
-					src="/images/art/{data.collection.id}/{image}"
-					alt="Artwork {index + 1} from {data.collection.title}"
-					loading="lazy"
-				/>
-				<div class="image-overlay">
-					<span class="view-text">View</span>
-				</div>
-			</button>
-		{/each}
-	</div>
-</main>
+<div class="images-grid">
+	{#each data.collection.images as image, index}
+		<button
+			class="image-card"
+			onclick={() => openLightbox(index)}
+			aria-label="View {image} in lightbox"
+		>
+			<img
+				src="/images/art/{data.collection.id}/{image}"
+				alt="Artwork {index + 1} from {data.collection.title}"
+				loading="lazy"
+			/>
+			<div class="image-overlay">
+				<span class="view-text">View</span>
+			</div>
+		</button>
+	{/each}
+</div>
 
 <Lightbox
 	images={imageUrls}
@@ -73,12 +71,6 @@
 
 <style>
 	@import 'open-props/media';
-
-	main {
-		min-height: calc(100vh - var(--header-height));
-		padding-top: var(--gap);
-		padding-bottom: var(--gap-large);
-	}
 
 	.post-navigation {
 		display: flex;

@@ -2,6 +2,7 @@
 	import { Button, Badge } from '$lib/components/ui';
 	import { PageHeader, PostsGrid, SEO } from '$lib/components';
 	import { bio } from '$lib/bio';
+	import { OneColumnLayout } from '$lib/components/layouts';
 
 	const { data } = $props();
 
@@ -33,42 +34,44 @@
 	keywords={['blog', 'software engineering', 'programming', 'distributed systems', 'C#', 'Go']}
 />
 
-<div class="blog-page">
-	<PageHeader title="Blog" subtitle="Thoughts, ideas, and explorations" />
+<OneColumnLayout>
+	<div class="blog-page">
+		<PageHeader title="Blog" subtitle="Thoughts, ideas, and explorations" />
 
-	<section class="blog-filters">
-		<div class="filter-label">Filter by topic:</div>
-		<div class="tags-container">
-			{#each allTags as tag}
-				<Badge
-					variant={activeTag === tag ? 'active' : 'default'}
-					interactive={true}
-					onclick={() => toggleTag(tag)}
-				>
-					{tag}
-				</Badge>
-			{/each}
-			{#if activeTag}
-				<Button size="small" intent="secondary" onclick={() => (activeTag = undefined)}>
-					Clear filter
-				</Button>
-			{/if}
-		</div>
-	</section>
-
-	<section class="blog-posts">
-		{#if filteredPosts.length === 0}
-			<div class="no-results">
-				<p>No posts found matching the selected filter.</p>
-				<Button size="small" intent="secondary" onclick={() => (activeTag = undefined)}>
-					Clear filter
-				</Button>
+		<section class="blog-filters">
+			<div class="filter-label">Filter by topic:</div>
+			<div class="tags-container">
+				{#each allTags as tag}
+					<Badge
+						variant={activeTag === tag ? 'active' : 'default'}
+						interactive={true}
+						onclick={() => toggleTag(tag)}
+					>
+						{tag}
+					</Badge>
+				{/each}
+				{#if activeTag}
+					<Button size="small" intent="secondary" onclick={() => (activeTag = undefined)}>
+						Clear filter
+					</Button>
+				{/if}
 			</div>
-		{:else}
-			<PostsGrid posts={filteredPosts} {activeTag} onTagClick={toggleTag} />
-		{/if}
-	</section>
-</div>
+		</section>
+
+		<section class="blog-posts">
+			{#if filteredPosts.length === 0}
+				<div class="no-results">
+					<p>No posts found matching the selected filter.</p>
+					<Button size="small" intent="secondary" onclick={() => (activeTag = undefined)}>
+						Clear filter
+					</Button>
+				</div>
+			{:else}
+				<PostsGrid posts={filteredPosts} {activeTag} onTagClick={toggleTag} />
+			{/if}
+		</section>
+	</div>
+</OneColumnLayout>
 
 <style>
 	@import 'open-props/media';
