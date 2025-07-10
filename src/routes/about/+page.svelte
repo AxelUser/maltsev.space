@@ -75,7 +75,7 @@
 					>
 						<ul>
 							<li>
-								Led a zero-downtime migration of 3 microservices and approximately 3 TB of data from
+								Led a zero-downtime migration of 3 microservices and approximately 1 TB of data from
 								a MongoDB replica set to a sharded cluster
 							</li>
 							<li>
