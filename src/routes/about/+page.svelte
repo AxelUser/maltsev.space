@@ -56,7 +56,7 @@
 				<h2 class="space-heading">My Journey</h2>
 				<Timeline>
 					<TimelineItem
-						date="August 2021–present"
+						date="August 2020–present"
 						title="Infobip"
 						role="Senior Software Engineer"
 						companyDescription="Infobip is a global Communications-Platform-as-a-Service (CPaaS) provider offering APIs for messaging, voice, video, and contact center services."
