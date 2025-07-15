@@ -3,21 +3,25 @@
 	
 	<url>
 		<loc>https://maltsev.space</loc>
-		<lastmod>2025-07-10</lastmod>
+		<lastmod>2025-07-15</lastmod>
 	</url>
 	<url>
 		<loc>https://maltsev.space/about</loc>
-		<lastmod>2025-07-10</lastmod>
+		<lastmod>2025-07-15</lastmod>
 	</url>
 	<url>
 		<loc>https://maltsev.space/blog</loc>
-		<lastmod>2025-07-10</lastmod>
+		<lastmod>2025-07-15</lastmod>
 	</url>
 	<url>
 		<loc>https://maltsev.space/art</loc>
-		<lastmod>2025-07-10</lastmod>
+		<lastmod>2025-07-15</lastmod>
 	</url>
 	
+	<url>
+		<loc>https://maltsev.space/blog/012-simd-within-a-register-how-i-doubled-hash-table-lookup-performance</loc>
+		<lastmod>2025-07-15</lastmod>
+	</url>
 	<url>
 		<loc>https://maltsev.space/blog/011-practical-bitwise-tricks-in-everyday-code</loc>
 		<lastmod>2025-07-07</lastmod>

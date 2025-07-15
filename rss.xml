@@ -6,6 +6,12 @@
 <link>https://maltsev.space/</link>
 <atom:link href="https://maltsev.space/rss.xml" rel="self" type="application/rss+xml"/>
 <item>
+<title>SIMD Within a Register: How I Doubled Hash Table Lookup Performance</title>
+<link>https://maltsev.space//blog/012-simd-within-a-register-how-i-doubled-hash-table-lookup-performance</link>
+<description>It started with a simple thought: four bytes in a hash table bucket look just like an integer. Luckily, this one idea led to a deep dive into bit-twiddling and a 2x performance boost.</description>
+<pubDate>Tue, 15 Jul 2025 00:00:00 GMT</pubDate>
+<guid isPermaLink="true">https://maltsev.space//blog/012-simd-within-a-register-how-i-doubled-hash-table-lookup-performance</guid>
+</item><item>
 <title>Practical Bitwise Tricks in Everyday Code</title>
 <link>https://maltsev.space//blog/011-practical-bitwise-tricks-in-everyday-code</link>
 <description>An opinionated and short collection of bitwise tricks that make sense at an average 1x engineer's code.</description>
