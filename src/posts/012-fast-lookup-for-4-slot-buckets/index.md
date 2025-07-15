@@ -190,7 +190,7 @@ First, we subtract `0x01010101U`.
 $$
 \begin{array}{r}
 \texttt{01000100\;01100010\;00000000\;00101110}\;(\texttt{0x4462002E}) \\[-2pt]
--\quad
+-\;
 \texttt{00000001\;00000001\;00000001\;00000001}\;(\texttt{0x01010101}) \\ \hline
 \texttt{01000011\;01100000\;11111111\;00101101}\;(\texttt{0x4360FF2D})
 \end{array}
@@ -203,7 +203,8 @@ Second, we apply a bitwise NOT to the original value:
 
 $$
 \begin{array}{r}
-\neg\quad\texttt{01000100\;01100010\;00000000\;00101110}\;(\texttt{0x4462002E}) \\ \hline
+\neg\;
+\texttt{01000100\;01100010\;00000000\;00101110}\;(\texttt{0x4462002E}) \\ \hline
 \texttt{10111011\;10011101\;11111111\;11010001}\;(\texttt{0xBB9DFFD1})
 \end{array}
 $$
@@ -270,7 +271,7 @@ Let’s say our bucket is `0xAA00CCDD` and we're searching for a non-zero finger
 $$
 \begin{array}{r}
 \texttt{10101010\;00000000\;11001100\;11011101}\;(\texttt{0xAA00CCDD}) \\[-2pt]
-\oplus\quad
+\oplus\;
 \texttt{10111011\;10111011\;10111011\;10111011}\;(\texttt{0xBBBBBBBB}) \\ \hline
 \texttt{00010001\;10111011\;01110111\;01100110}\;(\texttt{0x11BB7766})
 \end{array}
@@ -281,7 +282,7 @@ Now, what if we search for `0x00` itself (an empty slot in my case)? The mask is
 $$
 \begin{array}{r}
 \texttt{10101010\;00000000\;11001100\;11011101}\;(\texttt{0xAA00CCDD}) \\[-2pt]
-\oplus\quad
+\oplus\;
 \texttt{00000000\;00000000\;00000000\;00000000}\;(\texttt{0x00000000}) \\ \hline
 \texttt{10101010\;00000000\;11001100\;11011101}\;(\texttt{0xAA00CCDD})
 \end{array}
