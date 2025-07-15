@@ -8,8 +8,8 @@ keywords:
  - "Bitwise tricks"
  - "Hash table"
  - "Performance"
-title: "Fast Lookup for 4-Slot Buckets"
-preview: "My little bit-twiddling adventure, how I migrated my hash table from byte array to integer array."
+title: "SIMD Within a Register: How I Doubled Hash Table Lookup Performance"
+preview: "It started with a simple thought: four bytes in a hash table bucket look just like an integer. Luckily, this one idea led to a deep dive into bit-twiddling and a 2x performance boost."
 draft: false
 ---
 
@@ -36,7 +36,9 @@ But those four bytes in a bucket reminded me of something. They *feel* like … 
 
 I wasn’t chasing ultra-low latency—after all, this is C#—but I couldn’t resist experimenting. Could I speed up lookups in my Cuckoo Filter by replacing the 4-byte bucket with a plain old 32-bit integer?
 
-Time to find out.
+Time to find out. 💪
+
+## Contents
 
 ## A Flexible and Simple Implementation
 
@@ -136,7 +138,7 @@ I ran a quick benchmark on both `uint`-based lookups, and the results were revea
 
 </Scrollbox>
 
-The `BitConverter` approach, however, was a step backward. It was even slower than the original, likely due to the additional `Span` overhead.
+The `BitConverter` approach, however, was a step backward. It was even slower than the original, likely due to the additional `Span` overhead. I'm not about to introduce complexity for negative gain, so the `BitConverter` version was a non-starter.
 
 <Scrollbox>
 
@@ -159,9 +161,8 @@ The `BitConverter` approach, however, was a step backward. It was even slower th
 
 </Scrollbox>
 
-I'm not about to introduce complexity for negative gain, so the `BitConverter` version was a non-starter.
-
-Even the shifting version is quite performant, can we do better? Maybe just eliminate the loop entirely?
+> [!question] So what's next?
+> Even the shifting version is quite performant, can we do better? Maybe just eliminate the loop entirely?
 
 ## Finding a Byte with Masking
 
@@ -306,7 +307,7 @@ public bool Contains(byte fingerprint, uint bucketIdx)
 
 We XOR to zero-out matching bytes, then use the bit-twiddling trick to see if any byte is zero.
 
-The benchmarks confirmed this bit-twiddling exercise was well worth the effort. Positive lookup times were nearly **cut in half** and negative lookups **more than halved** compared to the original byte-array implementation. It's a significant leap over the shifting version, too. While readability certainly took a hit, the raw performance gain is a trade-off I’m ok with.
+The benchmarks confirmed this bit-twiddling exercise was well worth the effort. Positive lookups became over **60% faster**, while negative lookups became **more than twice as fast** compared to the original byte-array implementation. It's a significant leap over the shifting version, too. While readability certainly took a hit, the raw performance gain is a trade-off I’m ok with.
 
 <Scrollbox>
 

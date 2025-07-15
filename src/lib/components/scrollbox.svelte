@@ -10,5 +10,6 @@
 	.scrollbox {
 		overflow-x: auto;
 		max-inline-size: fit-content;
+		margin-bottom: var(--gap);
 	}
 </style>
