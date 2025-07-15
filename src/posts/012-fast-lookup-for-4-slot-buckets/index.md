@@ -19,7 +19,18 @@ draft: false
 
 While working on a [Cuckoo Filter](https://maltsev.space/blog/010-cuckoo-filters) implementation in C#, I created an array-like structure for the underlying hash table. I chose an 8-bit fingerprint: it aligns nicely on a byte boundary and still keeps the false-positive rate around **3 %**.
 
-The layout looked straightforward—just a byte array where the start of each bucket is calculated as `bucketIdx * bucketSize`.
+The layout looked straightforward—just a byte array where the start of each bucket is calculated as `bucketIdx * bucketSize`. The size of each bucket is 4 slots, which is a solid choice for Cuckoo Filter.
+
+<Scrollbox>
+
+```svgbob
+              Bucket 0              Bucket 1                      Bucket n
+       +----+----+----+----+ +----+----+----+----+         +----+----+----+----+
+Table: | 3A | 00 | B7 | F2 | | 4C | 91 | 00 | DE |   ...   | AA | 00 | 5F | C8 |
+       +----+----+----+----+ +----+----+----+----+         +----+----+----+----+
+```
+
+</Scrollbox>
 
 But those four bytes in a bucket reminded me of something. They *feel* like … an integer!
 
@@ -58,7 +69,7 @@ public bool Contains(byte fingerprint, uint bucketIdx)
 
 (Please ignore the missing bounds checks—they’re not the point today.)
 
-I’m no bit-twiddling wizard—I live in a cosy, GC-collected world—but those 4 bytes kept itching. A bucket lines up *perfectly* with a 32-bit `uint`; that opens the door to a future lock-free `CAS` (compare-and-swap). So I decided to play.
+I’m no bit-twiddling wizard—I live in a cosy, GC-collected world—but those 4 bytes kept itching. A bucket lines up *perfectly* with a 32-bit `uint`; that opens the door to a future lock-free [compare-and-swap](https://en.wikipedia.org/wiki/Compare-and-swap). So I decided to play.
 
 ## Migrating to a `uint` Table
 
@@ -72,7 +83,6 @@ Switching the backing array is trivial because the hash table is still one-dimen
 Now let’s refactor the lookup:
 
 ```diff
-
 public bool Contains(byte fingerprint, uint bucketIdx)
 {
 -   var s = bucketIdx * 4;
@@ -107,7 +117,7 @@ That still loops. Can we eliminate the loop entirely?
 
 ## Finding a Byte with Masking
 
-Long ago I bookmarked Sean Anderson’s great “[Bit Twiddling Hacks](https://graphics.stanford.edu/%7Eseander/bithacks.html).” One gem there—*Determine if a word has a zero byte*—is exactly what I need. The C# version is nearly identical:
+Long ago I bookmarked Sean Anderson’s great *[Bit Twiddling Hacks](https://graphics.stanford.edu/%7Eseander/bithacks.html)*. One gem there—*Determine if a word has a zero byte*—is exactly what I need. The C# version is nearly identical:
 
 ```csharp
 private static bool HasZero(uint v)
@@ -120,15 +130,35 @@ Admittedly opaque, so let’s unpack it.
 
 The core of the trick is `(v - 0x01010101U) & ~v`. This expression has a special property:
 
-- **For any non-zero byte b**, the most significant bit of (b - 1) & ~b will always be 0.
+- **For any non-zero byte b**, the most significant bit of `(b - 1) & ~b` will always be `0`.
 - **For a zero-byte b = 0x00**, the expression becomes `(0x00 - 1) & ~0x00`, which is `0xFF & 0xFF = 0xFF`. The most significant bit is `1`.
 
 So, this operation creates a "marker" bit (it sets the most significant bit to `1`) in any byte position that was originally `0x00`.
 
 Let's apply it to our `v`, e.g., `0x4462002E`:
 
-1. `v - 0x01010101U` = `0x4360FF2D`
-2. `~v` (i.e. bitwise NOT) = `0xBB9DFFD1`
+First, we subtract `0x01010101U`.
+
+$$
+\begin{array}{r}
+\texttt{01000100\;01100010\;00000000\;00101110}\;(\texttt{0x4462002E}) \\[-2pt]
+-\quad
+\texttt{00000001\;00000001\;00000001\;00000001}\;(\texttt{0x01010101}) \\ \hline
+\texttt{01000011\;01100000\;11111111\;00101101}\;(\texttt{0x4360FF2D})
+\end{array}
+$$
+
+> [!note]
+> Note that this is a single 32-bit subtraction, so borrows can cross byte boundaries. The `0x00` byte borrows from `0x62`, resulting in `0x...60FF...`.
+
+Second, we apply a bitwise NOT to the original value:
+
+$$
+\begin{array}{r}
+\neg\quad\texttt{01000100\;01100010\;00000000\;00101110}\;(\texttt{0x4462002E}) \\ \hline
+\texttt{10111011\;10011101\;11111111\;11010001}\;(\texttt{0xBB9DFFD1})
+\end{array}
+$$
 
 Now, `&` them together:
 
@@ -160,9 +190,12 @@ Great, now I can detect a zero byte without branches. All that remains is to *tu
 
 ## XOR to the Rescue
 
-Let’s assume our integer, aka bucket, is `0x12345678` and I’m looking for byte `0x56` . Without shifts, this seems tough. Luckily, all we need to transform `0x12345678` into something like `0x12340078` , i.e. transform `0x56` byte to `0x00`.
+Let’s assume our integer, aka bucket, is `0x12345678` and I’m looking for byte `0x56`. Without shifts, this seems tough. Luckily, all we need to do is transform the `0x56` byte to `0x00`.
 
-The XOR (`^`) operator has a useful property: `A ^ B = 0` if and only if `A == B`. So, if we apply a mask consisting only of repetitive bits `0x56` , we would transform it to `0x00` in a bucket.
+> [!note]
+> What happens to the other bytes is irrelevant, because our `HasZero` trick only cares if *any* byte is zero.
+
+The XOR (`^`) operator has a useful property: `A ^ B = 0` if and only if `A == B`. So, if we XOR the entire bucket with a repeating mask of our target byte, only the matching byte will become zero.
 
 $$
 \begin{array}{r}
@@ -179,6 +212,34 @@ $$
 \text{mask} \;=\; \text{0x56} \times \text{0x01010101} \;=\; \text{0x56565656}
 
 $$
+
+## What About Existing Zeros?
+
+A careful reader might ask: what happens if the bucket *already* has a zero byte in it? Does that mess up the logic?
+
+Let’s say our bucket is `0xAA00CCDD` and we're searching for a non-zero fingerprint like `0xBB`. The XOR operation transforms the original zero into a non-zero value, so `HasZero` correctly returns `false`.
+
+$$
+\begin{array}{r}
+\texttt{10101010\;00000000\;11001100\;11011101}\;(\texttt{0xAA00CCDD}) \\[-2pt]
+\oplus\quad
+\texttt{10111011\;10111011\;10111011\;10111011}\;(\texttt{0xBBBBBBBB}) \\ \hline
+\texttt{00010001\;10111011\;01110111\;01100110}\;(\texttt{0x11BB7766})
+\end{array}
+$$
+
+Now, what if we search for `0x00` itself (an empty slot in my case)? The mask is `0x00000000`, so the XOR leaves the bucket unchanged. `HasZero` is then applied to the result, which correctly finds the pre-existing zero and returns `true`.
+
+$$
+\begin{array}{r}
+\texttt{10101010\;00000000\;11001100\;11011101}\;(\texttt{0xAA00CCDD}) \\[-2pt]
+\oplus\quad
+\texttt{00000000\;00000000\;00000000\;00000000}\;(\texttt{0x00000000}) \\ \hline
+\texttt{10101010\;00000000\;11001100\;11011101}\;(\texttt{0xAA00CCDD})
+\end{array}
+$$
+
+So no, nothing breaks, the algorithm is still robust: `HasZero` only gives a positive result if a zero byte exists after the XOR, which only happens if our target fingerprint was in the bucket to begin with.
 
 ## Putting It All Together
 
@@ -200,25 +261,25 @@ In benchmarks, this cut both negative and positive lookup time almost *in half* 
 
 <Scrollbox>
 
-| Method                    | Operations | Mean           | Error       | StdDev      | Ratio | RatioSD | Allocated | Alloc Ratio |
-|-------------------------- |----------- |---------------:|------------:|------------:|------:|--------:|----------:|------------:|
-| **ByteTable_PositiveLookups** | **128**        |       **245.2 ns** |     **4.82 ns** |     **6.27 ns** |  **1.00** |    **0.04** |         **-** |          **NA** |
-| IntTable_PositiveLookups  | 128        |       147.7 ns |     1.54 ns |     1.44 ns |  0.60 |    0.02 |         - |          NA |
-| ByteTable_NegativeLookups | 128        |       324.1 ns |     1.93 ns |     1.71 ns |  1.32 |    0.03 |         - |          NA |
-| IntTable_NegativeLookups  | 128        |       147.1 ns |     0.77 ns |     0.69 ns |  0.60 |    0.02 |         - |          NA |
-|                           |            |                |             |             |       |         |           |             |
-| **ByteTable_PositiveLookups** | **1024**       |     **1,845.6 ns** |     **4.46 ns** |     **3.72 ns** |  **1.00** |    **0.00** |         **-** |          **NA** |
-| IntTable_PositiveLookups  | 1024       |     1,139.4 ns |     5.33 ns |     4.72 ns |  0.62 |    0.00 |         - |          NA |
-| ByteTable_NegativeLookups | 1024       |     2,561.2 ns |    49.52 ns |    46.32 ns |  1.39 |    0.02 |         - |          NA |
-| IntTable_NegativeLookups  | 1024       |     1,136.3 ns |     3.52 ns |     2.94 ns |  0.62 |    0.00 |         - |          NA |
-|                           |            |                |             |             |       |         |           |             |
-| **ByteTable_PositiveLookups** | **1048576**    | **1,908,031.9 ns** | **3,278.50 ns** | **3,066.71 ns** |  **1.00** |    **0.00** |         **-** |          **NA** |
-| IntTable_PositiveLookups  | 1048576    | 1,170,627.6 ns | 7,405.55 ns | 6,564.83 ns |  0.61 |    0.00 |         - |          NA |
-| ByteTable_NegativeLookups | 1048576    | 2,574,882.8 ns | 7,435.16 ns | 6,208.70 ns |  1.35 |    0.00 |         - |          NA |
-| IntTable_NegativeLookups  | 1048576    | 1,172,802.0 ns | 1,862.90 ns | 1,454.43 ns |  0.61 |    0.00 |         - |          NA |
+| Method                        | Operations  |               Mean |    Ratio |
+| ----------------------------- | ----------- | -----------------: | -------: |
+| **ByteTable_PositiveLookups** | **128**     |       **245.2 ns** | **1.00** |
+| IntTable_PositiveLookups      | 128         |           147.7 ns |     0.60 |
+| ByteTable_NegativeLookups     | 128         |           324.1 ns |     1.32 |
+| IntTable_NegativeLookups      | 128         |           147.1 ns |     0.60 |
+|                               |             |                    |          |
+| **ByteTable_PositiveLookups** | **1024**    |     **1,845.6 ns** | **1.00** |
+| IntTable_PositiveLookups      | 1024        |         1,139.4 ns |     0.62 |
+| ByteTable_NegativeLookups     | 1024        |         2,561.2 ns |     1.39 |
+| IntTable_NegativeLookups      | 1024        |         1,136.3 ns |     0.62 |
+|                               |             |                    |          |
+| **ByteTable_PositiveLookups** | **1048576** | **1,908,031.9 ns** | **1.00** |
+| IntTable_PositiveLookups      | 1048576     |     1,170,627.6 ns |     0.61 |
+| ByteTable_NegativeLookups     | 1048576     |     2,574,882.8 ns |     1.35 |
+| IntTable_NegativeLookups      | 1048576     |     1,172,802.0 ns |     0.61 |
 
 </Scrollbox>
 
 ## Final Thoughts
 
-I’m still not a huge fan of stuffing dense bit tricks into production C#—they can be hard to read and even harder to maintain if something goes wrong. But I think this little adventure has been worth it: the lookup path is now twice as fast, and the codebase is still compact enough to keep the trick well-commented. I hope these notes save someone else a detour—or at the very least that you enjoyed this little optimization trip with me.
+I’m still not a huge fan of stuffing dense [bit tricks](https://maltsev.space/blog/011-practical-bitwise-tricks-in-everyday-code) into production C#—they can be hard to read and even harder to maintain if something goes wrong. But I think this little adventure has been worth it: the lookup path is now twice as fast, and the codebase is still compact enough to keep the trick well-commented. I hope these notes save someone else a detour—or at the very least that you enjoyed this little optimization trip with me.
