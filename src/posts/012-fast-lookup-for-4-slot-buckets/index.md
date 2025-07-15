@@ -13,6 +13,10 @@ preview: "My little bit-twiddling adventure, how I migrated my hash table from b
 draft: false
 ---
 
+<script>
+    import { Scrollbox } from '$lib/components';
+</script>
+
 While working on a [Cuckoo Filter](https://maltsev.space/blog/010-cuckoo-filters) implementation in C#, I created an array-like structure for the underlying hash table. I chose an 8-bit fingerprint: it aligns nicely on a byte boundary and still keeps the false-positive rate around **3 %**.
 
 The layout looked straightforward—just a byte array where the start of each bucket is calculated as `bucketIdx * bucketSize`.
@@ -194,6 +198,8 @@ We XOR to zero-out matching bytes, then use the bit-twiddling trick to see if an
 
 In benchmarks, this cut both negative and positive lookup time almost *in half* compared to the byte-array version. Readability certainly took a hit, but at least I can justify it with real performance.
 
+<Scrollbox>
+
 | Method                    | Operations | Mean           | Error       | StdDev      | Ratio | RatioSD | Allocated | Alloc Ratio |
 |-------------------------- |----------- |---------------:|------------:|------------:|------:|--------:|----------:|------------:|
 | **ByteTable_PositiveLookups** | **128**        |       **245.2 ns** |     **4.82 ns** |     **6.27 ns** |  **1.00** |    **0.04** |         **-** |          **NA** |
@@ -210,6 +216,8 @@ In benchmarks, this cut both negative and positive lookup time almost *in half* 
 | IntTable_PositiveLookups  | 1048576    | 1,170,627.6 ns | 7,405.55 ns | 6,564.83 ns |  0.61 |    0.00 |         - |          NA |
 | ByteTable_NegativeLookups | 1048576    | 2,574,882.8 ns | 7,435.16 ns | 6,208.70 ns |  1.35 |    0.00 |         - |          NA |
 | IntTable_NegativeLookups  | 1048576    | 1,172,802.0 ns | 1,862.90 ns | 1,454.43 ns |  0.61 |    0.00 |         - |          NA |
+
+</Scrollbox>
 
 ## Final Thoughts
 
