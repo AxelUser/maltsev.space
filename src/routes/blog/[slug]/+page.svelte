@@ -57,16 +57,16 @@
 	/>
 </svelte:head>
 
-<OneColumnLayout>
-	<ArticleHero
-		title={data.title}
-		date={data.date}
-		preview={data.preview}
-		author={bio.fullName}
-		{heroImage}
-		placeholder={data.placeholderUrl}
-	/>
+<ArticleHero
+	title={data.title}
+	date={data.date}
+	preview={data.preview}
+	author={bio.fullName}
+	{heroImage}
+	placeholder={data.placeholderUrl}
+/>
 
+<OneColumnLayout>
 	<article>
 		<div class="post-navigation top-navigation">
 			<Button href="/blog">← Back to all posts</Button>

@@ -77,9 +77,9 @@
 
 	.hero-background-container {
 		position: relative;
-		width: 100%;
+		max-width: var(--content-width);
 		padding: var(--gap-large) 0;
-		margin-bottom: var(--gap);
+		margin: 0 auto var(--gap);
 		color: var(--text-on-dark-bg, white);
 	}
 
@@ -171,12 +171,21 @@
 	}
 
 	@media (--md-n-below) {
+		.hero-background-container {
+			max-width: none;
+		}
+
 		.hero-content hgroup {
 			text-align: center;
 		}
 
 		.post-meta {
 			justify-content: center;
+		}
+
+		.post-preview {
+			padding-left: var(--gap);
+			padding-right: var(--gap);
 		}
 	}
 </style>
