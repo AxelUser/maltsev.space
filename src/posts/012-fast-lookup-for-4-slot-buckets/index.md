@@ -113,7 +113,55 @@ The bucket offset disappears because each `uint` is a bucket. But I’ve lost th
   }
 ```
 
-That still loops. Can we eliminate the loop entirely?
+I ran a quick benchmark on both `uint`-based lookups, and the results were revealing. The shifting version gave a nice speed boost, about **35%** faster than the original byte-array loop. I've also tested the unrolled loop, but it showed no significant improvement because the compiler has already unrolled it.
+
+<Scrollbox>
+
+| Method                        | Operations  |               Mean |    Ratio |
+| ----------------------------- | ----------- | -----------------: | -------: |
+| **ByteTable_PositiveLookups** | **128**     |       **239.9 ns** | **1.00** |
+| IntTable_PositiveLookups      | 128         |           166.9 ns |     0.70 |
+| ByteTable_NegativeLookups     | 128         |           321.9 ns |     1.34 |
+| IntTable_NegativeLookups      | 128         |           203.9 ns |     0.85 |
+|                               |             |                    |          |
+| **ByteTable_PositiveLookups** | **1024**    |     **1,847.0 ns** | **1.00** |
+| IntTable_PositiveLookups      | 1024        |         1,300.9 ns |     0.70 |
+| ByteTable_NegativeLookups     | 1024        |         2,523.7 ns |     1.37 |
+| IntTable_NegativeLookups      | 1024        |         1,597.2 ns |     0.86 |
+|                               |             |                    |          |
+| **ByteTable_PositiveLookups** | **1048576** | **1,907,503.2 ns** | **1.00** |
+| IntTable_PositiveLookups      | 1048576     |     1,762,474.3 ns |     0.92 |
+| ByteTable_NegativeLookups     | 1048576     |     2,575,301.5 ns |     1.35 |
+| IntTable_NegativeLookups      | 1048576     |     1,637,653.6 ns |     0.86 |
+
+</Scrollbox>
+
+The `BitConverter` approach, however, was a step backward. It was even slower than the original, likely due to the additional `Span` overhead.
+
+<Scrollbox>
+
+| Method                        | Operations  |               Mean |    Ratio |
+| ----------------------------- | ----------- | -----------------: | -------: |
+| **ByteTable_PositiveLookups** | **128**     |       **239.7 ns** | **1.00** |
+| IntTable_PositiveLookups      | 128         |           366.8 ns |     1.53 |
+| ByteTable_NegativeLookups     | 128         |           322.6 ns |     1.35 |
+| IntTable_NegativeLookups      | 128         |           429.2 ns |     1.79 |
+|                               |             |                    |          |
+| **ByteTable_PositiveLookups** | **1024**    |     **1,850.0 ns** | **1.00** |
+| IntTable_PositiveLookups      | 1024        |         2,877.2 ns |     1.56 |
+| ByteTable_NegativeLookups     | 1024        |         2,512.9 ns |     1.36 |
+| IntTable_NegativeLookups      | 1024        |         3,396.8 ns |     1.84 |
+|                               |             |                    |          |
+| **ByteTable_PositiveLookups** | **1048576** | **1,909,607.9 ns** | **1.00** |
+| IntTable_PositiveLookups      | 1048576     |     3,352,454.1 ns |     1.76 |
+| ByteTable_NegativeLookups     | 1048576     |     2,566,696.5 ns |     1.34 |
+| IntTable_NegativeLookups      | 1048576     |     3,536,050.6 ns |     1.85 |
+
+</Scrollbox>
+
+I'm not about to introduce complexity for negative gain, so the `BitConverter` version was a non-starter.
+
+Even the shifting version is quite performant, can we do better? Maybe just eliminate the loop entirely?
 
 ## Finding a Byte with Masking
 
@@ -257,7 +305,7 @@ public bool Contains(byte fingerprint, uint bucketIdx)
 
 We XOR to zero-out matching bytes, then use the bit-twiddling trick to see if any byte is zero.
 
-In benchmarks, this cut both negative and positive lookup time almost *in half* compared to the byte-array version. Readability certainly took a hit, but at least I can justify it with real performance.
+The benchmarks confirmed this bit-twiddling exercise was well worth the effort. Positive lookup times were nearly **cut in half** and negative lookups **more than halved** compared to the original byte-array implementation. It's a significant leap over the shifting version, too. While readability certainly took a hit, the raw performance gain is a trade-off I’m ok with.
 
 <Scrollbox>
 
