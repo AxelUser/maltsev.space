@@ -482,6 +482,10 @@ details.callout summary.callout-title {
 	--rc-color: var(--purple-5);
 }
 
+[data-callout='question'] {
+	--rc-color: var(--blue-5);
+}
+
 [data-callout='quote'] {
 	--rc-color: var(--text-2);
 	font-style: italic;
@@ -508,6 +512,10 @@ details.callout summary.callout-title {
 	[data-callout='important'] {
 		--rc-color: var(--purple-6);
 	}
+
+	[data-callout='question'] {
+		--rc-color: var(--blue-6);
+	}
 }
 
 [color-scheme='light'] [data-callout='tip'] {
@@ -529,6 +537,10 @@ details.callout summary.callout-title {
 
 [color-scheme='light'] [data-callout='important'] {
 	--rc-color: var(--purple-6);
+}
+
+[color-scheme='light'] [data-callout='question'] {
+	--rc-color: var(--blue-6);
 }
 
 /* Responsive adjustments for callouts */
