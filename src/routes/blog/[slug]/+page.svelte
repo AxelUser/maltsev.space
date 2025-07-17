@@ -9,7 +9,7 @@
 	import mermaid from 'mermaid';
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
-	import { getPostHeroImage, getOGImagePath } from '$lib/utils';
+	import { getPostHeroImage } from '$lib/utils';
 	import PostsGrid from '$lib/components/posts-grid.svelte';
 	import { OneColumnLayout } from '$lib/components/layouts';
 	const { data }: PageProps = $props();
@@ -40,7 +40,7 @@
 <SEO
 	title={data.title}
 	description={data.preview || `Read about ${data.title} on ${config.websiteTitle}`}
-	image={getOGImagePath(data.slug)}
+	image={data.ogImagePath}
 	imageAlt={`${data.title} - ${data.title || 'Blog post'}`}
 	url={`/blog/${data.slug}`}
 	type="article"
