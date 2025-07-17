@@ -40,6 +40,7 @@ export const load: PageLoad = async ({ params, data }) => {
 			series,
 			placeholderUrl: data.placeholderUrl,
 			views: data.views,
+			ogImagePath: data.ogImagePath,
 			referencedPost
 		};
 	} catch (err) {
