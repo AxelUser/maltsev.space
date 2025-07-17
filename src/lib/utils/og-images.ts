@@ -1,5 +1,5 @@
 export function getOGImagePath(slug: string): string {
-	return `/images/og/${slug}.png`;
+	return `/images/og/${slug}.jpg`;
 }
 
 export function getOGImageUrl(slug: string, baseUrl: string): string {
