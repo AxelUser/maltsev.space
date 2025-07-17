@@ -103,7 +103,8 @@ async function generateOGImage(title, preview, date, author, heroImageBase64, ou
 
 	// Take screenshot
 	const screenshot = await page.screenshot({
-		type: 'png',
+		type: 'jpeg',
+		quality: 90,
 		clip: { x: 0, y: 0, width: 1536, height: 1024 }
 	});
 
@@ -162,7 +163,7 @@ async function generateAllOGImages() {
 				continue;
 			}
 
-			const outputPath = join(outputDir, `${slug}.png`);
+			const outputPath = join(outputDir, `${slug}.jpg`);
 
 			// Check if OG image already exists (unless force mode is enabled)
 			if (!forceRegenerate && existsSync(outputPath)) {
@@ -184,7 +185,7 @@ async function generateAllOGImages() {
 
 			await generateOGImage(title, preview, date, author, heroImageBase64, outputPath);
 
-			console.log(`✅ Generated: ${slug}.png`);
+			console.log(`✅ Generated: ${slug}.jpg`);
 			generatedCount++;
 		} catch (error) {
 			console.error(`❌ Error generating OG image for ${postFile}:`, error.message);
