@@ -5,6 +5,8 @@ on:
     branches:
       - main
   workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *'
 
 jobs:
   deploy:
@@ -33,6 +35,8 @@ jobs:
         env:
           PUBLIC_POSTHOG_API_KEY: ${{ secrets.PUBLIC_POSTHOG_API_KEY }}
           PUBLIC_POSTHOG_HOST: ${{ vars.PUBLIC_POSTHOG_HOST }}
+          POSTHOG_ANALYTICS_API_KEY: ${{ secrets.POSTHOG_ANALYTICS_API_KEY }}
+          POSTHOG_ANALYTICS_PROJECT_ID: ${{ vars.POSTHOG_ANALYTICS_PROJECT_ID }}
         run: pnpm run build
 
       - name: Deploy

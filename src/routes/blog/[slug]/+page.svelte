@@ -64,6 +64,7 @@
 	author={bio.fullName}
 	{heroImage}
 	placeholder={data.placeholderUrl}
+	views={data.views}
 />
 
 <OneColumnLayout>
