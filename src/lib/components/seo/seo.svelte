@@ -30,11 +30,15 @@
 		noindex = false
 	}: Props = $props();
 
-	const fullTitle = title === config.websiteTitle ? title : `${title} | ${config.websiteTitle}`;
-	const fullUrl = url ? `${config.websiteUrl.replace(/\/$/, '')}${url}` : config.websiteUrl;
-	const fullImageUrl = image?.startsWith('http')
-		? image
-		: `${config.websiteUrl.replace(/\/$/, '')}${image}`;
+	const fullTitle = $derived(
+		title === config.websiteTitle ? title : `${title} | ${config.websiteTitle}`
+	);
+	const fullUrl = $derived(
+		url ? `${config.websiteUrl.replace(/\/$/, '')}${url}` : config.websiteUrl
+	);
+	const fullImageUrl = $derived(
+		image?.startsWith('http') ? image : `${config.websiteUrl.replace(/\/$/, '')}${image}`
+	);
 
 	// JSON-LD structured data
 	const personSchema = $derived({
