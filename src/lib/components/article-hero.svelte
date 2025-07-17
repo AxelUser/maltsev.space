@@ -85,6 +85,7 @@
 		padding: var(--gap-large) 0;
 		margin: 0 auto var(--gap);
 		color: var(--text-on-dark-bg, white);
+		background-color: var(--surface-1);
 	}
 
 	.hero-image {
@@ -98,7 +99,6 @@
 
 	.hero-background-image {
 		opacity: 0;
-		z-index: -1;
 		transition: opacity 0.3s ease-in-out;
 	}
 
@@ -108,7 +108,6 @@
 
 	.hero-placeholder-image {
 		opacity: 0.3;
-		z-index: -2;
 		animation: pulse 2s ease-in-out infinite;
 	}
 
