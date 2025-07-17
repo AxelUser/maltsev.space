@@ -8,3 +8,8 @@ export interface PostPreview {
 	draft: boolean;
 	placeholder?: string;
 }
+
+export interface ArticleAnalytics {
+	slug: string;
+	views: number;
+}

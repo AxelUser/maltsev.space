@@ -39,6 +39,7 @@ export const load: PageLoad = async ({ params, data }) => {
 			slug: params.slug,
 			series,
 			placeholderUrl: data.placeholderUrl,
+			views: data.views,
 			referencedPost
 		};
 	} catch (err) {

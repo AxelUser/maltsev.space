@@ -1,6 +1,4 @@
 <script lang="ts">
-	import HeroPlanet from './hero-planet.svelte';
-
 	type Props = {
 		title: string;
 		date: string;
@@ -8,6 +6,7 @@
 		author: string;
 		heroImage: any;
 		placeholder?: string;
+		views?: number;
 	};
 
 	const {
@@ -16,7 +15,8 @@
 		preview,
 		author,
 		heroImage,
-		placeholder: placeholderBase64
+		placeholder: placeholderBase64,
+		views
 	}: Props = $props();
 
 	let imageLoaded = $state(false);
@@ -63,6 +63,10 @@
 				<time datetime="2024-06-15" class="publish-date">{date}</time>
 				<span class="meta-separator">•</span>
 				<span class="author-name">by {author}</span>
+				{#if views}
+					<span class="meta-separator">•</span>
+					<span class="views-count">{views.toLocaleString()} views</span>
+				{/if}
 			</div>
 			<h1 class="space-title">{title}</h1>
 			{#if preview}
