@@ -115,7 +115,7 @@ public class ViewModel: INotifyPropertyChanged
 
 In this example, the `OnPropertyChanged` method uses the `[CallerMemberName]` attribute to automatically provide the name of the property that has changed, eliminating the need to manually specify it each time.
 
-## Final thoughts
+## Final Thoughts
 
 Leveraging caller information attributes in C# can significantly simplify your debugging, logging, and event-handling code, making it more robust and easier to maintain.
 

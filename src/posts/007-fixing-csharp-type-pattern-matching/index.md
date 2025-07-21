@@ -15,7 +15,7 @@ hero: /images/blog/007-fixing-csharp-type-pattern-matching/hero.jpg
 
 Hello there! Are you looking for ways to make your code more robust, maintainable, and less prone to runtime errors? Well, buckle up because today we're going to explore how to substitute type pattern matching in C# with the Visitors pattern. Yes, I know it sounds a bit strange, but stick with me, and you'll see how this can help you write better code.
 
-## Task example: Validation of property values
+## Task Example: Validation of Property Values
 
 So let's start with an example. Imagine we have a marker interface for some property value - `IValue`. It has two implementations - `StringValue` and `NumericValue`, holding `string` and `long` values respectively.
 
@@ -73,7 +73,7 @@ Write a property value: -42
 Value '-42' is valid: False
 ```
 
-## The issue
+## The Issue
 
 At first glance everything looks fine! But what if we have dozens of such type pattern matching across the project, and some other developer introduces a new type for a value, for example, `DateTimeValue`?
 
@@ -202,7 +202,7 @@ while (true)
 
 Voilà, now not only the bug is fixed, but also the chance of missed type handling is reduced, so in overall we strengthen our type-safety guarantees.
 
-## Final thoughts
+## Final Thoughts
 
 However Visitor pattern is a lot more verbose than simple switch statement or expression, we are now almost absolutely sure that the developer doesn't miss to handle its new type. And as a reviewer, one will see all places that were changed in git diff without the need to double-check in the code of the project.
 

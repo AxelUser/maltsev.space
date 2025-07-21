@@ -18,7 +18,7 @@ hero: /images/blog/005-dictionary-on-generics/hero.jpg
 2. In code examples I've used **Nullable Reference Types**, which is a new feature from **C# 8**. They don't affect the performance and definitely not a main point of the article. If you're curious, check the [documentation](https://docs.microsoft.com/en-us/dotnet/csharp/nullable-references).
 3. All code is available on [GitHub](https://github.com/AxelUser/examples/tree/master/DotNet/DictionaryOfTypes).
 
-## Task: create a factory for REST clients
+## Task: Create a Factory for REST Clients
 
 When you are integrating different services into each other, it's always a very time-consuming process to write clients for all of them. Luckily, if those RESTful services provide their API schema in **OpenAPI** (or previously named **Swagger**) format, chances are great that there's a generator of clients for this common type of schema format.
 
@@ -50,7 +50,7 @@ public partial class SomeResourceClient : ISomeResourceClient
 }
 ```
 
-## Automating client creation
+## Automating Client Creation
 
 Although clients are implementing their own interfaces, it's still hard to test code, that creates clients via constructors. For a testable code it's required to have all those clients as dependencies or delegate their creation into a new dependency. It's possible to resolve clients via **Dependency Injection**, because _HttpClient_ can be effectively taken from reusable pool via [IHttpClientFactory](https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests), and most of the DI frameworks offer you a zero configuration for that feature.
 
@@ -242,7 +242,7 @@ Anyway, let's run our benchmark and see how things are doing:
 
 We may see, that the provider performed quite fast (for now), but had allocated factory objects for each invocation of the factory provider. As I've said, for this issue there's a solution - **caching factories**.
 
-## Store factories into Dictionary
+## Store Factories into Dictionary
 
 The most obvious way to cache concrete factories is to store mapping from interface to factory, not just the mapping between interfaces and their implementation.
 
@@ -334,7 +334,7 @@ We may stay with this implementation, but if that was an option, I've never wrot
 
 So, is there a way to improve speed even more? Well, **that's when generics steal the show!**
 
-## Delegate caching to JIT
+## Delegate Caching to JIT
 
 This trick is mostly inspired by the way how [Array.Empty](https://docs.microsoft.com/en-us/dotnet/api/system.array.empty?view=netcore-3.1) works.
 
@@ -342,7 +342,7 @@ Empty arrays are best candidates for caching, because their construction doesn't
 
 When you invoke `Array.Empty<MyClass>`, it internally invokes a static read-only field `Empty` of static generic class `EmptyArray<MyClass>`, which initializes and returns an empty array of type `MyClass` (have a look at [sources](https://github.com/dotnet/runtime/blob/3705185af806e273ccef98e44699400f0416c452/src/libraries/System.Private.CoreLib/src/System/Array.cs#L694-L704)). Static field is initialized during the time of a first access to the field of the class _EmptyArray_. This is guaranteed from the fact how generics and static classes work in **CLR** (Common Language Runtime). For your information, that's how you can implement a [simple thread-safe singleton](https://csharpindepth.com/articles/singleton) in .Net.
 
-## How CLR compiles generic classes
+## How CLR Compiles Generic Classes
 
 Generics are types, that contain a type parameter, which isn't known at compile time (e.g. `List<T>`). When dotnet compiler sees open generic type, it compiles it into IL with the same generic type parameter.
 
@@ -359,7 +359,7 @@ It worth mentioning, that for value types, like structs and primitives, JIT will
 
 Using the knowledge about how generics are compiled and how static fields are initialized, we can implement a cache for factory producer.
 
-## Implementing a generic-based cached producer
+## Implementing a Generic-Based Cached Producer
 
 Let's create a new static class `CachedFactory<T>` with static field `Instance`, which is initialized with a factory for the concrete client implementing interface _T_. The factory creation is extracted into the method, that gets implementation type from static dictionary and creates a factory.
 

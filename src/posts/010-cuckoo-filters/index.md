@@ -418,7 +418,7 @@ In practice, you can choose between **8 bits**, which are nicely aligned to 1 by
 | **12 bits** | $8/4096 = 0.001953\;(\;0.195\%\;)$ |
 | **16 bits** | $8/65 536 = 0.00012207\;(\;0.0122\%\;)$ |
 
-## Final thoughts
+## Final Thoughts
 
 I still remember how excited I was when I learned that a Cuckoo Filter could delete elements without blowing up the data structure like other Bloom filter variants. What also surprised me was how those bucket-hopping insertions seemed unreliable on paper, but they work remarkably well in practice.
 And that clever XOR trick! I’ve always had a soft spot for the bit-flip operator. Back when I studied Boolean algebra, XOR felt confusing and weirdly unnecessary. But once I understood that it could reverse itself to undo an operation, it felt like magic.

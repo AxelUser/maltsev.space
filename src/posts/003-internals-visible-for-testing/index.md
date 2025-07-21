@@ -13,7 +13,7 @@ legacy: true
 hero: /images/blog/003-internals-visible-for-testing/hero.jpg
 ---
 
-## About tests for private code
+## About Tests for Private Code
 
 Well, most of the time, if you need to test some private logic, maybe you it's better to be SPECIFIC and extract it to public members of new classes. Sometimes decomposition "rocks" and you code became clearer and more maintainable, so check it out before.
 
@@ -25,7 +25,7 @@ In that case you have 3 simple options and all of them somehow break the idea of
 - Make those members `protected`, inherit into your testable stub, which will make those members `public`, or derive your test-fixture from it. This can also work, but you have to write some boilerplate code. However, it is not suitable, if your class is sealed. For example, if you don't want users to extend it, as it may break the logic of connected classes.
 - Make those members `internal` and add `InternalsVisibleTo` attribute on assembly-level. This approach also breaks encapsulation, but only inside you assembly, all your public interfaces for users will stay clean and secure. And you don't need to use inheritance and write stubs.
 
-## How to use `InternalsVisibleTo`
+## How to Use `InternalsVisibleTo`
 
 For example, you have got a class `Some` with public method `Increment` and internal property `Counter` as object's state:
 

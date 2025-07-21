@@ -14,7 +14,7 @@ legacy: true
 hero: /images/blog/004-deconstructors/hero.jpg
 ---
 
-## About tuples in C# 7
+## About Tuples in C# 7
 
 New tuples and its support in C# 7 are blazing-cool:
 
@@ -24,7 +24,7 @@ New tuples and its support in C# 7 are blazing-cool:
 
 Moreover, the deconstruction can be used not only for build-in tuples, but also for your own classes and structures.
 
-## Deconstruction for tuples
+## Deconstruction for Tuples
 
 Let's start with the original usage for tuples. If you are already familiar with it, you may jump to [the next block](#implementing-deconstruction-for-custom-types).
 
@@ -100,7 +100,7 @@ static void Main(string[] args)
 }
 ```
 
-## Implementing deconstruction for custom types
+## Implementing Deconstruction for Custom Types
 
 Using deconstruction of tuples is quite straightforward, how about user-defined types? You may want `GetMostFrequentWord` to return your own struct `WordStat`:
 
@@ -187,7 +187,7 @@ static void Main(string[] args)
 }
 ```
 
-## Use-cases of deconstruction
+## Use-Cases of Deconstruction
 
 Imagine a service, which sends you some data, for example aggregational count of some records in some data-sources. Method takes a long time to aggregate. Let's say it's signature will be:
 
@@ -311,7 +311,7 @@ if(totalSuccess)
 
 And that's it, were are ready to go on!
 
-## Further reading
+## Further Reading
 
 - [Documentation about deconstruction](https://docs.microsoft.com/ru-ru/dotnet/csharp/deconstruct)
 - [Some investigation about how new tuples work](https://blogs.msdn.microsoft.com/seteplia/2017/11/01/dissecting-the-tuples-in-c-7/)

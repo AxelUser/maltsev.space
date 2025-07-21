@@ -38,7 +38,7 @@ If we look through the output format for `$currentOp`, we'll notice that it has 
 
 Now, let's look at some MongoDB shell examples.
 
-### Starting delete operation with "JobId"
+### Starting Delete Operation with "JobId"
 
 To pass `JobId` into the comment when we start the delete operation, we can use the following command:
 
@@ -74,7 +74,7 @@ The command document contains several fields:
 
 When executed, this query will delete all documents from the `"Events"` collection where the `"clientId"` field equals `0`. The deletion will be executed in parallel and there is no limit to the number of documents that can be deleted. The optional comment included in the command document is "job:blog-test", which is our `JobId`.
 
-### Finding running operation by "JobId"
+### Finding Running Operation by "JobId"
 
 MongoDB query below uses the aggregate method to find a specific operation that has a JobId in its command.comment field:
 
