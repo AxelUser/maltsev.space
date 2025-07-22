@@ -386,10 +386,10 @@ Unlike a Bloom filter, a Cuckoo Filter’s fingerprint length is chosen almost s
 
 During a negative lookup, we compare the query fingerprint with the at most `2b` fingerprints that live in the two candidate buckets (`b` slots each).
 
-Each comparison matches by pure chance with probability $2^{-f}$, the **upper bound** on the false-positive probability ε is
+Each comparison matches by pure chance with probability $2^{-f}$, so after `2b` comparisons, as derived by Fan et al., the **upper bound** on the false-positive probability ε is
 
 $$
-\epsilon \le \frac{2\,b}{2^{f}} \tag{1}
+\epsilon \le 1 - \left(1 - 2^{-f}\right)^{2b} \;\approx\; \frac{2b}{2^{f}} \tag{1}
 $$
 
 Where:
