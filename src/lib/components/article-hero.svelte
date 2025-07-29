@@ -16,7 +16,8 @@
 		author,
 		heroImage,
 		placeholder: placeholderBase64,
-		views
+		views,
+		readingTimeMinutes
 	}: Props = $props();
 
 	let imageLoaded = $state(false);
@@ -60,12 +61,16 @@
 	<div class="hero-content">
 		<hgroup>
 			<div class="post-meta">
-				<time datetime="2024-06-15" class="publish-date">{date}</time>
+				<time datetime="2024-06-15" class="meta-item">{date}</time>
 				<span class="meta-separator">•</span>
-				<span class="author-name">by {author}</span>
+				<span class="meta-item">by {author}</span>
+				{#if readingTimeMinutes}
+					<span class="meta-separator">•</span>
+					<span class="meta-item">{readingTimeMinutes} min</span>
+				{/if}
 				{#if views}
 					<span class="meta-separator">•</span>
-					<span class="views-count">{views.toLocaleString()} views</span>
+					<span class="meta-item">{views.toLocaleString()} views</span>
 				{/if}
 			</div>
 			<h1 class="space-title">{title}</h1>
@@ -150,18 +155,14 @@
 		font-weight: var(--font-weight-5);
 	}
 
-	.publish-date {
-		color: inherit;
+	.meta-item {
+		color: var(--text-2);
+		opacity: 0.9;
 	}
 
 	.meta-separator {
 		color: var(--text-3);
 		opacity: 0.6;
-	}
-
-	.author-name {
-		color: inherit;
-		opacity: 0.9;
 	}
 
 	.post-preview {
@@ -187,6 +188,14 @@
 
 		.post-meta {
 			justify-content: center;
+		}
+
+		.meta-item {
+			font-size: 0.8rem;
+		}
+
+		.meta-separator {
+			font-size: 0.8rem;
 		}
 
 		.post-preview {

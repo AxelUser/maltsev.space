@@ -36,6 +36,7 @@ export const load: PageLoad = async ({ params, data }) => {
 			keywords: post.metadata?.keywords as string[] | undefined,
 			tags: post.metadata?.tags as string[] | undefined,
 			draft: !!post.metadata?.draft,
+			readingTimeMinutes: Math.round(post.metadata?.readingTime?.minutes as number),
 			slug: params.slug,
 			series,
 			placeholderUrl: data.placeholderUrl,

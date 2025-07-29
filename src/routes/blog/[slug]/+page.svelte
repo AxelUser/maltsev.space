@@ -65,6 +65,7 @@
 	{heroImage}
 	placeholder={data.placeholderUrl}
 	views={data.views}
+	readingTimeMinutes={data.readingTimeMinutes}
 />
 
 <OneColumnLayout>
