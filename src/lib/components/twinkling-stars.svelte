@@ -10,8 +10,16 @@
 	const { density = 0.00008, maxStars = 30, resizeThreshold = 100 }: Props = $props();
 
 	let starsContainer: HTMLDivElement;
-	let stars: { x: number; y: number; size: number; opacity: number; delay: number }[] = $state([]);
-	let resizeTimer: number | undefined = $state(undefined);
+	let stars: {
+		x: number;
+		y: number;
+		size: number;
+		opacity: number;
+		delay: number;
+		pixelX?: number;
+		pixelY?: number;
+	}[] = $state([]);
+	let resizeTimer: ReturnType<typeof setTimeout> | undefined = $state(undefined);
 	let innerWidth = $state(0);
 	let innerHeight = $state(0);
 	let prevWidth = $state(0);
@@ -38,9 +46,14 @@
 		const starCount = Math.min(Math.round(viewportArea * baseDensity), mobileMaxStars);
 
 		for (let i = 0; i < starCount; i++) {
+			const xPercent = Math.random() * 100;
+			const yPercent = Math.random() * 100;
+
 			stars.push({
-				x: Math.random() * 100,
-				y: Math.random() * 100,
+				x: xPercent,
+				y: yPercent,
+				pixelX: isMobile ? (xPercent / 100) * innerWidth : undefined,
+				pixelY: isMobile ? (yPercent / 100) * innerHeight : undefined,
 				size: Math.random() * 1.2 + 0.8,
 				opacity: Math.random() * 0.4 + 0.2,
 				delay: Math.random() * 6
@@ -87,7 +100,14 @@
 		<div
 			class="star"
 			class:mobile={isMobile}
-			style="left: {star.x}%; top: {star.y}%; --star-size: {star.size}rem; --star-opacity: {star.opacity}; --animation-delay: {star.delay}s;"
+			style="
+				{isMobile && star.pixelX !== undefined && star.pixelY !== undefined
+				? `left: ${star.pixelX}px; top: ${star.pixelY}px;`
+				: `left: ${star.x}%; top: ${star.y}%;`}
+				--star-size: {star.size}rem; 
+				--star-opacity: {star.opacity}; 
+				--animation-delay: {star.delay}s;
+			"
 		>
 			<svg viewBox="0 0 100 100" class="star-svg">
 				<defs>
