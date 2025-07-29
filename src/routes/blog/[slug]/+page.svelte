@@ -65,6 +65,7 @@
 	{heroImage}
 	placeholder={data.placeholderUrl}
 	views={data.views}
+	readingTimeMinutes={data.readingTimeMinutes}
 />
 
 <OneColumnLayout>
@@ -137,6 +138,8 @@
 		margin: 0 auto;
 		padding-bottom: var(--gap-large);
 		max-width: var(--max-width-prose, 70ch);
+		border-radius: var(--radius-3);
+		background: color-mix(in srgb, var(--surface-1) 95%, transparent);
 	}
 
 	.post-footer {

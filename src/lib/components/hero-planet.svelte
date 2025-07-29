@@ -40,9 +40,10 @@
 	@import 'open-props/media';
 	.planet-container {
 		position: relative;
-		width: 500px;
-		height: 500px;
+		width: 540px;
+		height: 540px;
 		margin: var(--gap) 0;
+		overflow: hidden;
 	}
 
 	.planet {
@@ -181,8 +182,8 @@
 
 	@media (--md-n-below) {
 		.planet-container {
-			width: 350px;
-			height: 350px;
+			width: 380px;
+			height: 380px;
 		}
 
 		.planet {

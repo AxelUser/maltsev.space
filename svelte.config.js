@@ -9,6 +9,7 @@ import rehypeKatexSvelte from 'rehype-katex-svelte';
 import remarkMath from 'remark-math';
 import remarkSVGBob from 'remark-svgbob';
 import rehypeCallouts from 'rehype-callouts';
+import readingTime from 'mdsvex-reading-time';
 import { remarkLinksToReferences } from './src/lib/plugins/remark-links-to-references.js';
 
 const lightTheme = 'material-theme-palenight';
@@ -40,7 +41,8 @@ const mdsvexOptions = {
 		[remarkToc, { tight: true, maxDepth: 3 }],
 		remarkMath,
 		remarkSVGBob,
-		remarkLinksToReferences
+		remarkLinksToReferences,
+		readingTime
 	],
 	rehypePlugins: [
 		slug,

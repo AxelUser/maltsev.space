@@ -20,7 +20,7 @@ html {
 	--link-visited-dark: var(--purple-3);
 	--accent-dark: var(--cyan-5);
 
-	--star-dark: var(--yellow-3);
+	--star-dark: var(--gray-0);
 	--planet-dark: var(--cyan-7);
 	--nebula-dark: var(--purple-6);
 
@@ -40,7 +40,7 @@ html {
 	--link-visited-light: var(--purple-3);
 	--accent-light: var(--cyan-4);
 
-	--star-light: var(--yellow-3);
+	--star-light: var(--gray-0);
 	--planet-light: var(--cyan-5);
 	--nebula-light: var(--purple-4);
 
