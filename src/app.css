@@ -372,14 +372,14 @@ html {
 	padding: 0;
 	background: color-mix(in srgb, var(--rc-color) 3%, var(--surface-1));
 	border: 1px solid color-mix(in srgb, var(--surface-3) 30%, transparent);
-	border-left: 4px solid var(--rc-color);
+	border-left: 4px solid color-mix(in srgb, var(--rc-color) 70%, transparent);
 	overflow: hidden;
 	transition: all var(--transition-fast);
 }
 
 .callout:hover {
 	background: color-mix(in srgb, var(--rc-color) 5%, var(--surface-1));
-	border-left-color: color-mix(in srgb, var(--rc-color) 120%, var(--rc-color));
+	border-left-color: var(--rc-color);
 }
 
 .callout-title {
