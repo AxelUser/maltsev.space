@@ -7,6 +7,7 @@
 		heroImage: any;
 		placeholder?: string;
 		views?: number;
+		readingTimeMinutes?: number;
 	};
 
 	const {
@@ -151,12 +152,11 @@
 		gap: var(--gap-small);
 		margin-bottom: var(--gap);
 		font-size: var(--font-size-1);
-		color: var(--text-2);
+		color: var(--text-1);
 		font-weight: var(--font-weight-5);
 	}
 
 	.meta-item {
-		color: var(--text-2);
 		opacity: 0.9;
 	}
 
@@ -167,7 +167,7 @@
 
 	.post-preview {
 		font-size: var(--font-size-2);
-		color: var(--text-2);
+		color: var(--text-1);
 		font-style: italic;
 		line-height: 1.6;
 		margin-top: var(--gap);

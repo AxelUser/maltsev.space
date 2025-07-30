@@ -12,7 +12,7 @@ import rehypeCallouts from 'rehype-callouts';
 import readingTime from 'mdsvex-reading-time';
 import { remarkLinksToReferences } from './src/lib/plugins/remark-links-to-references.js';
 
-const lightTheme = 'material-theme-palenight';
+const lightTheme = 'github-light';
 const darkTheme = 'github-dark';
 
 const highlighter = await createHighlighter({
