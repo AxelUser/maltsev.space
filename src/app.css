@@ -28,21 +28,21 @@ html {
 	--shadow-strength-dark: 25%;
 
 	/* light */
-	--brand-light: var(--indigo-5);
-	--text-1-light: var(--gray-0);
-	--text-2-light: var(--gray-3);
-	--surface-1-light: var(--gray-8);
-	--surface-2-light: var(--gray-7);
-	--surface-3-light: var(--gray-6);
-	--surface-4-light: var(--gray-5);
+	--brand-light: var(--indigo-7);
+	--text-1-light: var(--gray-9);
+	--text-2-light: var(--gray-7);
+	--surface-1-light: var(--gray-0);
+	--surface-2-light: var(--gray-1);
+	--surface-3-light: var(--gray-2);
+	--surface-4-light: var(--gray-3);
 
-	--link-light: var(--indigo-3);
-	--link-visited-light: var(--purple-3);
-	--accent-light: var(--cyan-4);
+	--link-light: var(--indigo-7);
+	--link-visited-light: var(--purple-7);
+	--accent-light: var(--cyan-7);
 
-	--star-light: var(--gray-0);
-	--planet-light: var(--cyan-5);
-	--nebula-light: var(--purple-4);
+	--star-light: var(--gray-9);
+	--planet-light: var(--cyan-7);
+	--nebula-light: var(--purple-6);
 
 	--shadow-color-light: 220 40% 2%;
 	--shadow-strength-light: 15%;
