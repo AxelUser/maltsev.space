@@ -12,8 +12,10 @@
 
 	const { children } = $props();
 
+	const isLocalhost = $state(browser && window.location.hostname === 'localhost');
+
 	onMount(() => {
-		if (browser && !dev) {
+		if (browser && !dev && !isLocalhost) {
 			applyTheme($theme);
 			posthog.init(PUBLIC_POSTHOG_API_KEY, {
 				api_host: PUBLIC_POSTHOG_HOST,
@@ -24,7 +26,7 @@
 		}
 	});
 
-	if (browser && !dev) {
+	if (browser && !dev && !isLocalhost) {
 		beforeNavigate(() => posthog.capture('$pageleave'));
 		afterNavigate(() => posthog.capture('$pageview'));
 	}

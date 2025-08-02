@@ -46,6 +46,6 @@ export const load: PageLoad = async ({ params, data }) => {
 		};
 	} catch (err) {
 		console.error(err);
-		throw error(404, `Could not find ${params.slug}`);
+		throw error(404, `Could not find article ${params.slug}`);
 	}
 };
