@@ -250,7 +250,9 @@
 				<h2 class="space-heading">Personal Projects</h2>
 				<div class="card-grid">
 					<Card>
-						<div class="project-icon">✈️</div>
+						<div class="project-icon">
+							<img src="/images/projects/carryfit.png" alt="CarryFit icon" loading="lazy" />
+						</div>
 						<h3 class="section-title">CarryFit</h3>
 						<p>
 							An online tool that helps travelers check if their carry-on luggage meets size
@@ -264,6 +266,25 @@
 						</div>
 						<div class="project-link">
 							<Link href="https://carryon.fit/" external={true}>Visit Site</Link>
+						</div>
+					</Card>
+
+					<Card>
+						<div class="project-icon">
+							<img src="/images/projects/humble-hire.png" alt="HumbleHire icon" loading="lazy" />
+						</div>
+						<h3 class="section-title">HumbleHire</h3>
+						<p>
+							A small, growing collection of helpers to make your profile look great and your
+							application flow smoother.
+						</p>
+						<div class="badge-container">
+							<Badge>Svelte 5</Badge>
+							<Badge>TailwindCSS</Badge>
+							<Badge>TypeScript</Badge>
+						</div>
+						<div class="project-link">
+							<Link href="http://humblehire.maltsev.space/" external={true}>Visit Site</Link>
 						</div>
 					</Card>
 
@@ -434,6 +455,12 @@
 		color: var(--text-1);
 		font-size: var(--font-size-5);
 		margin-bottom: var(--gap-small);
+	}
+
+	.project-icon img {
+		width: 32px;
+		height: 32px;
+		object-fit: contain;
 	}
 
 	.project-link {
