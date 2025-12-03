@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Nebula from '$lib/components/nebula.svelte';
-	import { Timeline, TimelineItem, TagCloud, SEO } from '$lib/components';
+	import { Timeline, TimelineItem, TagCloud, SEO, ProjectCard } from '$lib/components';
 	import { Card, Badge, Link } from '$lib/components/ui';
 	import { bio } from '$lib/bio';
 	import { OneColumnLayout } from '$lib/components/layouts';
@@ -249,63 +249,37 @@
 			<section>
 				<h2 class="space-heading">Personal Projects</h2>
 				<div class="card-grid">
-					<Card>
-						<div class="project-icon">
-							<img src="/images/projects/carryfit.png" alt="CarryFit icon" loading="lazy" />
-						</div>
-						<h3 class="section-title">CarryFit</h3>
-						<p>
-							An online tool that helps travelers check if their carry-on luggage meets size
-							requirements for different airlines worldwide. Simply enter your bag's dimensions to
-							instantly see which of 150+ airlines will accept it as cabin baggage.
-						</p>
-						<div class="badge-container">
-							<Badge>SvelteKit</Badge>
-							<Badge>TailwindCSS</Badge>
-							<Badge>TypeScript</Badge>
-						</div>
-						<div class="project-link">
-							<Link href="https://carryon.fit/" external={true}>Visit Site</Link>
-						</div>
-					</Card>
+					<ProjectCard
+						title="CarryFit"
+						href="https://carryon.fit/"
+						icon="/images/projects/carryfit.png"
+						technologies={['Svelte 5', 'TailwindCSS', 'TypeScript']}
+					>
+						An online tool that helps travelers check if their carry-on luggage meets size
+						requirements for different airlines worldwide. Simply enter your bag's dimensions to
+						instantly see which of 150+ airlines will accept it as cabin baggage.
+					</ProjectCard>
 
-					<Card>
-						<div class="project-icon">
-							<img src="/images/projects/humble-hire.png" alt="HumbleHire icon" loading="lazy" />
-						</div>
-						<h3 class="section-title">HumbleHire</h3>
-						<p>
-							A small, growing collection of helpers to make your profile look great and your
-							application flow smoother.
-						</p>
-						<div class="badge-container">
-							<Badge>Svelte 5</Badge>
-							<Badge>TailwindCSS</Badge>
-							<Badge>TypeScript</Badge>
-						</div>
-						<div class="project-link">
-							<Link href="http://humblehire.maltsev.space/" external={true}>Visit Site</Link>
-						</div>
-					</Card>
+					<ProjectCard
+						title="HumbleHire"
+						href="http://humblehire.maltsev.space/"
+						icon="/images/projects/humble-hire.png"
+						technologies={['Svelte 5', 'TailwindCSS', 'TypeScript']}
+					>
+						A small, growing collection of helpers to make your profile look great and your
+						application flow smoother.
+					</ProjectCard>
 
-					<Card>
-						<div class="project-icon">🔄</div>
-						<h3 class="section-title">MongoTransit</h3>
-						<p>
-							A tool for automatic replication of documents between MongoDB clusters. Supports
-							iterative transfers, sharded collections, and configurable synchronization parameters,
-							making it ideal for database migrations and data synchronization tasks.
-						</p>
-						<div class="badge-container">
-							<Badge>C#</Badge>
-							<Badge>MongoDB</Badge>
-						</div>
-						<div class="project-link">
-							<Link href="https://github.com/AxelUser/MongoTransit" external={true}
-								>View on GitHub</Link
-							>
-						</div>
-					</Card>
+					<ProjectCard
+						title="MongoTransit"
+						href="https://github.com/AxelUser/MongoTransit"
+						icon="🔄"
+						technologies={['C#', 'MongoDB']}
+					>
+						A tool for automatic replication of documents between MongoDB clusters. Supports
+						iterative transfers, sharded collections, and configurable synchronization parameters,
+						making it ideal for database migrations and data synchronization tasks.
+					</ProjectCard>
 				</div>
 			</section>
 
@@ -442,29 +416,6 @@
 		flex-wrap: wrap;
 		margin-top: var(--gap-small);
 		margin-bottom: var(--gap-small);
-	}
-
-	.project-icon {
-		width: 50px;
-		height: 50px;
-		border-radius: 50%;
-		background-color: var(--surface-3);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: var(--text-1);
-		font-size: var(--font-size-5);
-		margin-bottom: var(--gap-small);
-	}
-
-	.project-icon img {
-		width: 32px;
-		height: 32px;
-		object-fit: contain;
-	}
-
-	.project-link {
-		margin-top: var(--gap-small);
 	}
 
 	.intro-section {
