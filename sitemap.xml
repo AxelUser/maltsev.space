@@ -3,72 +3,72 @@
 	
 	<url>
 		<loc>https://maltsev.space</loc>
-		<lastmod>2025-10-06</lastmod>
+		<lastmod>2025-12-03</lastmod>
 	</url>
 	<url>
 		<loc>https://maltsev.space/about</loc>
-		<lastmod>2025-10-06</lastmod>
+		<lastmod>2025-12-03</lastmod>
 	</url>
 	<url>
 		<loc>https://maltsev.space/blog</loc>
-		<lastmod>2025-10-06</lastmod>
+		<lastmod>2025-12-03</lastmod>
 	</url>
 	<url>
 		<loc>https://maltsev.space/art</loc>
-		<lastmod>2025-10-06</lastmod>
+		<lastmod>2025-12-03</lastmod>
 	</url>
 	
 	<url>
 		<loc>https://maltsev.space/blog/012-simd-within-a-register-how-i-doubled-hash-table-lookup-performance</loc>
-		<lastmod>2025-10-06</lastmod>
+		<lastmod>2025-12-03</lastmod>
 	</url>
 	<url>
 		<loc>https://maltsev.space/blog/011-practical-bitwise-tricks-in-everyday-code</loc>
-		<lastmod>2025-10-06</lastmod>
+		<lastmod>2025-12-03</lastmod>
 	</url>
 	<url>
 		<loc>https://maltsev.space/blog/010-cuckoo-filters</loc>
-		<lastmod>2025-10-06</lastmod>
+		<lastmod>2025-12-03</lastmod>
 	</url>
 	<url>
 		<loc>https://maltsev.space/blog/009-counting-bloom-filters</loc>
-		<lastmod>2025-10-06</lastmod>
+		<lastmod>2025-12-03</lastmod>
 	</url>
 	<url>
 		<loc>https://maltsev.space/blog/008-bloom-filters-pt1</loc>
-		<lastmod>2025-10-06</lastmod>
+		<lastmod>2025-12-03</lastmod>
 	</url>
 	<url>
 		<loc>https://maltsev.space/blog/007-fixing-csharp-type-pattern-matching</loc>
-		<lastmod>2025-10-06</lastmod>
+		<lastmod>2025-12-03</lastmod>
 	</url>
 	<url>
 		<loc>https://maltsev.space/blog/006-how-to-get-status-of-mongodb-operation</loc>
-		<lastmod>2025-10-06</lastmod>
+		<lastmod>2025-12-03</lastmod>
 	</url>
 	<url>
 		<loc>https://maltsev.space/blog/005-dictionary-on-generics</loc>
-		<lastmod>2025-10-06</lastmod>
+		<lastmod>2025-12-03</lastmod>
 	</url>
 	<url>
 		<loc>https://maltsev.space/blog/004-deconstructors</loc>
-		<lastmod>2025-10-06</lastmod>
+		<lastmod>2025-12-03</lastmod>
 	</url>
 	<url>
 		<loc>https://maltsev.space/blog/003-internals-visible-for-testing</loc>
-		<lastmod>2025-10-06</lastmod>
+		<lastmod>2025-12-03</lastmod>
 	</url>
 	<url>
 		<loc>https://maltsev.space/blog/002-callermembername-attribute-for-logging</loc>
-		<lastmod>2025-10-06</lastmod>
+		<lastmod>2025-12-03</lastmod>
 	</url>
 	<url>
 		<loc>https://maltsev.space/blog/001-binary-shifts-for-flags</loc>
-		<lastmod>2025-10-06</lastmod>
+		<lastmod>2025-12-03</lastmod>
 	</url>
 	
 	<url>
 		<loc>https://maltsev.space/art/busya</loc>
-		<lastmod>2025-10-06</lastmod>
+		<lastmod>2025-12-03</lastmod>
 	</url>
 </urlset>
