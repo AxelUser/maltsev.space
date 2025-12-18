@@ -30,9 +30,6 @@
 		noindex = false
 	}: Props = $props();
 
-	const fullTitle = $derived(
-		title === config.websiteTitle ? title : `${title} | ${config.websiteTitle}`
-	);
 	const fullUrl = $derived(
 		url ? `${config.websiteUrl.replace(/\/$/, '')}${url}` : config.websiteUrl
 	);
@@ -98,7 +95,7 @@
 
 <svelte:head>
 	<!-- Basic SEO -->
-	<title>{fullTitle}</title>
+	<title>{title}</title>
 	<meta name="description" content={description} />
 	<link rel="canonical" href={fullUrl} />
 
@@ -110,7 +107,7 @@
 
 	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content={type} />
-	<meta property="og:title" content={fullTitle} />
+	<meta property="og:title" content={title} />
 	<meta property="og:description" content={description} />
 	<meta property="og:image" content={fullImageUrl} />
 	<meta property="og:image:alt" content={imageAlt} />
@@ -136,7 +133,7 @@
 
 	<!-- Twitter Card -->
 	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content={fullTitle} />
+	<meta name="twitter:title" content={title} />
 	<meta name="twitter:description" content={description} />
 	<meta name="twitter:image" content={fullImageUrl} />
 	<meta name="twitter:image:alt" content={imageAlt} />

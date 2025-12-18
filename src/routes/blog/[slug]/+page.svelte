@@ -39,9 +39,9 @@
 
 <SEO
 	title={data.title}
-	description={data.preview || `Read about ${data.title} on ${config.websiteTitle}`}
+	description={data.preview}
 	image={data.ogImagePath}
-	imageAlt={`${data.title} - ${data.title || 'Blog post'}`}
+	imageAlt={data.title}
 	url={`/blog/${data.slug}`}
 	type="article"
 	{publishedTime}

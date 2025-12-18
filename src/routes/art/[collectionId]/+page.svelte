@@ -28,7 +28,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.collection.title} | {config.websiteTitle}</title>
+	<title>{data.collection.title}</title>
 	<meta name="description" content={data.collection.description} />
 </svelte:head>
 

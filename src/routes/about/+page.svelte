@@ -262,7 +262,7 @@
 
 					<ProjectCard
 						title="HumbleHire"
-						href="http://humblehire.maltsev.space/"
+						href="https://humblehire.maltsev.space/"
 						icon="/images/projects/humble-hire.png"
 						technologies={['Svelte 5', 'TailwindCSS', 'TypeScript']}
 					>

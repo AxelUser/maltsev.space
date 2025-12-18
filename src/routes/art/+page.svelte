@@ -1,13 +1,12 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { ContentCard, PageHeader } from '$lib/components';
-	import { config } from '$lib/config';
 
 	const { data }: { data: PageData } = $props();
 </script>
 
 <svelte:head>
-	<title>Art | {config.websiteTitle}</title>
+	<title>Art</title>
 	<meta
 		name="description"
 		content="A personal collection of my humble experiments and explorations with AI-generated art."
