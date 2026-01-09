@@ -59,8 +59,8 @@ Checking whether a particular fingerprint (a single byte) sits in a bucket is ju
 ```csharp
 public bool Contains(byte fingerprint, uint bucketIdx)
 {
-    var s = bucketIdx * 4;
-    for (var i = s; i < s + BucketSize; i++)
+    var offset = bucketIdx * 4;
+    for (var i = offset; i < offset + BucketSize; i++)
     {
         if (_table[i] == fingerprint) return true;
     }
@@ -82,91 +82,98 @@ Switching the backing array is trivial because the hash table is still one-dimen
 + private readonly uint[] _table;
 ```
 
-Now let’s refactor the lookup:
+Now let’s refactor the lookup. The most straightforward approach is to use a loop and shift the bucket to get the individual bytes, it's conceptually same as the previous version:
 
-```diff
+```csharp
 public bool Contains(byte fingerprint, uint bucketIdx)
 {
--   var s = bucketIdx * 4;
-+   var bucket = _table[bucketIdx];
--   for (var i = s; i < s + BucketSize; i++)
-+   for (var i = 0; i < BucketSize; i++)
+    ref readonly var bucket = ref _table[bucketIdx];
+    for (var i = 0; i < BucketSize; i++)
     {
--       if (_table[i] == fingerprint) return true;
-+       var shift = i * 8;
-+       var fp = (byte)(bucket >> shift);
-+       if (fp == fingerprint) return true;
+        var shift = i * 8;
+        var fp = (byte)(bucket >> shift);
+        if (fp == fingerprint) return true;
     }
 
     return false;
 }
 ```
 
-The bucket offset disappears because each `uint` is a bucket. But I’ve lost the luxury of direct indexing—unless I convert the integer to bytes first:
+The bucket offset disappears because each `uint` is a bucket. But I’ve lost the luxury of direct indexing, unless I can perform the trick with a struct layout. And it's really ugly and you may lose not only direct indexing, but sanity as well.
+
+So, to make things a little prettier, I may convert plain array of `uint`s to an array of `struct`s with a `byte` layout:
 
 ```csharp
-  Span<byte> bucketBytes = stackalloc byte[sizeof(uint)];
-  BitConverter.TryWriteBytes(bucketBytes, _table[bucketIdx]);
+private struct Bucket
+{
+    public byte Fp0;
+    public byte Fp1;
+    public byte Fp2;
+    public byte Fp3;
+}
 
-  for (var i = 0; i < BucketSize; i++)
-  {
-      var fp = bucketBytes[i];
-      if (fp == fingerprint) return true;
-  }
+private readonly Bucket[] _table;
+
 ```
 
-I ran a quick benchmark on both `uint`-based lookups, and the results were revealing. The shifting version gave a nice speed boost, about **35%** faster than the original byte-array loop. I've also tested the unrolled loop, but it showed no significant improvement because the compiler has already unrolled it.
+The size of the struct is still 4 bytes, so no performance or storage penalty. Accessing the fields is now a bit more verbose than just indexing the array, but it's a no-brainer to figure out what's going on and much nicer to read than shifts:
+
+```csharp
+public bool Contains(byte fingerprint, uint bucketIdx)
+{
+    ref readonly var bucket = ref _table[bucketIdx];
+    if (bucket.Fp0 == fingerprint) return true;
+    if (bucket.Fp1 == fingerprint) return true;
+    if (bucket.Fp2 == fingerprint) return true;
+    if (bucket.Fp3 == fingerprint) return true;
+    return false;
+}
+```
+
+Let's run some quick benchmarks via `BenchmarkDotNet`. Positive lookups is for the case when the fingerprint is in the bucket, negative lookups is for the case when the fingerprint is not in the bucket.
+
+**Positive lookups (fingerprint exists in the bucket):**
 
 <Scrollbox>
 
-| Method                        | Operations  |               Mean |    Ratio |
-| ----------------------------- | ----------- | -----------------: | -------: |
-| **ByteTable_PositiveLookups** | **128**     |       **239.9 ns** | **1.00** |
-| IntTable_PositiveLookups      | 128         |           166.9 ns |     0.70 |
-| ByteTable_NegativeLookups     | 128         |           321.9 ns |     1.34 |
-| IntTable_NegativeLookups      | 128         |           203.9 ns |     0.85 |
-|                               |             |                    |          |
-| **ByteTable_PositiveLookups** | **1024**    |     **1,847.0 ns** | **1.00** |
-| IntTable_PositiveLookups      | 1024        |         1,300.9 ns |     0.70 |
-| ByteTable_NegativeLookups     | 1024        |         2,523.7 ns |     1.37 |
-| IntTable_NegativeLookups      | 1024        |         1,597.2 ns |     0.86 |
-|                               |             |                    |          |
-| **ByteTable_PositiveLookups** | **1048576** | **1,907,503.2 ns** | **1.00** |
-| IntTable_PositiveLookups      | 1048576     |     1,762,474.3 ns |     0.92 |
-| ByteTable_NegativeLookups     | 1048576     |     2,575,301.5 ns |     1.35 |
-| IntTable_NegativeLookups      | 1048576     |     1,637,653.6 ns |     0.86 |
+| Method        | Operations  |               Mean |    Ratio |
+| ------------- | ----------- | -----------------: | -------: |
+| **ByteTable** | **128**     |       **237.7 ns** | **1.00** |
+| StructTable   | 128         |           175.9 ns |     0.74 |
+|               |             |                    |          |
+| **ByteTable** | **1024**    |     **1,870.7 ns** | **1.00** |
+| StructTable   | 1024        |         1,350.2 ns |     0.72 |
+|               |             |                    |          |
+| **ByteTable** | **1048576** | **1,906,960.6 ns** | **1.00** |
+| StructTable   | 1048576     |     1,757,943.9 ns |     0.92 |
 
 </Scrollbox>
 
-The `BitConverter` approach, however, was a step backward. It was even slower than the original, likely due to the additional `Span` overhead. I'm not about to introduce complexity for negative gain, so the `BitConverter` version was a non-starter.
+**Negative lookups (fingerprint does not exist in the bucket):**
 
 <Scrollbox>
 
-| Method                        | Operations  |               Mean |    Ratio |
-| ----------------------------- | ----------- | -----------------: | -------: |
-| **ByteTable_PositiveLookups** | **128**     |       **239.7 ns** | **1.00** |
-| IntTable_PositiveLookups      | 128         |           366.8 ns |     1.53 |
-| ByteTable_NegativeLookups     | 128         |           322.6 ns |     1.35 |
-| IntTable_NegativeLookups      | 128         |           429.2 ns |     1.79 |
-|                               |             |                    |          |
-| **ByteTable_PositiveLookups** | **1024**    |     **1,850.0 ns** | **1.00** |
-| IntTable_PositiveLookups      | 1024        |         2,877.2 ns |     1.56 |
-| ByteTable_NegativeLookups     | 1024        |         2,512.9 ns |     1.36 |
-| IntTable_NegativeLookups      | 1024        |         3,396.8 ns |     1.84 |
-|                               |             |                    |          |
-| **ByteTable_PositiveLookups** | **1048576** | **1,909,607.9 ns** | **1.00** |
-| IntTable_PositiveLookups      | 1048576     |     3,352,454.1 ns |     1.76 |
-| ByteTable_NegativeLookups     | 1048576     |     2,566,696.5 ns |     1.34 |
-| IntTable_NegativeLookups      | 1048576     |     3,536,050.6 ns |     1.85 |
+| Method        | Operations  |               Mean |    Ratio |
+| ------------- | ----------- | -----------------: | -------: |
+| **ByteTable** | **128**     |       **320.6 ns** | **1.00** |
+| StructTable   | 128         |           198.2 ns |     0.62 |
+|               |             |                    |          |
+| **ByteTable** | **1024**    |     **2,522.6 ns** | **1.00** |
+| StructTable   | 1024        |         1,533.6 ns |     0.61 |
+|               |             |                    |          |
+| **ByteTable** | **1048576** | **2,585,740.9 ns** | **1.00** |
+| StructTable   | 1048576     |     1,593,549.0 ns |     0.62 |
 
 </Scrollbox>
+
+The results are revealing. The 4-byte struct version gave a nice speed boost, about **10-30%** faster than the original byte-array loop for positive lookups and about **40%** faster for negative lookups. Results for positive lookups are a bit fluctuating, especially for biggest table size, but the trend is good.
 
 > [!question] So what's next?
-> Even the shifting version is quite performant, can we do better? Maybe just eliminate the loop entirely?
+> Even the struct version is quite performant, can we do better? Maybe we can not only eliminate the loop, but make that lookup with a single instruction, like a SIMD within a single 32-bit integer?
 
 ## Finding a Byte with Masking
 
-Long ago I bookmarked Sean Anderson’s great *[Bit Twiddling Hacks](https://graphics.stanford.edu/%7Eseander/bithacks.html)*. One gem there—*Determine if a word has a zero byte*—is exactly what I need. The C# version is nearly identical:
+Long ago I bookmarked Sean Anderson’s great *[Bit Twiddling Hacks](https://graphics.stanford.edu/%7Eseander/bithacks.html)*. One gem there *"Determine if a word has a zero byte"* is exactly what I need. The C# version is nearly identical:
 
 ```csharp
 private static bool HasZero(uint v)
@@ -291,44 +298,114 @@ $$
 
 So no, nothing breaks, the algorithm is still robust: `HasZero` only gives a positive result if a zero byte exists after the XOR, which only happens if our target fingerprint was in the bucket to begin with.
 
-## Putting It All Together
+## What About Struct Layout?
 
-Here’s the final, branch-free lookup:
+Even if we're doing all operations on a single 32-bit integer, the possibility to access each individual slot without shifts as was done before is still very helpful. To effectively combine the structs and this bitwise trick, we need to explicitly set the field offsets:
 
 ```csharp
+[StructLayout(LayoutKind.Explicit, Size = 4)]
+private struct Bucket
+{
+    [FieldOffset(0)] public uint All;
+    [FieldOffset(0)] public byte Fp0;
+    [FieldOffset(1)] public byte Fp1;
+    [FieldOffset(2)] public byte Fp2;
+    [FieldOffset(3)] public byte Fp3;
+}
+```
+
+`StructLayout` attribute with `LayoutKind.Explicit` mode and `Size = 4` ensures that the struct is laid out in memory as a 4-byte block and we have full control what parts of memory are mapped to each field.
+
+The `FieldOffset` attribute is used to set the offset in bytes where each individual field starts in the memory layout. So `Fp0` is at offset `0`, i.e. at the beginning of the struct, and accessing it will access the first byte of the integer, because this field is of type `byte`. `Fp1` will access the second byte, and so on.
+
+What's cool is that `All` field is accessing whole bucket as a single 32-bit integer, so we can use it to perform the lookup with a single instruction!
+
+<Scrollbox>
+
+```svgbob
+0          7 8         15 16        23 24        31 <---- Bit indices
++----------+ +----------+ +----------+ +----------+
+|   0xAA   | |   0xBB   | |   0xCC   | |   0xDD   |
++----------+ +----------+ +----------+ +----------+
+^          ^ ^          ^ ^          ^ ^          ^
+|          | |          | |          | |          |
++--- Fp0 --+ +--- Fp1 --+ +--- Fp2 --+ +--- Fp3 --+
+^                                                 ^
+|                                                 |
++---------------------- All ----------------------+
+```
+
+</Scrollbox>
+
+## Putting It All Together
+
+Here's the final, branch-free lookup and loop-free lookup with the struct layout:
+
+```csharp
+[StructLayout(LayoutKind.Explicit, Size = 4)]
+private struct Bucket
+{
+    [FieldOffset(0)] public uint All;
+    [FieldOffset(0)] public byte Fp0;
+    [FieldOffset(1)] public byte Fp1;
+    [FieldOffset(2)] public byte Fp2;
+    [FieldOffset(3)] public byte Fp3;
+}
+
+private readonly Bucket[] _table;
+
 public bool Contains(byte fingerprint, uint bucketIdx)
 {
-    uint bucket = _table[bucketIdx];
+    ref readonly var bucket = ref _table[bucketIdx];
     uint mask = fingerprint * 0x01010101U;
     uint xored = bucket ^ mask;
     return ((xored - 0x01010101U) & ~xored & 0x80808080U) != 0;
 }
 ```
 
-We XOR to zero-out matching bytes, then use the bit-twiddling trick to see if any byte is zero.
+Let's see how it looks in action. I will perform same positive and negative lookups as before to see if it outperforms the previous versions.
 
-The benchmarks confirmed this bit-twiddling exercise was well worth the effort. Positive lookups became over **60% faster**, while negative lookups became **more than twice as fast** compared to the original byte-array implementation. It's a significant leap over the shifting version, too. While readability certainly took a hit, the raw performance gain is a trade-off I’m ok with.
+**Positive lookups (fingerprint exists in the bucket):**
 
 <Scrollbox>
 
-| Method                        | Operations  |               Mean |    Ratio |
-| ----------------------------- | ----------- | -----------------: | -------: |
-| **ByteTable_PositiveLookups** | **128**     |       **245.2 ns** | **1.00** |
-| IntTable_PositiveLookups      | 128         |           147.7 ns |     0.60 |
-| ByteTable_NegativeLookups     | 128         |           324.1 ns |     1.32 |
-| IntTable_NegativeLookups      | 128         |           147.1 ns |     0.60 |
-|                               |             |                    |          |
-| **ByteTable_PositiveLookups** | **1024**    |     **1,845.6 ns** | **1.00** |
-| IntTable_PositiveLookups      | 1024        |         1,139.4 ns |     0.62 |
-| ByteTable_NegativeLookups     | 1024        |         2,561.2 ns |     1.39 |
-| IntTable_NegativeLookups      | 1024        |         1,136.3 ns |     0.62 |
-|                               |             |                    |          |
-| **ByteTable_PositiveLookups** | **1048576** | **1,908,031.9 ns** | **1.00** |
-| IntTable_PositiveLookups      | 1048576     |     1,170,627.6 ns |     0.61 |
-| ByteTable_NegativeLookups     | 1048576     |     2,574,882.8 ns |     1.35 |
-| IntTable_NegativeLookups      | 1048576     |     1,172,802.0 ns |     0.61 |
+| Method        | Operations  |               Mean |    Ratio |
+| ------------- | ----------- | -----------------: | -------: |
+| **ByteTable** | **128**     |       **248.1 ns** | **1.00** |
+| StructTable   | 128         |           178.6 ns |     0.72 |
+| IntTable      | 128         |           154.6 ns |     0.62 |
+|               |             |                    |          |
+| **ByteTable** | **1024**    |     **1,972.3 ns** | **1.00** |
+| StructTable   | 1024        |         1,415.4 ns |     0.72 |
+| IntTable      | 1024        |         1,199.0 ns |     0.61 |
+|               |             |                    |          |
+| **ByteTable** | **1048576** | **2,000,663.8 ns** | **1.00** |
+| StructTable   | 1048576     |     1,826,837.4 ns |     0.91 |
+| IntTable      | 1048576     |     1,214,772.3 ns |     0.61 |
 
 </Scrollbox>
+
+**Negative lookups (fingerprint does not exist in the bucket):**
+
+<Scrollbox>
+
+| Method        | Operations  |               Mean |    Ratio |
+| ------------- | ----------- | -----------------: | -------: |
+| **ByteTable** | **128**     |       **323.0 ns** | **1.00** |
+| StructTable   | 128         |           200.0 ns |     0.62 |
+| IntTable      | 128         |           146.3 ns |     0.45 |
+|               |             |                    |          |
+| **ByteTable** | **1024**    |     **2,533.1 ns** | **1.00** |
+| StructTable   | 1024        |         1,542.7 ns |     0.61 |
+| IntTable      | 1024        |         1,149.2 ns |     0.45 |
+|               |             |                    |          |
+| **ByteTable** | **1048576** | **2,676,830.7 ns** | **1.00** |
+| StructTable   | 1048576     |     1,644,196.9 ns |     0.61 |
+| IntTable      | 1048576     |     1,213,374.7 ns |     0.45 |
+
+</Scrollbox>
+
+The benchmarks confirmed this bit-twiddling exercise was well worth the effort. Positive lookups became over **40% faster**, while negative lookups became **more than twice as fast** compared to the original byte-array implementation. It's a significant leap even compared to the previous struct version. While readability of algorithm certainly took a hit, the raw performance gain is a trade-off I’m ok with.
 
 ## Final Thoughts
 
