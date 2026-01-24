@@ -59,6 +59,7 @@
 	.default:hover {
 		background-color: color-mix(in srgb, var(--brand) 20%, transparent);
 		color: var(--text-1);
+		cursor: default;
 	}
 
 	.active {

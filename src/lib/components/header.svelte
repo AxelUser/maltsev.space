@@ -40,12 +40,11 @@
 		</div>
 
 		<ul class="nav-links">
-			<li><a class="nav-link" href="/" onclick={() => (mobileMenuOpen = false)}>Home</a></li>
+			<li><a class="nav-link" href="/blog" onclick={() => (mobileMenuOpen = false)}>Blog</a></li>
 			<li>
 				<a class="nav-link" href="/about" onclick={() => (mobileMenuOpen = false)}>About</a>
 			</li>
-			<li><a class="nav-link" href="/art" onclick={() => (mobileMenuOpen = false)}>Gallery</a></li>
-			<li><a class="nav-link" href="/blog" onclick={() => (mobileMenuOpen = false)}>Blog</a></li>
+			<li><a class="nav-link" href="/art" onclick={() => (mobileMenuOpen = false)}>Art</a></li>
 		</ul>
 
 		<div class="nav-actions">
@@ -76,12 +75,11 @@
 
 	<div class="mobile-nav" class:active={mobileMenuOpen} bind:this={navContainer}>
 		<ul>
-			<li><a class="nav-link" href="/" onclick={() => (mobileMenuOpen = false)}>Home</a></li>
+			<li><a class="nav-link" href="/blog" onclick={() => (mobileMenuOpen = false)}>Blog</a></li>
 			<li>
 				<a class="nav-link" href="/about" onclick={() => (mobileMenuOpen = false)}>About</a>
 			</li>
-			<li><a class="nav-link" href="/art" onclick={() => (mobileMenuOpen = false)}>Gallery</a></li>
-			<li><a class="nav-link" href="/blog" onclick={() => (mobileMenuOpen = false)}>Blog</a></li>
+			<li><a class="nav-link" href="/art" onclick={() => (mobileMenuOpen = false)}>Art</a></li>
 		</ul>
 	</div>
 </header>

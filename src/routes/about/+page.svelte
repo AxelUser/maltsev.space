@@ -59,12 +59,12 @@
 						date="August 2020–present"
 						title="Infobip"
 						role="Senior Software Engineer"
-						companyDescription="Infobip is a global Communications-Platform-as-a-Service (CPaaS) provider offering APIs for messaging, voice, video, and contact center services."
+						companyDescription="Infobip is a global Communications Platform as a Service (CPaaS) provider offering APIs for messaging, voice, video, and contact center services."
 						companyUrl="https://www.infobip.com/"
 						technologies={[
 							'C#',
 							'Kotlin',
-							'Go',
+							'Go (Golang)',
 							'TypeScript',
 							'React',
 							'ASP.NET',
@@ -75,21 +75,22 @@
 					>
 						<ul>
 							<li>
-								Led a zero-downtime migration of 3 microservices and approximately 1 TB of data from
-								a MongoDB replica set to a sharded cluster
+								Designed and implemented fault-tolerant architecture in Kotlin and C# for 4
+								real-time audience-segmentation services, processing up to 50,000 events per second.
+								One delivered feature replaced an external product through internal dogfooding.
 							</li>
 							<li>
-								Improved platform performance by optimizing bottleneck queries, reducing p95 latency
-								by 5 to 10 times
+								Led a zero-downtime migration of 3 microservices and ~1 TB of data from a MongoDB
+								replica set to a sharded cluster.
 							</li>
 							<li>
-								Designed and implemented a fault-tolerant architecture in Kotlin and C# for 4
-								real-time audience segmentation microservices, processing ~10,000 events per second
+								Improved platform performance by optimizing MongoDB query p95 latency and
+								redesigning the leader-election algorithm, achieving a 5–10× improvement in key
+								technical metrics.
 							</li>
 							<li>
-								Delivered a segmentation feature that replaced an external product via "dogfooding".
+								Developed internal tools in C# and Go to automate maintenance and troubleshooting.
 							</li>
-							<li>Developed internal CLI and CI/CD tools, replacing manual work with automation</li>
 						</ul>
 					</TimelineItem>
 
@@ -103,18 +104,16 @@
 					>
 						<ul>
 							<li>
-								Integrated a RESTful microservice connecting Veeam Backup for Microsoft Azure with
-								Veeam Backup & Replication using C#, .NET Core 3.1, ASP.NET Core, and
-								Swagger-documented APIs
+								Built a RESTful integration between Veeam Backup for Azure and Veeam Backup &
+								Replication using C#, ASP.NET Core, and Swagger-documented APIs.
 							</li>
 							<li>
-								Engineered an event-driven pipeline ensuring sub-1-second for daily entity updates,
-								maintaining eventual data consistency through SignalR, PostgreSQL, and Entity
-								Framework Core
+								Implemented a real-time notification center in Veeam Backup for Azure using
+								WebSockets.
 							</li>
 							<li>
-								Implemented a real-time notification center in the web UI, reducing status-check
-								time from 6 clicks to a single click via React, TypeScript, and SignalR
+								Engineered an event-driven data synchronization pipeline handling thousands of daily
+								entity updates, ensuring eventual consistency between two major products.
 							</li>
 						</ul>
 					</TimelineItem>
@@ -137,17 +136,14 @@
 					>
 						<ul>
 							<li>
-								Delivered 5 enterprise features for Kontur Extern using C#/.NET and React,
-								supporting over 800,000 B2B clients
+								Delivered 5 enterprise features for Kontur Extern using C#/.NET and React for B2B
+								clients.
 							</li>
 							<li>
-								Refactored the monolithic backend by replacing global context with scoped services
-								in ASP.NET, enabling batch processing of 1,000+ documents per request
+								Refactored the monolithic backend by replacing the global context with scoped
+								services in ASP.NET, enabling batch document processing per request.
 							</li>
-							<li>
-								Migrated legacy JavaScript UI to React, Redux, and TypeScript, cutting feature
-								delivery time by 6 to 10 hours per task
-							</li>
+							<li>Migrated a legacy JavaScript UI to React, Redux, and TypeScript.</li>
 						</ul>
 					</TimelineItem>
 
@@ -162,16 +158,16 @@
 						<ul>
 							<li>
 								Optimized the rendering pipeline of a Xamarin.Forms Android app, increasing frame
-								rate from 30–35 fps to a steady 55–60 fps (+70%), significantly enhancing user
-								experience
+								rate from 30–35 FPS to a steady 55–60 FPS (+70%), significantly improving the user
+								experience.
 							</li>
 							<li>
-								Implemented custom caching and full offline mode using Realm database, reducing
-								remote API calls and improving load times
+								Implemented custom caching and a full offline mode using the Realm database,
+								reducing remote API calls and improving load times.
 							</li>
 							<li>
-								Refactored legacy code to clean MVVM architecture, shortening feature lead time and
-								boosting unit-test coverage to nearly 90%
+								Refactored legacy code into a clean MVVM architecture, shortening feature lead time
+								and boosting unit-test coverage to nearly 90%.
 							</li>
 						</ul>
 					</TimelineItem>
@@ -180,25 +176,25 @@
 						date="October 2015–August 2017"
 						title="PRO IT"
 						role="Software Developer"
-						companyDescription="PRO IT is a Russian software company developing web-based electronic document workflow systems for government agencies, employing over 100 staff."
+						companyDescription="PRO IT is a Russian software company developing web-based electronic document workflow systems for government agencies, with over 100 employees."
 						technologies={['C#', '.NET Framework', 'ASP.NET', 'React', 'MSSQL Server', 'LINQ']}
 					>
 						<ul>
 							<li>
 								Engineered a push-based scheduling daemon, reducing client polling traffic by
-								approximately 80%
+								approximately 80%.
 							</li>
 							<li>
 								Developed self-service admin panels, enabling support staff to resolve ~90% of
-								common tickets without engineering involvement
+								common tickets without involving engineers.
 							</li>
 							<li>
 								Refactored a jQuery codebase to Knockout.js (MVVM), halving front-end defect rates
-								and accelerating feature delivery
+								and speeding up feature delivery.
 							</li>
 							<li>
-								Optimized heavy LINQ queries in Entity Framework for Oracle, cutting average latency
-								from 1 minute to 4–5 seconds
+								Optimized heavy LINQ queries in Entity Framework for Oracle, cutting average query
+								latency from 1 minute to 4–5 seconds.
 							</li>
 						</ul>
 					</TimelineItem>
@@ -223,16 +219,16 @@
 						<ul>
 							<li>
 								Developed a jQuery-based WYSIWYG admin panel for the XSUD project blog and
-								introduced semantic versioning of post markup in ASP.NET MVC, reducing publishing
-								time and increasing click-through rates by approximately 35% within 4 months
+								introduced semantic versioning for post markup in ASP.NET MVC, reducing publishing
+								time and increasing click-through rates by ~35% within 4 months.
 							</li>
 							<li>
 								Designed and launched an offline-capable Android app for the Safe-Childhood Map
-								project within 2 months
+								project within 2 months.
 							</li>
 							<li>
 								Refactored CPU-heavy business logic into parameterized Microsoft SQL Server stored
-								procedures, reducing p95 latency from 30 seconds to under 5 seconds
+								procedures, reducing p95 latency from 30 seconds to under 5 seconds.
 							</li>
 						</ul>
 					</TimelineItem>
