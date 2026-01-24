@@ -69,7 +69,7 @@
 		"@sveltejs/enhanced-img": "^0.6.1",
 		"class-variance-authority": "^0.7.1",
 		"mermaid": "^11.6.0",
-		"posthog-js": "^1.242.2",
+		"posthog-js": "^1.335.2",
 		"rehype-autolink-headings": "^7.1.0",
 		"rehype-callouts": "^2.1.1",
 		"rehype-katex-svelte": "^1.2.0",
