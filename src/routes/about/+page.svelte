@@ -258,12 +258,13 @@
 
 					<ProjectCard
 						title="HumbleHire"
-						href="https://humblehire.maltsev.space/"
+						href="https://humblehire.cv/"
 						icon="/images/projects/humble-hire.png"
 						technologies={['Svelte 5', 'TailwindCSS', 'TypeScript']}
 					>
-						A small, growing collection of helpers to make your profile look great and your
-						application flow smoother.
+						HumbleHire is a free, open-source CV builder that runs entirely in your browser.
+						You keep one master CV with your whole history in it, branch a tailored copy for
+						each job you apply to, and export a clean PDF to send.
 					</ProjectCard>
 
 					<ProjectCard
