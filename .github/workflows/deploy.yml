@@ -32,7 +32,7 @@ jobs:
         run: pnpm install
 
       - name: Install Playwright browsers
-        run: npx playwright install chromium
+        run: 	npx playwright --version && npx playwright install chromium
 
       - name: Build project
         env:
