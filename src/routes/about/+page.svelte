@@ -8,7 +8,7 @@
 
 <SEO
 	title="About Me"
-	description={`Learn about ${bio.fullName}, Senior Software Engineer at Infobip. Programming since 2014, specializing in distributed systems, C#, Go, and highload applications. Previously at Veeam and SkbKontur.`}
+	description={`Learn about ${bio.fullName}, Software Developer at JetBrains. Programming since 2014, specializing in distributed systems, C#, Go, and highload applications. Previously at Infobip, Veeam and SkbKontur.`}
 	url="/about"
 	keywords={['about', 'software engineer', 'career', 'experience', 'distributed systems']}
 />
@@ -56,7 +56,16 @@
 				<h2 class="space-heading">My Journey</h2>
 				<Timeline>
 					<TimelineItem
-						date="August 2020–present"
+						date="June 2026–present"
+						title="JetBrains"
+						role="Software Developer"
+						companyDescription="JetBrains is a global software company that builds developer tools and IDEs, including IntelliJ IDEA, PyCharm, Rider, and the Kotlin programming language."
+						companyUrl="https://www.jetbrains.com/"
+						technologies={['C#', 'Kotlin']}
+					></TimelineItem>
+
+					<TimelineItem
+						date="August 2020–June 2026"
 						title="Infobip"
 						role="Senior Software Engineer"
 						companyDescription="Infobip is a global Communications Platform as a Service (CPaaS) provider offering APIs for messaging, voice, video, and contact center services."
@@ -262,9 +271,9 @@
 						icon="/images/projects/humble-hire.png"
 						technologies={['Svelte 5', 'TailwindCSS', 'TypeScript']}
 					>
-						HumbleHire is a free, open-source CV builder that runs entirely in your browser.
-						You keep one master CV with your whole history in it, branch a tailored copy for
-						each job you apply to, and export a clean PDF to send.
+						HumbleHire is a free, open-source CV builder that runs entirely in your browser. You
+						keep one master CV with your whole history in it, branch a tailored copy for each job
+						you apply to, and export a clean PDF to send.
 					</ProjectCard>
 
 					<ProjectCard

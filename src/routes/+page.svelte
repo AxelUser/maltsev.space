@@ -18,7 +18,7 @@
 
 <SEO
 	title="Home"
-	description={`${bio.fullName} - Senior Software Engineer at Infobip focusing on distributed systems and highload applications. Programming since 2014, sharing insights about C#, Go, system design, and performance optimization.`}
+	description={`${bio.fullName} - Software Developer at JetBrains focusing on distributed systems and highload applications. Programming since 2014, sharing insights about C#, Go, system design, and performance optimization.`}
 	url="/"
 	keywords={['portfolio', 'blog', 'software engineering', 'distributed systems']}
 />
@@ -51,8 +51,8 @@
 			<div class="about-text">
 				<h2 class="space-heading">About Me</h2>
 				<p>
-					Senior Software Engineer at Infobip with focus on distributed systems and highload
-					applications. Programming since 2014, previously at Veeam and SkbKontur.
+					Software Developer at JetBrains with focus on distributed systems and highload
+					applications. Programming since 2014, previously at Infobip, Veeam and SkbKontur.
 				</p>
 				<Link href="/about" hasArrow={true}>Learn more about me</Link>
 			</div>

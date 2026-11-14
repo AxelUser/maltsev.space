@@ -29,7 +29,7 @@
 
 <SEO
 	title="Blog"
-	description={`${bio.fullName}'s blog about software engineering, distributed systems, C#, Go, and system design. Insights from a Senior Software Engineer at Infobip.`}
+	description={`${bio.fullName}'s blog about software engineering, distributed systems, C#, Go, and system design. Insights from a Software Developer at JetBrains.`}
 	url="/blog"
 	keywords={['blog', 'software engineering', 'programming', 'distributed systems', 'C#', 'Go']}
 />
@@ -41,7 +41,7 @@
 		<section class="blog-filters">
 			<div class="filter-label">Filter by topic:</div>
 			<div class="tags-container">
-				{#each allTags as tag}
+				{#each allTags as tag (tag)}
 					<Badge
 						variant={activeTag === tag ? 'active' : 'default'}
 						interactive={true}
