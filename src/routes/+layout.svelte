@@ -3,8 +3,6 @@
 	import { browser, dev } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { theme, applyTheme } from '$lib/stores/theme';
-	import 'open-props/style';
-	import 'open-props/normalize';
 	import '../app.css';
 	import posthog from 'posthog-js';
 	import { PUBLIC_POSTHOG_API_KEY, PUBLIC_POSTHOG_HOST } from '$env/static/public';
@@ -37,40 +35,12 @@
 	<link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
 </svelte:head>
 
-<div class="space-layout">
+<div class="relative z-0 flex min-h-screen flex-col bg-surface-1">
 	<Header />
 	<TwinklingStars />
-	<main>
+	<main class="flex-1 py-12">
 		{@render children()}
 	</main>
 
 	<Footer />
 </div>
-
-<style>
-	.space-layout {
-		display: flex;
-		flex-direction: column;
-		min-height: 100vh;
-		background-color: var(--surface-1);
-		position: relative;
-		z-index: 0;
-	}
-
-	main {
-		flex: 1;
-		padding-block: var(--gap-large);
-	}
-
-	@media (--sm-n-below) {
-		main {
-			padding-block: var(--gap);
-		}
-	}
-
-	@media (--xs-n-below) {
-		main {
-			padding-block: var(--gap-small);
-		}
-	}
-</style>

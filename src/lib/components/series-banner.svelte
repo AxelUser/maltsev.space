@@ -9,91 +9,24 @@
 </script>
 
 {#if posts.length > 0}
-	<div class="series-banner">
-		<div class="series-title">More from this series</div>
-		<ol class="series-list">
+	<div class="mb-12 rounded-md border border-brand/20 bg-surface-2 p-2 md:p-5">
+		<div
+			class="m-0 mb-5 flex items-center gap-2 text-lg font-semibold text-fg-1 before:text-lg before:content-['📚'] md:text-xl"
+		>
+			More from this series
+		</div>
+		<ol class="list-none pl-0 [counter-reset:series-counter]">
 			{#each posts as post}
-				<li class="series-item">
-					<a href={`/blog/${post.slug}`} class="series-link">{post.title}</a>
+				<li
+					class="relative m-0 flex items-start pl-5 [counter-increment:series-counter] before:absolute before:top-1/2 before:left-0 before:min-w-5 before:-translate-y-1/2 before:text-left before:font-medium before:text-fg-2 before:content-[counter(series-counter)_'.']"
+				>
+					<a
+						href={`/blog/${post.slug}`}
+						class="inline-block py-2 font-medium text-link no-underline transition-colors hover:text-accent"
+						>{post.title}</a
+					>
 				</li>
 			{/each}
 		</ol>
 	</div>
 {/if}
-
-<style>
-	@import 'open-props/media';
-
-	.series-banner {
-		background-color: var(--surface-2);
-		border: 1px solid color-mix(in srgb, var(--brand) 20%, transparent);
-		border-radius: var(--radius-2);
-		padding: var(--gap);
-		margin-bottom: var(--gap-large);
-	}
-
-	.series-title {
-		font-size: var(--font-size-3);
-		font-weight: var(--font-weight-6);
-		color: var(--text-1);
-		margin: 0 0 var(--gap) 0;
-		display: flex;
-		align-items: center;
-		gap: var(--gap-small);
-	}
-
-	.series-title::before {
-		content: '📚';
-		font-size: var(--font-size-2);
-	}
-
-	.series-list {
-		list-style: none;
-		padding-left: 0;
-		counter-reset: series-counter;
-	}
-
-	.series-item {
-		margin: 0;
-		display: flex;
-		align-items: flex-start;
-		counter-increment: series-counter;
-		padding-left: var(--gap);
-		position: relative;
-	}
-
-	.series-item::before {
-		content: counter(series-counter) '.';
-		position: absolute;
-		left: 0;
-		top: 50%;
-		transform: translateY(-50%);
-		font-weight: var(--font-weight-5);
-		color: var(--text-2);
-		min-width: var(--gap);
-		text-align: left;
-	}
-
-	.series-link {
-		color: var(--link);
-		text-decoration: none;
-		font-weight: var(--font-weight-5);
-		transition: color var(--transition-fast);
-		display: inline-block;
-		padding: var(--gap-small) 0;
-	}
-
-	.series-link:hover {
-		color: var(--accent);
-	}
-
-	@media (--md-n-below) {
-		.series-banner {
-			padding: var(--gap-small);
-		}
-
-		.series-title {
-			font-size: var(--font-size-2);
-		}
-	}
-</style>

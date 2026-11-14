@@ -2,8 +2,6 @@
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import ContentCard from '$lib/components/content-card.svelte';
 	import '../../app.css';
-	import 'open-props/style';
-	import 'open-props/normalize';
 	import heroImage from './hero.jpg?enhanced';
 
 	const { Story } = defineMeta({

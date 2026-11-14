@@ -10,7 +10,7 @@
 	}>();
 </script>
 
-<div class="posts-grid">
+<div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
 	{#each posts as post}
 		<ContentCard
 			date={post.date}
@@ -26,20 +26,3 @@
 		/>
 	{/each}
 </div>
-
-<style>
-	@import 'open-props/media';
-
-	.posts-grid {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: var(--gap-large);
-	}
-
-	@media (--lg-n-above) {
-		.posts-grid {
-			grid-template-columns: repeat(2, 1fr);
-			gap: var(--gap-large);
-		}
-	}
-</style>

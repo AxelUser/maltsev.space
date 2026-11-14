@@ -4,16 +4,8 @@
 	export let tags: string[] = [];
 </script>
 
-<div class="tag-cloud">
+<div class="flex flex-wrap gap-2">
 	{#each tags as tag}
 		<Badge>{tag}</Badge>
 	{/each}
 </div>
-
-<style>
-	.tag-cloud {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--gap-small);
-	}
-</style>

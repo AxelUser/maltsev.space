@@ -23,62 +23,24 @@
 	const inputId = $derived(id || `input-${Math.random().toString(36).substr(2, 9)}`);
 </script>
 
-<div class="input-group">
+<div
+	class="mb-5 flex flex-col gap-2 rounded-md border border-surface-3 bg-surface-1 p-5 transition-all duration-200 ease-[ease]"
+>
 	{#if label}
-		<label for={inputId}>{label}{required ? '*' : ''}</label>
+		<label for={inputId} class="m-0 text-base font-semibold text-fg-2"
+			>{label}{required ? '*' : ''}</label
+		>
 	{/if}
-	<input id={inputId} {type} bind:value {placeholder} {disabled} {min} {max} {step} {required} />
+	<input
+		id={inputId}
+		{type}
+		bind:value
+		{placeholder}
+		{disabled}
+		{min}
+		{max}
+		{step}
+		{required}
+		class="min-h-[1.5em] rounded-xs border border-surface-3 bg-surface-2 p-2 text-center font-mono text-lg/normal font-bold text-fg-1 transition-all duration-200 ease-[ease] placeholder:text-center placeholder:text-fg-2 placeholder:opacity-60 focus:border-brand focus:bg-surface-1 focus:outline-none disabled:cursor-not-allowed disabled:bg-surface-3 disabled:opacity-60"
+	/>
 </div>
-
-<style>
-	.input-group {
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap-small);
-		background: var(--surface-1);
-		border-radius: var(--radius-2);
-		padding: var(--gap);
-		border: 1px solid var(--surface-3);
-		margin-bottom: var(--gap);
-		transition: all 0.2s ease;
-	}
-
-	.input-group label {
-		font-size: var(--font-size-1);
-		color: var(--text-2);
-		font-weight: var(--font-weight-6);
-		margin: 0;
-	}
-
-	.input-group input {
-		padding: var(--gap-small);
-		border: 1px solid var(--surface-3);
-		border-radius: var(--radius-1);
-		background: var(--surface-2);
-		color: var(--text-1);
-		font-size: var(--font-size-2);
-		font-family: var(--font-monospace-code);
-		font-weight: var(--font-weight-7);
-		text-align: center;
-		min-height: 1.5em;
-		transition: all 0.2s ease;
-	}
-
-	.input-group input::placeholder {
-		color: var(--text-2);
-		opacity: 0.6;
-		text-align: center;
-	}
-
-	.input-group input:focus {
-		outline: none;
-		border-color: var(--brand);
-		background: var(--surface-1);
-	}
-
-	.input-group input:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
-		background: var(--surface-3);
-	}
-</style>

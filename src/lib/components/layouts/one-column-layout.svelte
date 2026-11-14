@@ -9,29 +9,11 @@
 	const { children, class: className }: Props = $props();
 </script>
 
-<div class={`space-container ${className}`}>
+<div
+	class={[
+		'mx-auto max-w-[90%] px-2 md:px-5 xl:max-w-[min(90%,var(--container-content))] md:max-xl:max-w-[min(90%,1000px)]',
+		className
+	]}
+>
 	{@render children()}
 </div>
-
-<style>
-	@import 'open-props/media';
-
-	.space-container {
-		max-width: var(--content-width);
-		margin-inline: auto;
-		padding-inline: var(--gap);
-	}
-
-	@media (--xl-n-below) {
-		.space-container {
-			max-width: min(90%, 1000px);
-		}
-	}
-
-	@media (--md-n-below) {
-		.space-container {
-			max-width: 90%;
-			padding-inline: var(--gap-small);
-		}
-	}
-</style>

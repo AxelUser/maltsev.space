@@ -59,15 +59,17 @@
 	}
 </script>
 
-<div class="calculator-container">
-	<h2>Bloom Filter Parameter Calculator</h2>
+<div class="mx-auto rounded-md border border-surface-3 bg-surface-2 p-5 font-sans">
+	<h2 class="m-0 mb-12 text-center text-2xl leading-tight font-bold text-fg-1">
+		Bloom Filter Parameter Calculator
+	</h2>
 
-	<div class="layout">
+	<div class="grid grid-cols-1 items-start gap-5 md:grid-cols-[1fr_300px] md:gap-12">
 		<!-- Calculator -->
-		<div class="main-content">
+		<div class="min-w-0">
 			<!-- Input Section -->
-			<div class="input-section">
-				<h3>Input Parameters</h3>
+			<div class="mb-5 rounded-md border border-surface-3 bg-surface-1 p-5">
+				<h3 class="m-0 mb-5 text-lg leading-tight font-semibold text-fg-1">Input Parameters</h3>
 
 				<LabeledInput
 					label="Expected Elements (n):"
@@ -91,14 +93,16 @@
 				/>
 
 				<!-- Calculation Mode -->
-				<div class="mode-section">
-					<h4>Calculation Mode</h4>
-					<div class="radio-group">
-						<label class="radio-label">
+				<div class="my-5 rounded-xs bg-surface-2 p-2">
+					<h4 class="mt-5 mb-2 text-base leading-tight font-semibold text-fg-2">
+						Calculation Mode
+					</h4>
+					<div class="flex flex-col gap-2">
+						<label class="flex cursor-pointer items-center gap-2 text-base text-fg-1">
 							<input type="radio" bind:group={calculationMode} value="optimal" />
 							Calculate optimal parameters
 						</label>
-						<label class="radio-label">
+						<label class="flex cursor-pointer items-center gap-2 text-base text-fg-1">
 							<input type="radio" bind:group={calculationMode} value="custom" />
 							Use custom parameters
 						</label>
@@ -106,7 +110,7 @@
 				</div>
 
 				{#if calculationMode === 'custom'}
-					<div class="custom-params">
+					<div class="rounded-xs border border-dashed border-surface-3 bg-surface-2 p-5">
 						<LabeledInput
 							label="Bit Array Size (m):"
 							bind:value={customM}
@@ -131,10 +135,10 @@
 			</div>
 
 			<!-- Results Section -->
-			<div class="results-section">
-				<h3>Calculated Results</h3>
+			<div class="mb-5 rounded-md border border-surface-3 bg-surface-1 p-5">
+				<h3 class="m-0 mb-5 text-lg leading-tight font-semibold text-fg-1">Calculated Results</h3>
 
-				<div class="results-grid">
+				<div class="grid grid-cols-1 gap-5 md:grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
 					<DisplayCard
 						label="Bit Array Size (m)"
 						value={formatNumber(calculationMode === 'optimal' ? optimalM : customM || optimalM, 0)}
@@ -181,7 +185,7 @@
 		</div>
 
 		<!-- Parameters Display -->
-		<div class="parameters-column">
+		<div class="max-md:-order-1 md:sticky md:top-5">
 			<ParameterGroup
 				title="Current Parameters"
 				parameters={[
@@ -200,9 +204,9 @@
 				cardVariant="compact"
 			/>
 
-			<div class="parameters-section">
-				<h3>Quick Presets</h3>
-				<div class="preset-buttons">
+			<div class="mb-5 rounded-md bg-surface-1 p-2 md:p-5">
+				<h3 class="m-0 mb-5 text-lg leading-tight font-semibold">Quick Presets</h3>
+				<div class="flex flex-col gap-2">
 					<Button
 						onclick={() => {
 							expectedElements = 1000;
@@ -235,142 +239,3 @@
 		</div>
 	</div>
 </div>
-
-<style>
-	.calculator-container {
-		margin: 0 auto;
-		padding: var(--gap);
-		font-family: var(--font-system-ui);
-		background: var(--surface-2);
-		border-radius: var(--radius-2);
-		border: 1px solid var(--surface-3);
-	}
-
-	.calculator-container h2 {
-		margin: 0 0 var(--gap-large) 0;
-		font-size: var(--font-size-4);
-		font-weight: var(--font-weight-7);
-		color: var(--text-1);
-		text-align: center;
-	}
-
-	.layout {
-		display: grid;
-		grid-template-columns: 1fr 300px;
-		gap: var(--gap-large);
-		align-items: start;
-	}
-
-	.main-content {
-		min-width: 0;
-	}
-
-	.input-section,
-	.results-section {
-		background: var(--surface-1);
-		border-radius: var(--radius-2);
-		padding: var(--gap);
-		margin-bottom: var(--gap);
-		border: 1px solid var(--surface-3);
-	}
-
-	.input-section h3,
-	.results-section h3 {
-		margin: 0 0 var(--gap) 0;
-		font-size: var(--font-size-2);
-		font-weight: var(--font-weight-6);
-		color: var(--text-1);
-	}
-
-	.input-section h4 {
-		margin: var(--gap) 0 var(--gap-small) 0;
-		font-size: var(--font-size-1);
-		font-weight: var(--font-weight-6);
-		color: var(--text-2);
-	}
-
-	.mode-section {
-		margin: var(--gap) 0;
-		padding: var(--gap-small);
-		background: var(--surface-2);
-		border-radius: var(--radius-1);
-	}
-
-	.radio-group {
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap-small);
-	}
-
-	.radio-label {
-		display: flex;
-		align-items: center;
-		gap: var(--gap-small);
-		font-size: var(--font-size-1);
-		color: var(--text-1);
-		cursor: pointer;
-	}
-
-	.custom-params {
-		background: var(--surface-2);
-		padding: var(--gap);
-		border-radius: var(--radius-1);
-		border: 1px dashed var(--surface-3);
-	}
-
-	.results-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-		gap: var(--gap);
-	}
-
-	.parameters-column {
-		position: sticky;
-		top: var(--gap);
-	}
-
-	.parameters-section {
-		background: var(--surface-1);
-		border-radius: var(--radius-2);
-		padding: var(--gap);
-		margin-bottom: var(--gap);
-	}
-
-	.parameters-section h3 {
-		margin: 0 0 var(--gap) 0;
-		font-size: var(--font-size-2);
-		font-weight: var(--font-weight-6);
-	}
-
-	.preset-buttons {
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap-small);
-	}
-
-	@media (max-width: 768px) {
-		.layout {
-			grid-template-columns: 1fr;
-			gap: var(--gap);
-		}
-
-		.parameters-column {
-			position: static;
-			order: -1;
-		}
-
-		.parameters-section {
-			padding: var(--gap-small);
-		}
-
-		.results-grid {
-			grid-template-columns: 1fr;
-		}
-	}
-
-	@media (max-width: 600px) {
-		.preset-buttons {
-			flex-direction: column;
-		}
-	}
-</style>

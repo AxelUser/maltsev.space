@@ -2,14 +2,6 @@
 	const { children } = $props();
 </script>
 
-<div class="scrollbox">
+<div class="mb-5 max-w-fit overflow-x-auto">
 	{@render children()}
 </div>
-
-<style>
-	.scrollbox {
-		overflow-x: auto;
-		max-inline-size: fit-content;
-		margin-bottom: var(--gap);
-	}
-</style>

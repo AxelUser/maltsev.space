@@ -71,21 +71,25 @@
 
 {#if isOpen}
 	<div
-		class="lightbox-overlay"
+		class="fixed inset-0 z-1000 flex items-center justify-center bg-black/95 backdrop-blur-xs"
 		bind:this={lightboxContainer}
 		tabindex="-1"
 		role="dialog"
 		aria-modal="true"
 		aria-label="Image lightbox"
 	>
-		<div class="lightbox-container">
-			<button class="close-btn" onclick={onClose} aria-label="Close lightbox">
+		<div class="relative flex size-full items-center justify-center">
+			<button
+				class="absolute top-2 right-2 z-10 cursor-pointer rounded-md bg-black/70 p-2 text-white transition-colors duration-200 hover:bg-black/90 md:top-5 md:right-5"
+				onclick={onClose}
+				aria-label="Close lightbox"
+			>
 				<X size={24} />
 			</button>
 
 			{#if images.length > 1}
 				<button
-					class="nav-btn prev-btn"
+					class="absolute top-1/2 z-10 -translate-y-1/2 cursor-pointer rounded-md bg-black/70 p-2 text-white transition-colors duration-200 hover:bg-black/90 disabled:cursor-not-allowed disabled:opacity-30 md:p-5 left-5"
 					onclick={previousImage}
 					disabled={currentIndex === 0}
 					aria-label="Previous image"
@@ -94,7 +98,7 @@
 				</button>
 
 				<button
-					class="nav-btn next-btn"
+					class="absolute top-1/2 z-10 -translate-y-1/2 cursor-pointer rounded-md bg-black/70 p-2 text-white transition-colors duration-200 hover:bg-black/90 disabled:cursor-not-allowed disabled:opacity-30 md:p-5 right-5"
 					onclick={nextImage}
 					disabled={currentIndex === images.length - 1}
 					aria-label="Next image"
@@ -103,9 +107,14 @@
 				</button>
 			{/if}
 
-			<div class="image-container">
+			<div
+				class="relative flex max-h-[85vh] max-w-[95vw] items-center justify-center md:max-h-[90vh] md:max-w-[90vw]"
+			>
 				{#if !imageLoaded}
-					<div class="loading-spinner" aria-label="Loading image">
+					<div
+						class="absolute flex animate-spin items-center justify-center text-brand"
+						aria-label="Loading image"
+					>
 						<Loader2 size={40} />
 					</div>
 				{/if}
@@ -114,7 +123,10 @@
 					src={images[currentIndex]}
 					loading="lazy"
 					alt="Gallery image {currentIndex + 1}"
-					class:loaded={imageLoaded}
+					class={[
+						'max-h-full max-w-full object-contain transition-opacity duration-300 ease-[ease]',
+						imageLoaded ? 'opacity-100' : 'opacity-0'
+					]}
 					onload={() => (imageLoaded = true)}
 					onclick={(e) => e.stopPropagation()}
 					role="none"
@@ -122,8 +134,10 @@
 			</div>
 
 			{#if images.length > 1}
-				<div class="controls">
-					<span class="image-counter">
+				<div
+					class="absolute bottom-2 left-1/2 flex -translate-x-1/2 items-center gap-5 rounded-2xl bg-black/70 p-2 md:bottom-5 md:px-5"
+				>
+					<span class="text-xs font-normal whitespace-nowrap text-white">
 						{currentIndex + 1} / {images.length}
 					</span>
 				</div>
@@ -131,156 +145,3 @@
 		</div>
 	</div>
 {/if}
-
-<style>
-	.lightbox-overlay {
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		background: rgba(0, 0, 0, 0.95);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 1000;
-		backdrop-filter: blur(4px);
-	}
-
-	.lightbox-container {
-		position: relative;
-		width: 100%;
-		height: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.image-container {
-		position: relative;
-		max-width: 90vw;
-		max-height: 90vh;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.image-container img {
-		max-width: 100%;
-		max-height: 100%;
-		object-fit: contain;
-		opacity: 0;
-		transition: opacity 0.3s ease;
-	}
-
-	.image-container img.loaded {
-		opacity: 1;
-	}
-
-	.loading-spinner {
-		position: absolute;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: var(--brand);
-	}
-
-	@keyframes spin {
-		0% {
-			transform: rotate(0deg);
-		}
-		100% {
-			transform: rotate(360deg);
-		}
-	}
-
-	.close-btn {
-		position: absolute;
-		background: rgba(0, 0, 0, 0.7);
-		border: none;
-		color: white;
-		cursor: pointer;
-		padding: var(--gap-small);
-		border-radius: var(--radius-2);
-		transition: background-color 0.2s ease;
-		z-index: 10;
-		top: var(--gap);
-		right: var(--gap);
-	}
-
-	.close-btn:hover {
-		background: rgba(0, 0, 0, 0.9);
-	}
-
-	.nav-btn {
-		position: absolute;
-		top: 50%;
-		transform: translateY(-50%);
-		background: rgba(0, 0, 0, 0.7);
-		border: none;
-		color: white;
-		cursor: pointer;
-		padding: var(--gap);
-		border-radius: var(--radius-2);
-		transition: background-color 0.2s ease;
-		z-index: 10;
-	}
-
-	.nav-btn:hover {
-		background: rgba(0, 0, 0, 0.9);
-	}
-
-	.nav-btn:disabled {
-		opacity: 0.3;
-		cursor: not-allowed;
-	}
-
-	.prev-btn {
-		left: var(--gap);
-	}
-
-	.next-btn {
-		right: var(--gap);
-	}
-
-	.controls {
-		position: absolute;
-		bottom: var(--gap);
-		left: 50%;
-		transform: translateX(-50%);
-		display: flex;
-		align-items: center;
-		gap: var(--gap);
-		background: rgba(0, 0, 0, 0.7);
-		padding: var(--gap-small) var(--gap);
-		border-radius: var(--radius-3);
-	}
-
-	.image-counter {
-		color: white;
-		font-size: var(--font-size-0);
-		font-weight: var(--font-weight-4);
-		white-space: nowrap;
-	}
-
-	@media (max-width: 768px) {
-		.image-container {
-			max-width: 95vw;
-			max-height: 85vh;
-		}
-
-		.nav-btn {
-			padding: var(--gap-small);
-		}
-
-		.controls {
-			bottom: var(--gap-small);
-			padding: var(--gap-small);
-		}
-
-		.close-btn {
-			top: var(--gap-small);
-			right: var(--gap-small);
-		}
-	}
-</style>

@@ -1,24 +1,32 @@
 <script lang="ts">
 	import { cva, type VariantProps } from 'class-variance-authority';
 	import type { SvelteHTMLElements } from 'svelte/elements';
+	import { cn } from '$lib/utils';
 
-	const card = cva('card', {
-		variants: {
-			variant: {
-				default: 'default',
-				neon: 'neon'
-			},
-			clickable: {
-				true: 'clickable',
-				false: ''
+	const card = cva(
+		'relative block overflow-hidden rounded-2xl border border-surface-3 bg-surface-2 p-5 text-fg-1 no-underline transition-colors',
+		{
+			variants: {
+				variant: {
+					default: 'shadow-lg',
+					neon: 'group/card z-1 border-none hover:bg-surface-3'
+				},
+				clickable: {
+					true: 'cursor-pointer',
+					false: ''
+				}
 			}
 		}
-	});
+	);
+
+	const coverImageClass = 'absolute inset-0 size-full object-cover';
 
 	type Props = SvelteHTMLElements['div'] &
 		VariantProps<typeof card> & {
 			coverImage?: string;
 			placeholder?: string;
+			/** Extra classes for the inner content wrapper. */
+			contentClass?: string;
 		};
 
 	const {
@@ -27,11 +35,12 @@
 		coverImage,
 		placeholder: placeholderBase64,
 		class: className = '',
+		contentClass,
 		children,
 		...rest
 	}: Props = $props();
 
-	const cardClasses = $derived(card({ variant, clickable, class: className }));
+	const cardClasses = $derived(cn(card({ variant, clickable }), className));
 
 	let imageLoaded = $state(false);
 
@@ -58,166 +67,31 @@
 			<!-- svelte-ignore a11y_missing_attribute -->
 			<img
 				src={placeholderBase64}
-				class="cover-image placeholder-image"
-				class:loaded={imageLoaded}
+				class={[
+					coverImageClass,
+					'-z-1 [--pulse-max:0.2] [--pulse-min:0.1]',
+					imageLoaded ? 'opacity-0' : 'animate-placeholder-pulse opacity-20'
+				]}
 			/>
 		{/if}
 		<!-- svelte-ignore a11y_missing_attribute -->
 		<enhanced:img
 			src={coverImage}
 			loading="lazy"
-			class="cover-image real-image"
-			class:loaded={imageLoaded}
+			class="{coverImageClass} z-0 transition-opacity duration-300 ease-in-out {imageLoaded
+				? 'opacity-20'
+				: 'opacity-0'}"
 			sizes="min(800px, 30vw)"
 			onload={handleImageLoad}
 			onerror={handleImageError}
 		/>
 	{/if}
-	<div class="card-content">
+	<div class={cn('relative z-1', contentClass)}>
 		{@render children?.()}
 	</div>
 	{#if variant === 'neon'}
-		<div class="neon-border"></div>
+		<div
+			class="pointer-events-none absolute inset-0 -z-999 rounded-2xl opacity-0 transition-opacity duration-300 ease-[ease] group-hover/card:opacity-100 before:absolute before:inset-0 before:-z-1 before:rounded-2xl before:bg-[linear-gradient(45deg,var(--accent),var(--star),var(--nebula),var(--accent))] before:bg-size-[400%_400%] before:p-0.5 group-hover/card:before:animate-gradient-shift after:absolute after:inset-0.5 after:z-1 after:rounded-[calc(1rem-2px)] after:bg-surface-3"
+		></div>
 	{/if}
 </div>
-
-<style>
-	.card {
-		display: block;
-		color: var(--text-1);
-		text-decoration: none;
-		background-color: var(--surface-2);
-		border: 1px solid var(--surface-3);
-		padding: var(--gap);
-		border-radius: var(--radius-3);
-		transition: all var(--animation-fade);
-		position: relative;
-		overflow: hidden;
-	}
-
-	.cover-image {
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-
-	.real-image {
-		opacity: 0;
-		z-index: 0;
-		transition: opacity 0.3s ease-in-out;
-	}
-
-	.real-image.loaded {
-		opacity: 0.2;
-	}
-
-	.placeholder-image {
-		opacity: 0.2;
-		z-index: -1;
-		animation: pulse 2s ease-in-out infinite;
-	}
-
-	.placeholder-image.loaded {
-		opacity: 0;
-		animation: none;
-	}
-
-	@keyframes pulse {
-		0% {
-			opacity: 0.1;
-		}
-		50% {
-			opacity: 0.2;
-		}
-		100% {
-			opacity: 0.1;
-		}
-	}
-
-	.card-content {
-		position: relative;
-		z-index: 1;
-	}
-
-	.default {
-		box-shadow: var(--shadow-3);
-	}
-
-	.neon {
-		border: none;
-		position: relative;
-		z-index: 1;
-	}
-
-	.neon:hover {
-		background-color: var(--surface-3);
-	}
-
-	.neon-border {
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		border-radius: var(--radius-3);
-		opacity: 0;
-		transition: opacity 0.3s ease;
-		pointer-events: none;
-		z-index: -999;
-	}
-
-	.neon-border::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		border-radius: var(--radius-3);
-		padding: 2px;
-		background: linear-gradient(45deg, var(--accent), var(--star), var(--nebula), var(--accent));
-		background-size: 400% 400%;
-		z-index: -1;
-	}
-
-	.neon-border::after {
-		content: '';
-		position: absolute;
-		top: 2px;
-		left: 2px;
-		right: 2px;
-		bottom: 2px;
-		background-color: var(--surface-3);
-		border-radius: calc(var(--radius-3) - 2px);
-		z-index: 1;
-	}
-
-	.neon:hover .neon-border {
-		opacity: 1;
-	}
-
-	.neon:hover .neon-border::before {
-		animation: rotate 3s linear infinite;
-	}
-
-	@keyframes rotate {
-		0% {
-			background-position: 0% 50%;
-		}
-		50% {
-			background-position: 100% 50%;
-		}
-		100% {
-			background-position: 0% 50%;
-		}
-	}
-
-	.clickable {
-		cursor: pointer;
-	}
-</style>

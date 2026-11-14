@@ -13,14 +13,14 @@
 	/>
 </svelte:head>
 
-<div class="art-page">
+<div class="flex flex-col pb-12">
 	<PageHeader
 		title="My AI Art Experiments"
 		subtitle="Just my experiments with AI art and creativity"
 	/>
 
-	<section class="art-collections">
-		<div class="collections-grid">
+	<section class="mb-12">
+		<div class="grid grid-cols-1 gap-5 lg:gap-12">
 			{#each data.collections as collection}
 				<ContentCard
 					href="/art/{collection.id}"
@@ -32,36 +32,3 @@
 		</div>
 	</section>
 </div>
-
-<style>
-	@import 'open-props/media';
-
-	.art-page {
-		padding-bottom: var(--gap-large);
-		display: flex;
-		flex-direction: column;
-	}
-
-	.art-collections {
-		margin-bottom: var(--gap-large);
-	}
-
-	.collections-grid {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: var(--gap);
-	}
-
-	@media (--lg-n-above) {
-		.collections-grid {
-			grid-template-columns: 1fr;
-			gap: var(--gap-large);
-		}
-	}
-
-	@media (--sm-n-below) {
-		.collections-grid {
-			grid-template-columns: 1fr;
-		}
-	}
-</style>

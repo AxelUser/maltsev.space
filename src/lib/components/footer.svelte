@@ -3,23 +3,12 @@
 	import { OneColumnLayout } from '$lib/components/layouts';
 </script>
 
-<footer>
+<footer
+	class="flex min-h-20 items-center justify-center border-t border-brand/30 bg-surface-1/90 text-center backdrop-blur-[5px]"
+>
 	<OneColumnLayout>
-		<p class="space-text-small">
+		<p>
 			© {new Date().getFullYear()} | {bio.fullName}
 		</p>
 	</OneColumnLayout>
 </footer>
-
-<style>
-	footer {
-		min-height: var(--footer-height);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		text-align: center;
-		backdrop-filter: blur(5px);
-		background-color: color-mix(in srgb, var(--surface-1) 90%, transparent);
-		border-top: 1px solid color-mix(in srgb, var(--brand) 30%, transparent);
-	}
-</style>

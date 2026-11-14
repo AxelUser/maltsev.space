@@ -2,15 +2,17 @@
 	import { theme, type Theme } from '$lib/stores/theme';
 	import { Sun, Moon, Laptop } from '@lucide/svelte';
 
+	const buttonClass =
+		'flex size-[30px] items-center justify-center bg-transparent text-fg-2 transition-colors hover:bg-brand/15 hover:text-fg-1';
+
 	const setTheme = (newTheme: Theme) => {
 		theme.set(newTheme);
 	};
 </script>
 
-<div class="theme-switch">
+<div class="flex gap-2 bg-surface-2 p-1">
 	<button
-		class="theme-button"
-		class:active={$theme === 'light'}
+		class={[buttonClass, $theme === 'light' && 'bg-brand/30 text-fg-1 hover:bg-brand/30']}
 		onclick={() => setTheme('light')}
 		title="Light theme"
 		aria-label="Light theme"
@@ -18,8 +20,7 @@
 		<Sun size={16} />
 	</button>
 	<button
-		class="theme-button"
-		class:active={$theme === 'dark'}
+		class={[buttonClass, $theme === 'dark' && 'bg-brand/30 text-fg-1 hover:bg-brand/30']}
 		onclick={() => setTheme('dark')}
 		title="Dark theme"
 		aria-label="Dark theme"
@@ -27,8 +28,7 @@
 		<Moon size={16} />
 	</button>
 	<button
-		class="theme-button"
-		class:active={$theme === 'system'}
+		class={[buttonClass, $theme === 'system' && 'bg-brand/30 text-fg-1 hover:bg-brand/30']}
 		onclick={() => setTheme('system')}
 		title="System theme"
 		aria-label="System theme"
@@ -36,39 +36,3 @@
 		<Laptop size={16} />
 	</button>
 </div>
-
-<style>
-	.theme-switch {
-		display: flex;
-		gap: var(--gap-small);
-		background-color: var(--surface-2);
-		padding: 4px;
-		border-radius: var(--radius-sm);
-	}
-
-	.theme-button {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 30px;
-		height: 30px;
-		border: none;
-		background: transparent;
-		color: var(--text-2);
-		border-radius: var(--radius-sm);
-		cursor: pointer;
-		transition:
-			background-color var(--transition-fast),
-			color var(--transition-fast);
-	}
-
-	.theme-button:hover {
-		background-color: color-mix(in srgb, var(--brand) 15%, transparent);
-		color: var(--text-1);
-	}
-
-	.theme-button.active {
-		background-color: color-mix(in srgb, var(--brand) 30%, transparent);
-		color: var(--text-1);
-	}
-</style>
