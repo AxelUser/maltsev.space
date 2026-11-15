@@ -1,15 +1,15 @@
 ---
-date: "2025-07-15"
+date: '2025-07-15'
 tags:
- - "Bitwise"
- - "C#"
+  - 'Bitwise'
+  - 'C#'
 keywords:
- - "C#"
- - "Bitwise tricks"
- - "Hash table"
- - "Performance"
-title: "SIMD Within a Register: How I Doubled Hash Table Lookup Performance"
-preview: "It started with a simple thought: four bytes in a hash table bucket look just like an integer. Luckily, this one idea led to a deep dive into bit-twiddling and a 2x performance boost."
+  - 'C#'
+  - 'Bitwise tricks'
+  - 'Hash table'
+  - 'Performance'
+title: 'SIMD Within a Register: How I Doubled Hash Table Lookup Performance'
+preview: 'It started with a simple thought: four bytes in a hash table bucket look just like an integer. Luckily, this one idea led to a deep dive into bit-twiddling and a 2x performance boost.'
 draft: false
 ---
 
@@ -32,7 +32,7 @@ Table: | 3A | 00 | B7 | F2 | | 4C | 91 | 00 | DE |   ...   | AA | 00 | 5F | C8 |
 
 </Scrollbox>
 
-But those four bytes in a bucket reminded me of something. They *feel* like … an integer!
+But those four bytes in a bucket reminded me of something. They _feel_ like … an integer!
 
 I wasn’t chasing ultra-low latency—after all, this is C#—but I couldn’t resist experimenting. Could I speed up lookups in my Cuckoo Filter by replacing the 4-byte bucket with a plain old 32-bit integer?
 
@@ -71,7 +71,7 @@ public bool Contains(byte fingerprint, uint bucketIdx)
 
 (Please ignore the missing bounds checks—they’re not the point today.)
 
-I’m no bit-twiddling wizard—I live in a cosy, GC-collected world—but those 4 bytes kept itching. A bucket lines up *perfectly* with a 32-bit `uint`; that opens the door to a future lock-free [compare-and-swap](https://en.wikipedia.org/wiki/Compare-and-swap). So I decided to play.
+I’m no bit-twiddling wizard—I live in a cosy, GC-collected world—but those 4 bytes kept itching. A bucket lines up _perfectly_ with a 32-bit `uint`; that opens the door to a future lock-free [compare-and-swap](https://en.wikipedia.org/wiki/Compare-and-swap). So I decided to play.
 
 ## Migrating to a `uint` Table
 
@@ -173,7 +173,7 @@ The results are revealing. The 4-byte struct version gave a nice speed boost, ab
 
 ## Finding a Byte with Masking
 
-Long ago I bookmarked Sean Anderson’s great *[Bit Twiddling Hacks](https://graphics.stanford.edu/%7Eseander/bithacks.html)*. One gem there *"Determine if a word has a zero byte"* is exactly what I need. The C# version is nearly identical:
+Long ago I bookmarked Sean Anderson’s great _[Bit Twiddling Hacks](https://graphics.stanford.edu/%7Eseander/bithacks.html)_. One gem there _"Determine if a word has a zero byte"_ is exactly what I need. The C# version is nearly identical:
 
 ```csharp
 private static bool HasZero(uint v)
@@ -243,14 +243,14 @@ $$
 
 The method returns the result of `0x00008000 != 0`. Since `0x8000` is not zero, the expression is `true`, and the method correctly reports that the zero byte was found.
 
-Great, now I can detect a zero byte without branches. All that remains is to *turn the byte I’m searching for into zero*.
+Great, now I can detect a zero byte without branches. All that remains is to _turn the byte I’m searching for into zero_.
 
 ## XOR to the Rescue
 
 Let’s assume our integer, aka bucket, is `0x12345678` and I’m looking for byte `0x56`. Without shifts, this seems tough. Luckily, all we need to do is transform the `0x56` byte to `0x00`.
 
 > [!note]
-> What happens to the other bytes is irrelevant, because our `HasZero` trick only cares if *any* byte is zero.
+> What happens to the other bytes is irrelevant, because our `HasZero` trick only cares if _any_ byte is zero.
 
 The XOR (`^`) operator has a useful property: `A ^ B = 0` if and only if `A == B`. So, if we XOR the entire bucket with a repeating mask of our target byte, only the matching byte will become zero.
 
@@ -268,11 +268,12 @@ So the remaining part of this puzzle is to make a repetitive mask, which is pret
 $$
 \text{mask} \;=\; \text{0x56} \times \text{0x01010101} \;=\; \text{0x56565656}
 
+
 $$
 
 ## What About Existing Zeros?
 
-A careful reader might ask: what happens if the bucket *already* has a zero byte in it? Does that mess up the logic?
+A careful reader might ask: what happens if the bucket _already_ has a zero byte in it? Does that mess up the logic?
 
 Let’s say our bucket is `0xAA00CCDD` and we're searching for a non-zero fingerprint like `0xBB`. The XOR operation transforms the original zero into a non-zero value, so `HasZero` correctly returns `false`.
 

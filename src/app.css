@@ -10,7 +10,6 @@
 	--font-sans: 'Atkinson Hyperlegible', sans-serif;
 	--font-mono: 'JetBrains Mono', monospace;
 
-	/* Breakpoints (kept identical to the former Open Props media queries) */
 	--breakpoint-xs: 360px;
 	--breakpoint-sm: 480px;
 	--breakpoint-md: 768px;
@@ -18,19 +17,9 @@
 	--breakpoint-xl: 1440px;
 	--breakpoint-2xl: 1920px;
 
-	/* Layout */
 	--container-content: 1200px;
 	--spacing-header: 5rem;
 
-	/* Callout accent colors */
-	--color-callout-tip: #3bc9db;
-	--color-callout-success: #51cf66;
-	--color-callout-warning: #ff922b;
-	--color-callout-danger: #ff6b6b;
-	--color-callout-important: #cc5de8;
-	--color-callout-question: #339af0;
-
-	/* Animations */
 	--animate-twinkle: twinkle 3s ease-in-out infinite;
 	--animate-ring-pulse: ring-pulse 3s ease-in-out infinite;
 	--animate-placeholder-pulse: placeholder-pulse 2s ease-in-out infinite;
@@ -104,131 +93,52 @@
 	--color-surface-3: var(--surface-3);
 	--color-surface-4: var(--surface-4);
 	--color-link: var(--link);
-	--color-link-visited: var(--link-visited);
 	--color-accent: var(--accent);
 	--color-star: var(--star);
 	--color-planet: var(--planet);
 	--color-nebula: var(--nebula);
-	--color-on-dark: var(--text-1-dark);
-	--color-on-dark-muted: var(--text-2-dark);
 }
 
-/* Theme-driven variants: `dark:` follows the explicit switch, then the OS */
-@custom-variant dark {
-	&:where([color-scheme='dark'], [color-scheme='dark'] *) {
-		@slot;
-	}
-	@media (prefers-color-scheme: dark) {
-		&:where(:root:not([color-scheme='light']), :root:not([color-scheme='light']) *) {
-			@slot;
-		}
-	}
+/*
+ * Palette: light-dark(<light>, <dark>) follows `color-scheme`.
+ * No attribute = follow the OS; the theme switch sets [color-scheme] on <html>.
+ */
+:root {
+	color-scheme: light dark;
+
+	--brand: light-dark(#4263eb, #5c7cfa);
+	--brand-foreground: #f1f3f5;
+	--text-1: light-dark(#212529, #f1f3f5);
+	--text-2: light-dark(#495057, #ced4da);
+	--surface-1: light-dark(#f8f9fa, #212529);
+	--surface-2: light-dark(#f1f3f5, #343a40);
+	--surface-3: light-dark(#e9ecef, #495057);
+	--surface-4: light-dark(#dee2e6, #868e96);
+	--link: light-dark(#4263eb, #91a7ff);
+	--accent: light-dark(#1098ad, #22b8cf);
+	--star: light-dark(#212529, #f8f9fa);
+	--planet: #1098ad;
+	--nebula: #be4bdb;
+
+	/* Callout accents, slightly deeper on light backgrounds */
+	--callout-tip: light-dark(#15aabf, #3bc9db);
+	--callout-success: light-dark(#40c057, #51cf66);
+	--callout-warning: light-dark(#fd7e14, #ff922b);
+	--callout-danger: light-dark(#fa5252, #ff6b6b);
+	--callout-important: light-dark(#be4bdb, #cc5de8);
+	--callout-question: light-dark(#228be6, #339af0);
 }
 
-@custom-variant light {
-	&:where([color-scheme='light'], [color-scheme='light'] *) {
-		@slot;
-	}
-	@media (prefers-color-scheme: light) {
-		&:where(:root:not([color-scheme='dark']), :root:not([color-scheme='dark']) *) {
-			@slot;
-		}
-	}
-}
-
-html {
-	/* dark palette */
-	--brand-dark: #5c7cfa;
-	--text-1-dark: #f1f3f5;
-	--text-2-dark: #ced4da;
-	--surface-1-dark: #212529;
-	--surface-2-dark: #343a40;
-	--surface-3-dark: #495057;
-	--surface-4-dark: #868e96;
-	--link-dark: #91a7ff;
-	--link-visited-dark: #e599f7;
-	--accent-dark: #22b8cf;
-	--star-dark: #f8f9fa;
-	--planet-dark: #1098ad;
-	--nebula-dark: #be4bdb;
-
-	/* light palette */
-	--brand-light: #4263eb;
-	--text-1-light: #212529;
-	--text-2-light: #495057;
-	--surface-1-light: #f8f9fa;
-	--surface-2-light: #f1f3f5;
-	--surface-3-light: #e9ecef;
-	--surface-4-light: #dee2e6;
-	--link-light: #4263eb;
-	--link-visited-light: #ae3ec9;
-	--accent-light: #1098ad;
-	--star-light: #212529;
-	--planet-light: #1098ad;
-	--nebula-light: #be4bdb;
-}
-
-/* Dark theme (default) */
-:root,
 [color-scheme='dark'] {
 	color-scheme: dark;
-
-	--brand: var(--brand-dark);
-	--brand-foreground: var(--text-1-dark);
-	--text-1: var(--text-1-dark);
-	--text-2: var(--text-2-dark);
-	--surface-1: var(--surface-1-dark);
-	--surface-2: var(--surface-2-dark);
-	--surface-3: var(--surface-3-dark);
-	--surface-4: var(--surface-4-dark);
-	--link: var(--link-dark);
-	--link-visited: var(--link-visited-dark);
-	--accent: var(--accent-dark);
-	--star: var(--star-dark);
-	--planet: var(--planet-dark);
-	--nebula: var(--nebula-dark);
-}
-
-@media (prefers-color-scheme: light) {
-	:root:not([color-scheme='dark']) {
-		color-scheme: light;
-
-		--brand: var(--brand-light);
-		--text-1: var(--text-1-light);
-		--text-2: var(--text-2-light);
-		--surface-1: var(--surface-1-light);
-		--surface-2: var(--surface-2-light);
-		--surface-3: var(--surface-3-light);
-		--surface-4: var(--surface-4-light);
-		--link: var(--link-light);
-		--link-visited: var(--link-visited-light);
-		--accent: var(--accent-light);
-		--star: var(--star-light);
-		--planet: var(--planet-light);
-		--nebula: var(--nebula-light);
-	}
 }
 
 [color-scheme='light'] {
 	color-scheme: light;
-
-	--brand: var(--brand-light);
-	--text-1: var(--text-1-light);
-	--text-2: var(--text-2-light);
-	--surface-1: var(--surface-1-light);
-	--surface-2: var(--surface-2-light);
-	--surface-3: var(--surface-3-light);
-	--surface-4: var(--surface-4-light);
-	--link: var(--link-light);
-	--link-visited: var(--link-visited-light);
-	--accent: var(--accent-light);
-	--star: var(--star-light);
-	--planet: var(--planet-light);
-	--nebula: var(--nebula-light);
 }
 
 /* ------------------------------------------------------------------ */
-/* Base (the parts of the old Open Props normalize the site relies on) */
+/* Base                                                                */
 /* ------------------------------------------------------------------ */
 
 @layer base {
@@ -330,8 +240,7 @@ html {
 		@apply size-4 p-0;
 	}
 	::placeholder {
-		color: #495057;
-		opacity: 0.75;
+		@apply text-fg-2/75;
 	}
 
 	hr {
@@ -399,7 +308,25 @@ html {
 		@apply my-5 text-lg leading-normal font-semibold text-fg-1 xs:text-xl sm:text-2xl;
 	}
 
-	/* Rendered markdown (mdsvex output, {@html} content) */
+	.space-hero {
+		@apply m-0 bg-linear-90/srgb from-brand to-accent bg-clip-text text-[2rem] text-transparent xs:text-5xl sm:text-[3.5rem];
+		text-shadow: 0 0 20px color-mix(in srgb, var(--brand) 30%, transparent);
+	}
+
+	.space-tagline {
+		@apply m-0 max-w-[60ch] rounded-md border border-accent bg-accent/10 px-2 py-1 text-lg leading-normal font-semibold tracking-[0.02em] text-accent xs:border-2 xs:text-xl sm:px-5 sm:py-2 sm:text-2xl;
+		text-shadow: 0 0 15px color-mix(in srgb, var(--accent) 40%, transparent);
+	}
+
+	.icon-bubble {
+		@apply flex size-12 shrink-0 items-center justify-center rounded-full bg-surface-3 text-[2rem] text-fg-1;
+	}
+
+	.card-grid {
+		@apply grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5;
+	}
+
+	/* Rendered markdown (mdsvex output) */
 	.prose {
 		@apply text-[calc(1.1rem*0.85)] leading-snug text-fg-1 xs:text-[1.1rem] xs:leading-normal;
 
@@ -558,48 +485,27 @@ html {
 		--rc-color: var(--accent);
 	}
 	[data-callout='tip'] {
-		--rc-color: var(--color-callout-tip);
+		--rc-color: var(--callout-tip);
 	}
 	[data-callout='success'] {
-		--rc-color: var(--color-callout-success);
+		--rc-color: var(--callout-success);
 	}
 	[data-callout='warning'] {
-		--rc-color: var(--color-callout-warning);
+		--rc-color: var(--callout-warning);
 	}
 	[data-callout='danger'],
 	[data-callout='error'] {
-		--rc-color: var(--color-callout-danger);
+		--rc-color: var(--callout-danger);
 	}
 	[data-callout='important'] {
-		--rc-color: var(--color-callout-important);
+		--rc-color: var(--callout-important);
 	}
 	[data-callout='question'] {
-		--rc-color: var(--color-callout-question);
+		--rc-color: var(--callout-question);
 	}
 	[data-callout='quote'] {
 		--rc-color: var(--text-2);
 		@apply italic;
-	}
-
-	/* Slightly deeper callout hues on light backgrounds */
-	:root:not([color-scheme='dark']) {
-		@media (prefers-color-scheme: light) {
-			--color-callout-tip: #15aabf;
-			--color-callout-success: #40c057;
-			--color-callout-warning: #fd7e14;
-			--color-callout-danger: #fa5252;
-			--color-callout-important: #be4bdb;
-			--color-callout-question: #228be6;
-		}
-	}
-
-	[color-scheme='light'] {
-		--color-callout-tip: #15aabf;
-		--color-callout-success: #40c057;
-		--color-callout-warning: #fd7e14;
-		--color-callout-danger: #fa5252;
-		--color-callout-important: #be4bdb;
-		--color-callout-question: #228be6;
 	}
 }
 

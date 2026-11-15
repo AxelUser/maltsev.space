@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button, Badge } from '$lib/components/ui';
+	import { Button, Badge, Card } from '$lib/components/ui';
 	import { PageHeader, PostsGrid, SEO } from '$lib/components';
 	import { bio } from '$lib/bio';
 	import { OneColumnLayout } from '$lib/components/layouts';
@@ -60,12 +60,12 @@
 
 		<section>
 			{#if filteredPosts.length === 0}
-				<div class="mt-5 bg-surface-2 p-12 text-center">
-					<p class="mb-5">No posts found matching the selected filter.</p>
+				<Card class="p-12 text-center">
+					<p class="mx-auto mb-5">No posts found matching the selected filter.</p>
 					<Button size="small" intent="secondary" onclick={() => (activeTag = undefined)}>
 						Clear filter
 					</Button>
-				</div>
+				</Card>
 			{:else}
 				<PostsGrid posts={filteredPosts} {activeTag} onTagClick={toggleTag} />
 			{/if}

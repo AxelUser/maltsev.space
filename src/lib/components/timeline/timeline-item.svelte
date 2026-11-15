@@ -1,12 +1,27 @@
 <script lang="ts">
 	import { Badge, Link } from '$lib/components/ui';
 	import { ExternalLink } from '@lucide/svelte';
-	export let date: string | undefined = undefined;
-	export let technologies: string[] = [];
-	export let title: string;
-	export let role: string | undefined = undefined;
-	export let companyDescription: string | undefined = undefined;
-	export let companyUrl: string | undefined = undefined;
+	import type { Snippet } from 'svelte';
+
+	interface Props {
+		title: string;
+		date?: string;
+		role?: string;
+		companyDescription?: string;
+		companyUrl?: string;
+		technologies?: string[];
+		children?: Snippet;
+	}
+
+	const {
+		title,
+		date,
+		role,
+		companyDescription,
+		companyUrl,
+		technologies = [],
+		children
+	}: Props = $props();
 </script>
 
 <div class="relative mb-12">
@@ -48,12 +63,12 @@
 		<div
 			class="[&_li]:mb-2 [&_li]:ps-2 [&_li]:text-fg-2 [&_p]:m-0 [&_p]:text-fg-2 [&_ul]:mt-2 [&_ul]:list-disc [&_ul]:pl-5"
 		>
-			<slot />
+			{@render children?.()}
 		</div>
 
 		{#if technologies.length > 0}
 			<div class="mt-2 flex flex-wrap gap-2">
-				{#each technologies as tech}
+				{#each technologies as tech (tech)}
 					<Badge>{tech}</Badge>
 				{/each}
 			</div>

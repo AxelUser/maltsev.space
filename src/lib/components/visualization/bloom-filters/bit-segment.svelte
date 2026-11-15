@@ -18,9 +18,9 @@
 	}: Props = $props();
 </script>
 
-<div class="flex flex-col items-center gap-2 rounded-xs border border-surface-3 bg-surface-2 p-2">
+<div class="flex flex-col items-center gap-2 rounded-md border border-surface-3 bg-surface-2 p-2">
 	<div class="flex gap-1">
-		{#each bits as bit, bitIndex}
+		{#each bits as bit, bitIndex (bitIndex)}
 			{@const absoluteIndex = startIndex + bitIndex}
 			<div
 				class={cn(
@@ -37,7 +37,7 @@
 		{/each}
 	</div>
 	<div class="flex justify-center gap-1">
-		{#each bits as _, bitIndex}
+		{#each bits.keys() as bitIndex (bitIndex)}
 			{@const absoluteIndex = startIndex + bitIndex}
 			<span class="w-5 text-center font-mono text-xs text-fg-2 min-[601px]:w-6"
 				>{absoluteIndex}</span

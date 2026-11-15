@@ -7,17 +7,16 @@
 		class?: string;
 	}
 
-	const badge = cva('inline-block rounded-xs transition-colors', {
+	const badge = cva('inline-block rounded-md transition-colors', {
 		variants: {
 			variant: {
-				default: 'border border-brand/30 bg-brand/15 text-fg-2 hover:bg-brand/20 hover:text-fg-1',
+				default: 'border border-brand/30 bg-brand/15 text-fg-2 hover:bg-brand/30 hover:text-fg-1',
 				active: 'border border-brand bg-brand text-fg-1',
 				subtle: 'bg-surface-2 text-fg-2 hover:bg-surface-3'
 			},
 			size: {
 				small: 'px-1 py-0.5 text-xs',
-				medium: 'px-2 py-1 text-base',
-				large: 'px-4 py-1 text-lg'
+				medium: 'px-2 py-1 text-base'
 			},
 			interactive: {
 				true: 'cursor-pointer',

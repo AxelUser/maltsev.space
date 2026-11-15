@@ -1,16 +1,12 @@
 <script lang="ts">
 	import '../../../svgbob.css';
-	import Link from '$lib/components/ui/link/link.svelte';
-	import Card from '$lib/components/ui/card/card.svelte';
-	import Button from '$lib/components/ui/button/button.svelte';
-	import { ArticleHero, SEO, SeriesBanner } from '$lib/components';
-	import { config } from '$lib/config';
+	import { Button, Card, Link } from '$lib/components/ui';
+	import { ArticleHero, BackBar, PostsGrid, SEO, SeriesBanner } from '$lib/components';
 	import { bio } from '$lib/bio';
 	import mermaid from 'mermaid';
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
 	import { getPostHeroImage } from '$lib/utils';
-	import PostsGrid from '$lib/components/posts-grid.svelte';
 	import { OneColumnLayout } from '$lib/components/layouts';
 	const { data }: PageProps = $props();
 
@@ -60,6 +56,7 @@
 <ArticleHero
 	title={data.title}
 	date={data.date}
+	isoDate={publishedTime}
 	preview={data.preview}
 	author={bio.fullName}
 	{heroImage}
@@ -70,9 +67,7 @@
 
 <OneColumnLayout>
 	<article class="mx-auto max-w-[70ch] rounded-2xl bg-surface-1/95 pb-12">
-		<div class="mb-12 flex justify-between border-b border-brand/20 pb-5">
-			<Button href="/blog">← Back to all posts</Button>
-		</div>
+		<BackBar href="/blog" label="Back to all posts" />
 
 		{#if data.series && data.series.length > 0}
 			<SeriesBanner posts={data.series} />
@@ -83,7 +78,7 @@
 		</div>
 
 		<footer class="mt-12 flex flex-col gap-5 border-t border-brand/20 pt-5">
-			<div class="mb-5 flex justify-between">
+			<div>
 				<Button href="/blog">← Back to all posts</Button>
 			</div>
 

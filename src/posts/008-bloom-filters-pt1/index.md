@@ -1,15 +1,15 @@
 ---
-date: "2025-06-09"
+date: '2025-06-09'
 tags:
-  - "Algorithms"
+  - 'Algorithms'
 keywords:
-  - "Bloom filters"
-  - "Probabilistic data structures"
-  - "Hash functions"
-  - "Bit arrays"
-title: "Grokking Bloom Filters: The Classic Bloom Filter Demystified"
-preview: "How a tiny data structure cuts memory usage by 90% — while helping systems instantly check if data exists."
-series: "Grokking Bloom Filters"
+  - 'Bloom filters'
+  - 'Probabilistic data structures'
+  - 'Hash functions'
+  - 'Bit arrays'
+title: 'Grokking Bloom Filters: The Classic Bloom Filter Demystified'
+preview: 'How a tiny data structure cuts memory usage by 90% — while helping systems instantly check if data exists.'
+series: 'Grokking Bloom Filters'
 draft: false
 hero: /images/blog/008-bloom-filters-pt1/hero.jpg
 ---
@@ -49,28 +49,28 @@ The algorithm behind Bloom filters is elegantly built on three main components: 
 > [!info] Hash functions?
 > A hash function is a function that takes an input (like a string or number) and deterministically maps it to a number within a fixed range — in this case, some positions in the bit array.  
 > When we say that hash functions should be **independent**, we mean that knowing the output of one hash function doesn't help you guess or calculate the output of another — each one works on its own, like rolling different dice.  
-> And when we say they are **uniformly distributed**, we mean that they spread their results evenly across all possible positions, so no part of the resulting bit array gets overloaded with too many bits set.  
+> And when we say they are **uniformly distributed**, we mean that they spread their results evenly across all possible positions, so no part of the resulting bit array gets overloaded with too many bits set.
 >
 > Examples of commonly used hash functions include MurmurHash, xxHash, CityHash, or cryptographic ones like SHA-256 (though cryptographic hashes are usually overkill for Bloom filters).
 
 ```mermaid
 graph TD
     A["Element: 'apple'"] --> B["Hash Function 1<br/>h1('apple') = 3"]
-    A --> C["Hash Function 2<br/>h2('apple') = 8"]  
+    A --> C["Hash Function 2<br/>h2('apple') = 8"]
     A --> D["Hash Function 3<br/>h3('apple') = 14"]
-    
+
     B --> E["Bit Array Position 3"]
     C --> F["Bit Array Position 8"]
     D --> G["Bit Array Position 14"]
-    
+
     E --> H["Set bit[3] = 1"]
-    F --> I["Set bit[8] = 1"] 
+    F --> I["Set bit[8] = 1"]
     G --> J["Set bit[14] = 1"]
-    
+
     H --> K["Bit Array:<br/>[0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0]"]
     I --> K
     J --> K
-    
+
     style A fill:#5d5fef,color:#f8f9fa
     style K fill:#22d3ee,color:#212529
 ```
@@ -82,20 +82,20 @@ Lookup works similarly. To check whether an element might be in the set, the alg
 ```mermaid
 graph TD
     A["Query: 'banana'"] --> B["Hash Function 1<br/>h1('banana') = 3"]
-    A --> C["Hash Function 2<br/>h2('banana') = 7"]  
+    A --> C["Hash Function 2<br/>h2('banana') = 7"]
     A --> D["Hash Function 3<br/>h3('banana') = 14"]
-    
+
     B --> E["Check bit[3]<br/>Result: 1 ✓"]
     C --> F["Check bit[7]<br/>Result: 0 ✗"]
     D --> G["Check bit[14]<br/>Result: 1 ✓"]
-    
+
     E --> H["Current Bit Array:<br/>[0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0]"]
     F --> H
     G --> H
-    
+
     H --> I{"All bits = 1?"}
     I -->|"No, bit[7] = 0"| J["DEFINITELY NOT in set<br/>(No false negative)"]
-    
+
     style A fill:#5d5fef,color:#f8f9fa
     style J fill:#dc2626,color:#f8f9fa
     style I fill:#f59e0b,color:#212529
@@ -106,23 +106,23 @@ However, if all the bits are 1, the element _might_ be in the set, but there's a
 ```mermaid
 graph TD
     A["Query: 'cherry'"] --> B["Hash Function 1<br/>h1('cherry') = 3"]
-    A --> C["Hash Function 2<br/>h2('cherry') = 8"]  
+    A --> C["Hash Function 2<br/>h2('cherry') = 8"]
     A --> D["Hash Function 3<br/>h3('cherry') = 14"]
-    
+
     B --> E["Check bit[3]<br/>Result: 1 ✓"]
     C --> F["Check bit[8]<br/>Result: 1 ✓"]
     D --> G["Check bit[14]<br/>Result: 1 ✓"]
-    
+
     E --> H["Current Bit Array:<br/>[0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0]"]
     F --> H
     G --> H
-    
+
     H --> I{"All bits = 1?"}
     I -->|"Yes, all = 1"| J["POSSIBLY in set<br/>(Could be false positive)"]
-    
+
     K["Note: 'cherry' was never inserted!<br/>But its hash positions match<br/>bits set by previous elements"]
     K -.-> J
-    
+
     style A fill:#5d5fef,color:#f8f9fa
     style J fill:#fde047,color:#212529
     style I fill:#f59e0b,color:#212529
@@ -174,19 +174,19 @@ The next time someone asks, "Is Bob still living here?" the system might falsely
 graph TD
     A["Alice moves in"] --> A1["Gets keys to rooms:<br/>3, 7, 12"]
     B["Bob moves in"] --> B1["Gets keys to rooms:<br/>7, 15, 23"]
-    
+
     A1 --> R["Room occupancy:<br/>Room 3: Alice<br/>Room 7: Alice + Bob<br/>Room 12: Alice<br/>Room 15: Bob<br/>Room 23: Bob"]
     B1 --> R
-    
+
     R --> D["Alice moves out<br/>(Naive deletion)"]
     D --> D1["Turn off lights in<br/>rooms 3, 7, 12"]
-    
+
     D1 --> P["Problem: Room 7 light<br/>is turned off but<br/>Bob still needs it!"]
-    
+
     P --> Q["Next query: 'Is Bob here?'<br/>Checks rooms 7, 15, 23<br/>Room 7 is dark (0)<br/>Answer: NO"]
-    
+
     Q --> F["FALSE NEGATIVE<br/>Bob never left!"]
-    
+
     style A fill:#22d3ee,color:#212529
     style B fill:#22d3ee,color:#212529
     style D fill:#dc2626,color:#f8f9fa
@@ -272,22 +272,22 @@ This approach has several nice properties:
 graph LR
     A["Element: 'data'"] --> B["h1('data') = 5"]
     A --> C["h2('data') = 3"]
-    
+
     B --> D["position_0 = (5 + 0×3) % 16 = 5"]
-    B --> E["position_1 = (5 + 1×3) % 16 = 8"]  
+    B --> E["position_1 = (5 + 1×3) % 16 = 8"]
     B --> F["position_2 = (5 + 2×3) % 16 = 11"]
     B --> G["position_3 = (5 + 3×3) % 16 = 14"]
-    
+
     C --> D
     C --> E
     C --> F
     C --> G
-    
+
     D --> H["Set bits: 5, 8, 11, 14"]
     E --> H
     F --> H
     G --> H
-    
+
     style A fill:#5d5fef,color:#f8f9fa
     style B fill:#495057,color:#f8f9fa
     style C fill:#495057,color:#f8f9fa
@@ -337,11 +337,11 @@ $$
 Everything seems fine... until one day your Bloom filter quietly becomes _less random than you expect_. This happens when `h2(x)` and `m` (the Bloom filter size) are not **coprime**.
 
 > [!info] What does "coprime" mean?
->Two numbers are coprime if they don't share any common divisors except 1.
->For example:
+> Two numbers are coprime if they don't share any common divisors except 1.
+> For example:
 >
->- `9` and `16` are coprime.
->- `6` and `18` are **not** coprime (since they share divisor `6`).
+> - `9` and `16` are coprime.
+> - `6` and `18` are **not** coprime (since they share divisor `6`).
 
 If `h2(x)` and `m` share a common divisor, the sequence of hashes generated
 
@@ -362,11 +362,11 @@ Let's say you have:
 Now calculate the hashes:
 
 ```
-(2 + 0*4) % 10 → 2  
-(2 + 1*4) % 10 → 6  
-(2 + 2*4) % 10 → 0  
-(2 + 3*4) % 10 → 4  
-(2 + 4*4) % 10 → 8  
+(2 + 0*4) % 10 → 2
+(2 + 1*4) % 10 → 6
+(2 + 2*4) % 10 → 0
+(2 + 3*4) % 10 → 4
+(2 + 4*4) % 10 → 8
 (2 + 5*4) % 10 → 2  (cycle repeats)
 ```
 
@@ -393,15 +393,15 @@ Let's walk through a small example where things work exactly as intended:
 Hash values be like that:
 
 ```
-(2 + 0*7) % 10 → 2  
-(2 + 1*7) % 10 → 9  
-(2 + 2*7) % 10 → 6  
-(2 + 3*7) % 10 → 3  
-(2 + 4*7) % 10 → 0  
-(2 + 5*7) % 10 → 7  
-(2 + 6*7) % 10 → 4  
-(2 + 7*7) % 10 → 1  
-(2 + 8*7) % 10 → 8  
+(2 + 0*7) % 10 → 2
+(2 + 1*7) % 10 → 9
+(2 + 2*7) % 10 → 6
+(2 + 3*7) % 10 → 3
+(2 + 4*7) % 10 → 0
+(2 + 5*7) % 10 → 7
+(2 + 6*7) % 10 → 4
+(2 + 7*7) % 10 → 1
+(2 + 8*7) % 10 → 8
 (2 + 9*7) % 10 → 5
 ```
 
@@ -433,11 +433,11 @@ Of course, like everything in Bloom filters — no free lunch:
 
 ### Recap
 
-| Method                    | # of Hash Calls | Speed       | Independence       |
-| ------------------------- | --------------- | ----------- | ------------------ |
-| k hashes                  | k               | Slow        | True               |
-| Double hashing            | 2               | Fast        | Almost             |
-| Wide hash split           | 1               | Even faster | Almost             |
+| Method          | # of Hash Calls | Speed       | Independence |
+| --------------- | --------------- | ----------- | ------------ |
+| k hashes        | k               | Slow        | True         |
+| Double hashing  | 2               | Fast        | Almost       |
+| Wide hash split | 1               | Even faster | Almost       |
 
 ## How to Calculate Parameters
 
@@ -478,11 +478,11 @@ The memory usage of a Bloom filter is directly proportional to `m`. This is one 
 
 For [example](https://valkey.io/blog/introducing-bloom-filters/), let's say you want to maintain 500 Bloom filters, each capable of holding 5 million elements. The total memory depends heavily on your target false positive rate:
 
-|False Positive Rate|Total Memory|Memory Savings vs SET|
-|---|---|---|
-|0.01 (1 in 100)|2.9 GB|98.08% saved|
-|0.001 (1 in 1,000)|4.9 GB|96.80% saved|
-|0.00001 (1 in 100,000)|7.8 GB|94.88% saved|
+| False Positive Rate    | Total Memory | Memory Savings vs SET |
+| ---------------------- | ------------ | --------------------- |
+| 0.01 (1 in 100)        | 2.9 GB       | 98.08% saved          |
+| 0.001 (1 in 1,000)     | 4.9 GB       | 96.80% saved          |
+| 0.00001 (1 in 100,000) | 7.8 GB       | 94.88% saved          |
 
 #### Query Performance
 

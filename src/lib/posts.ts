@@ -6,7 +6,9 @@ function getPosts(
 	status: 'draft' | 'published' | 'all' = 'published',
 	slugs: string[] | null = null
 ): PostPreview[] {
-	const paths = import.meta.glob('/src/posts/*/*.md', { eager: true });
+	const paths = import.meta.glob<{ metadata: Partial<PostPreview> }>('/src/posts/*/*.md', {
+		eager: true
+	});
 
 	const posts = Object.entries(paths)
 		.map(([path, post]) => {

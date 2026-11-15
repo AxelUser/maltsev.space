@@ -12,7 +12,7 @@
 	];
 
 	const navLinkClass =
-		'p-2 text-base font-normal text-fg-2 no-underline transition-colors hover:bg-brand/15 hover:text-fg-1';
+		'rounded-md p-2 text-base font-normal text-fg-2 no-underline transition-colors hover:bg-brand/15 hover:text-fg-1';
 
 	let mobileMenuOpen = $state(false);
 	let navContainer: HTMLDivElement;
@@ -104,7 +104,7 @@
 					class="w-full text-center not-last:after:mx-auto not-last:after:mt-2 not-last:after:block not-last:after:h-px not-last:after:w-[30%] not-last:after:bg-brand/30"
 				>
 					<a
-						class="block px-0 py-2 text-center text-[1.2rem] text-fg-2 no-underline transition-colors hover:bg-brand/15 hover:text-fg-1"
+						class="block rounded-md px-0 py-2 text-center text-lg text-fg-2 no-underline transition-colors hover:bg-brand/15 hover:text-fg-1"
 						href={item.href}
 						onclick={() => (mobileMenuOpen = false)}
 					>

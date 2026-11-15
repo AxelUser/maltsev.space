@@ -28,7 +28,7 @@
 
 <div class="relative my-5 size-[380px] overflow-hidden md:size-[540px]">
 	<div
-		class="absolute top-1/2 left-1/2 size-20 -translate-1/2 rounded-full bg-[radial-gradient(circle_at_30%_30%,var(--planet),var(--brand))] shadow-[0_0_20px_rgba(76,170,255,0.4)] md:size-[100px]"
+		class="absolute top-1/2 left-1/2 size-20 -translate-1/2 rounded-full bg-[radial-gradient(circle_at_30%_30%,var(--planet),var(--brand))] shadow-[0_0_20px_color-mix(in_srgb,var(--brand)_40%,transparent)] md:size-[100px]"
 	>
 		<div
 			class="absolute inset-0 rounded-full bg-[linear-gradient(45deg,rgba(0,0,0,0.5),transparent_70%)]"

@@ -169,22 +169,19 @@
 
 <div class="mx-auto rounded-md border border-surface-3 bg-surface-2 p-5 font-sans">
 	<div class="grid grid-cols-1 items-start gap-5 md:grid-cols-[1fr_250px] md:gap-12">
-		<!-- Bloom Filter -->
 		<div class="min-w-0">
-			<!-- Hash Values Display -->
 			<div class="mb-5 grid grid-cols-[repeat(auto-fit,minmax(50px,1fr))] gap-5">
 				<DisplayCard label="Hash 1:" value={hash1Value} variant="centered" showEmpty={false} />
 				<DisplayCard label="Hash 2:" value={hash2Value} variant="centered" showEmpty={false} />
 			</div>
 
-			<!-- Binary Representation -->
 			<div class="mb-5 rounded-md border border-surface-3 bg-surface-1 p-5 text-center">
-				<label class="mb-5 block text-base font-semibold text-fg-2">Mapped Bits:</label>
+				<div class="mb-5 text-base font-semibold text-fg-2">Mapped Bits:</div>
 				{#if binaryValue !== ''}
 					<div
 						class="mx-auto grid max-w-[200px] grid-cols-1 justify-center gap-5 md:max-w-[600px] md:grid-cols-[repeat(auto-fit,minmax(120px,1fr))]"
 					>
-						{#each binaryGroups as group, groupIndex}
+						{#each binaryGroups as group, groupIndex (groupIndex)}
 							<BitSegment bits={group} startIndex={groupIndex * 4} type="binary" />
 						{/each}
 					</div>
@@ -195,7 +192,6 @@
 				{/if}
 			</div>
 
-			<!-- User Input Section -->
 			{#if userInputEnabled}
 				<div class="mb-5 flex flex-col gap-2">
 					<LabeledInput
@@ -225,7 +221,6 @@
 				</div>
 			{/if}
 
-			<!-- Result Display -->
 			{#if result !== null && lastOperation}
 				<div class="mb-5 rounded-md border border-surface-3 bg-surface-1 p-5 text-center">
 					<span class="mr-2 font-semibold text-fg-2"
@@ -241,13 +236,12 @@
 				</div>
 			{/if}
 
-			<!-- Bit Array Visualization -->
 			<div class="mb-5 rounded-md border border-surface-3 bg-surface-1 p-5 text-center">
-				<label class="mb-5 block text-base font-semibold text-fg-2">Bit Array:</label>
+				<div class="mb-5 text-base font-semibold text-fg-2">Bit Array:</div>
 				<div
 					class="mx-auto grid max-w-[200px] grid-cols-1 justify-center gap-5 md:max-w-[600px] md:grid-cols-[repeat(auto-fit,minmax(120px,1fr))]"
 				>
-					{#each bitGroups as group, groupIndex}
+					{#each bitGroups as group, groupIndex (groupIndex)}
 						<BitSegment
 							bits={group}
 							startIndex={groupIndex * 4}
@@ -259,7 +253,6 @@
 				</div>
 			</div>
 		</div>
-		<!-- Parameters -->
 		<div class="max-md:-order-1 md:sticky md:top-5">
 			<ParameterGroup
 				title="Parameters"

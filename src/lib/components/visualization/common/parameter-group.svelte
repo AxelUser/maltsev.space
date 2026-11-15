@@ -25,7 +25,7 @@
 	]}
 >
 	<h3 class="m-0 mb-5 pb-2 text-center text-lg leading-tight font-semibold text-fg-1">{title}</h3>
-	{#each parameters as param}
+	{#each parameters as param (param.label)}
 		<DisplayCard
 			label={param.label}
 			value={param.value}

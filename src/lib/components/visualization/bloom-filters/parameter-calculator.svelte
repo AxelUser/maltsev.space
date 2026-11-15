@@ -65,9 +65,7 @@
 	</h2>
 
 	<div class="grid grid-cols-1 items-start gap-5 md:grid-cols-[1fr_300px] md:gap-12">
-		<!-- Calculator -->
 		<div class="min-w-0">
-			<!-- Input Section -->
 			<div class="mb-5 rounded-md border border-surface-3 bg-surface-1 p-5">
 				<h3 class="m-0 mb-5 text-lg leading-tight font-semibold text-fg-1">Input Parameters</h3>
 
@@ -92,7 +90,6 @@
 					id="false-positive-rate"
 				/>
 
-				<!-- Calculation Mode -->
 				<div class="my-5 rounded-xs bg-surface-2 p-2">
 					<h4 class="mt-5 mb-2 text-base leading-tight font-semibold text-fg-2">
 						Calculation Mode
@@ -134,7 +131,6 @@
 				{/if}
 			</div>
 
-			<!-- Results Section -->
 			<div class="mb-5 rounded-md border border-surface-3 bg-surface-1 p-5">
 				<h3 class="m-0 mb-5 text-lg leading-tight font-semibold text-fg-1">Calculated Results</h3>
 
@@ -184,7 +180,6 @@
 			</div>
 		</div>
 
-		<!-- Parameters Display -->
 		<div class="max-md:-order-1 md:sticky md:top-5">
 			<ParameterGroup
 				title="Current Parameters"

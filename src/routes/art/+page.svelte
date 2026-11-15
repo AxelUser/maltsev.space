@@ -21,7 +21,7 @@
 
 	<section class="mb-12">
 		<div class="grid grid-cols-1 gap-5 lg:gap-12">
-			{#each data.collections as collection}
+			{#each data.collections as collection (collection.id)}
 				<ContentCard
 					href="/art/{collection.id}"
 					title={collection.title}

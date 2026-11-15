@@ -2,37 +2,28 @@
 	import { theme, type Theme } from '$lib/stores/theme';
 	import { Sun, Moon, Laptop } from '@lucide/svelte';
 
-	const buttonClass =
-		'flex size-[30px] items-center justify-center bg-transparent text-fg-2 transition-colors hover:bg-brand/15 hover:text-fg-1';
-
-	const setTheme = (newTheme: Theme) => {
-		theme.set(newTheme);
-	};
+	const options = [
+		{ value: 'light', label: 'Light theme', icon: Sun },
+		{ value: 'dark', label: 'Dark theme', icon: Moon },
+		{ value: 'system', label: 'System theme', icon: Laptop }
+	] satisfies { value: Theme; label: string; icon: typeof Sun }[];
 </script>
 
-<div class="flex gap-2 bg-surface-2 p-1">
-	<button
-		class={[buttonClass, $theme === 'light' && 'bg-brand/30 text-fg-1 hover:bg-brand/30']}
-		onclick={() => setTheme('light')}
-		title="Light theme"
-		aria-label="Light theme"
-	>
-		<Sun size={16} />
-	</button>
-	<button
-		class={[buttonClass, $theme === 'dark' && 'bg-brand/30 text-fg-1 hover:bg-brand/30']}
-		onclick={() => setTheme('dark')}
-		title="Dark theme"
-		aria-label="Dark theme"
-	>
-		<Moon size={16} />
-	</button>
-	<button
-		class={[buttonClass, $theme === 'system' && 'bg-brand/30 text-fg-1 hover:bg-brand/30']}
-		onclick={() => setTheme('system')}
-		title="System theme"
-		aria-label="System theme"
-	>
-		<Laptop size={16} />
-	</button>
+<div class="flex gap-1 rounded-md bg-surface-2 p-1">
+	{#each options as { value, label, icon: Icon } (value)}
+		<button
+			class={[
+				'flex size-8 items-center justify-center rounded-md transition-colors',
+				$theme === value
+					? 'bg-brand/30 text-fg-1'
+					: 'bg-transparent text-fg-2 hover:bg-brand/15 hover:text-fg-1'
+			]}
+			onclick={() => theme.set(value)}
+			title={label}
+			aria-label={label}
+			aria-pressed={$theme === value}
+		>
+			<Icon size={16} />
+		</button>
+	{/each}
 </div>

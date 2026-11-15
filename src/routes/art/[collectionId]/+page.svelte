@@ -1,8 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { Lightbox, PageHeader } from '$lib/components';
-	import Button from '$lib/components/ui/button/button.svelte';
-	import { config } from '$lib/config';
+	import { BackBar, Lightbox, PageHeader } from '$lib/components';
 
 	const { data }: { data: PageData } = $props();
 
@@ -35,19 +33,17 @@
 <PageHeader title={data.collection.title} subtitle={data.collection.description} />
 
 <div class="mt-0 mb-12 text-center">
-	<span class="text-xs font-normal text-fg-2">{data.collection.images.length} images</span>
+	<span class="text-xs text-fg-2">{data.collection.images.length} images</span>
 </div>
 
-<div class="mb-12 flex justify-between border-b border-brand/20 pb-5">
-	<Button href="/art">← Back to Gallery</Button>
-</div>
+<BackBar href="/art" label="Back to Gallery" />
 
 <div
 	class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 sm:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] md:gap-5"
 >
-	{#each data.collection.images as image, index}
+	{#each data.collection.images as image, index (image)}
 		<button
-			class="group relative aspect-square cursor-pointer overflow-hidden rounded-md border border-surface-3 bg-surface-2 p-0 transition-[transform,box-shadow] hover:shadow-lg"
+			class="group relative aspect-square cursor-pointer overflow-hidden rounded-2xl border border-surface-3 bg-surface-2 p-0 transition-[transform,box-shadow] hover:shadow-lg"
 			onclick={() => openLightbox(index)}
 			aria-label="View {image} in lightbox"
 		>

@@ -4,7 +4,7 @@
 </script>
 
 <footer
-	class="flex min-h-20 items-center justify-center border-t border-brand/30 bg-surface-1/90 text-center backdrop-blur-[5px]"
+	class="flex min-h-20 items-center justify-center border-t border-brand/20 bg-surface-1/90 text-center backdrop-blur-[5px]"
 >
 	<OneColumnLayout>
 		<p>

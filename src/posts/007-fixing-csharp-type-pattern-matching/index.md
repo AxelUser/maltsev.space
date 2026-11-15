@@ -1,13 +1,13 @@
 ---
-date: "2024-02-18"
+date: '2024-02-18'
 tags:
-  - "C#"
+  - 'C#'
 keywords:
-  - "C#"
-  - "Visitors Pattern"
-  - "Type pattern matching"
-  - "switch keyword"
-title: "Fixing C# type pattern-matching"
+  - 'C#'
+  - 'Visitors Pattern'
+  - 'Type pattern matching'
+  - 'switch keyword'
+title: 'Fixing C# type pattern-matching'
 preview: "Craving Kotlin's secure pattern matching on sealed classes for your C# code? Discover how the Visitor Pattern can satisfy your longing!"
 draft: false
 hero: /images/blog/007-fixing-csharp-type-pattern-matching/hero.jpg
@@ -52,7 +52,7 @@ while (true)
     Console.Write("Write a property value: ");
     var input = Console.ReadLine();
     var value = Parse(input);
-    Console.WriteLine($"Value '{input}' is valid: " + ValidationHelper.IsValid(value));    
+    Console.WriteLine($"Value '{input}' is valid: " + ValidationHelper.IsValid(value));
 }
 
 static IValue Parse(string? value)
@@ -67,7 +67,7 @@ Let's test it:
 ```
 Write a property value: foo
 Value 'foo' is valid: True
-Write a property value: 1 
+Write a property value: 1
 Value '1' is valid: True
 Write a property value: -42
 Value '-42' is valid: False
@@ -99,9 +99,9 @@ So, you may already guess what will happen if we pass `2024-02-18T19:38:37Z` to 
 
 ```
 Write a property value: 2024-02-18T19:38:37Z
-Unhandled exception. System.Diagnostics.UnreachableException: The program executed an instruction that was thought to be unreachable.                                
+Unhandled exception. System.Diagnostics.UnreachableException: The program executed an instruction that was thought to be unreachable.
    at TypePatternMatchingOnVisitors.ValidationHelper.IsValid(IValue value) in C:\Users\AxelU\projects\learn\TypePatternMatchingOnVisitors\ValidationHelper.cs:line 13
-   at Program.<Main>$(String[] args) in C:\Users\AxelU\projects\learn\TypePatternMatchingOnVisitors\Program.cs:line 8                                                
+   at Program.<Main>$(String[] args) in C:\Users\AxelU\projects\learn\TypePatternMatchingOnVisitors\Program.cs:line 8
 
 Process finished with exit code -532,462,766.
 ```
@@ -195,8 +195,8 @@ while (true)
     Console.Write("Write a property value: ");
     var input = Console.ReadLine();
     var value = Parse(input);
-    //Console.WriteLine($"Value '{input}' is valid: " + ValidationHelper.IsValid(value));    
-    Console.WriteLine($"Value '{input}' is valid: " + value.Accept(ValueValidationVisitor.Instance));    
+    //Console.WriteLine($"Value '{input}' is valid: " + ValidationHelper.IsValid(value));
+    Console.WriteLine($"Value '{input}' is valid: " + value.Accept(ValueValidationVisitor.Instance));
 }
 ```
 

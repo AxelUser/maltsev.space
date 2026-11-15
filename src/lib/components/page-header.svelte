@@ -12,6 +12,6 @@
 >
 	<h1 class="space-title mb-2">{title}</h1>
 	{#if subtitle}
-		<p class="space-subtitle m-0 max-w-[600px] text-xl leading-[1.6]">{subtitle}</p>
+		<p class="space-subtitle m-0 max-w-[600px]">{subtitle}</p>
 	{/if}
 </header>

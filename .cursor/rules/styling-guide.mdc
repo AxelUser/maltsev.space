@@ -9,14 +9,14 @@ This project uses [Tailwind CSS v4](https://tailwindcss.com) (via `@tailwindcss/
 
 ## Theme colors
 
-Semantic colors follow the light/dark theme switch automatically:
+Semantic colors follow the light/dark theme switch automatically. Each token is defined once in `app.css` as `light-dark(<light>, <dark>)`; the theme switch only sets `color-scheme` on `<html>`.
 
 | Utility suffix | Meaning |
 | --- | --- |
 | `fg-1`, `fg-2` | primary / secondary text |
 | `surface-1` … `surface-4` | backgrounds, from base to most raised |
 | `brand`, `brand-fg` | brand color and text on it |
-| `link`, `link-visited`, `accent` | links and highlights |
+| `link`, `accent` | links and highlights |
 | `star`, `planet`, `nebula` | space decorations |
 
 ```svelte
@@ -26,17 +26,34 @@ Semantic colors follow the light/dark theme switch automatically:
 </div>
 ```
 
+## Design rules
+
+Keep the design predictable: pick from these values instead of inventing new ones.
+
+| Concern | Rule |
+| --- | --- |
+| Spacing | `1`, `2`, `5`, `12` steps only. Sections `gap-12`, cards/grids `gap-5`, chips `gap-2`. |
+| Radius | Controls (buttons, badges, inputs, nav items) `rounded-md`. Containers (cards, banners, tiles) `rounded-2xl`. |
+| Borders | Dividers and page chrome `border-brand/20`. Boxes `border-surface-3`. |
+| Brand tint | Hover `bg-brand/15`, active/selected `bg-brand/30`. |
+| Glow | `color-mix(in srgb, var(--brand or --accent) N%, transparent)`, never hard-coded rgba. |
+| Meta text | `text-xs text-fg-2`. |
+
+Boxes with a background use `Card`, not ad-hoc `bg-surface-2 p-5` divs.
+
 ## Breakpoints
 
 `xs` 360px, `sm` 480px, `md` 768px, `lg` 1024px, `xl` 1440px, `2xl` 1920px. Write mobile-first (`md:grid-cols-2`) or use `max-*` for "below" (`max-md:hidden`).
 
 ## Typography
 
-- `.space-title`, `.space-subtitle`, `.space-heading` — page-level headings (responsive).
+- `.space-title`, `.space-subtitle`, `.space-heading` — page-level headings (responsive). Pages start with `PageHeader`.
+- `.space-hero` + `.space-tagline` — gradient headline and accent pill for hero sections (home, error).
 - `.prose` — wrapper for rendered markdown.
 
 ## Components
 
 - Variant components (`Button`, `Badge`, `Link`, `Card`) use `cva` with Tailwind classes; merge consumer classes with `cn()` from `$lib/utils` so overrides win.
 - Wrap pages in `OneColumnLayout`.
+- `BackBar` for "← Back to …" bars; `.card-grid` for responsive card grids; `.icon-bubble` for round emoji/icon holders.
 - Custom animations: `animate-twinkle`, `animate-ring-pulse`, `animate-placeholder-pulse` (set `[--pulse-min:…] [--pulse-max:…]`), `animate-gradient-shift`.

@@ -18,9 +18,7 @@
 <Card class="h-full" contentClass="h-full">
 	<div class="flex h-full flex-col">
 		{#if icon}
-			<div
-				class="mb-2 flex size-[50px] items-center justify-center rounded-full bg-surface-3 text-[2rem] text-fg-1"
-			>
+			<div class="icon-bubble mb-2">
 				{#if isEmoji}
 					{icon}
 				{:else}
@@ -28,7 +26,7 @@
 				{/if}
 			</div>
 		{/if}
-		<h3 class="m-0 mb-5 text-2xl leading-tight font-bold text-fg-1">
+		<h3 class="mb-2 text-2xl">
 			<Link {href} external={true}>{title}</Link>
 		</h3>
 		<p class="grow">
@@ -37,7 +35,7 @@
 		{#if technologies.length > 0}
 			<div class="mt-auto pt-5">
 				<div class="flex flex-wrap gap-2">
-					{#each technologies as tech}
+					{#each technologies as tech (tech)}
 						<Badge>{tech}</Badge>
 					{/each}
 				</div>

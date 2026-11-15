@@ -1,6 +1,5 @@
 <script lang="ts">
-	import Nebula from '$lib/components/nebula.svelte';
-	import { Timeline, TimelineItem, TagCloud, SEO, ProjectCard } from '$lib/components';
+	import { Timeline, TimelineItem, TagCloud, SEO, ProjectCard, PageHeader } from '$lib/components';
 	import { Card, Badge, Link } from '$lib/components/ui';
 	import { bio } from '$lib/bio';
 	import { OneColumnLayout } from '$lib/components/layouts';
@@ -15,18 +14,11 @@
 
 <OneColumnLayout>
 	<div class="pb-12">
-		<header
-			class="relative mb-12 flex h-[150px] items-center justify-center overflow-hidden sm:h-[200px] md:h-[250px]"
-		>
-			<Nebula />
-			<h1 class="space-title z-1 text-[3.5rem] text-fg-1 [text-shadow:0_0_10px_var(--brand)]">
-				About Me
-			</h1>
-		</header>
+		<PageHeader title="About Me" subtitle="Senior Software Engineer" />
 
 		<div class="flex flex-col gap-12">
 			<section
-				class="mt-5 grid grid-cols-1 items-center gap-5 max-lg:text-center lg:grid-cols-[1fr_4fr] lg:gap-x-12"
+				class="grid grid-cols-1 items-center gap-5 max-lg:text-center lg:grid-cols-[1fr_4fr] lg:gap-x-12"
 			>
 				<div class="relative size-[150px] shrink-0 max-lg:justify-self-center sm:size-[200px]">
 					<img
@@ -40,7 +32,6 @@
 
 				<div class="flex-1">
 					<h2 class="space-heading mt-0">Hello, I'm {bio.fullName}</h2>
-					<p class="mb-5 text-xl text-fg-2">Senior Software Engineer</p>
 					<div class="flex flex-col gap-2">
 						<p>
 							I've been programming for fun and profit since 2014, focusing on distributed systems
@@ -65,7 +56,7 @@
 				</div>
 			</section>
 
-			<section class="mt-5">
+			<section>
 				<h2 class="space-heading">My Journey</h2>
 				<Timeline>
 					<TimelineItem
@@ -257,16 +248,16 @@
 				</Timeline>
 			</section>
 
-			<section class="mt-5">
+			<section>
 				<h2 class="space-heading">Professional Interests</h2>
 				<Card variant="default">
 					<TagCloud tags={bio.interests} />
 				</Card>
 			</section>
 
-			<section class="mt-5">
+			<section>
 				<h2 class="space-heading">Personal Projects</h2>
-				<div class="mt-5 grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
+				<div class="card-grid">
 					<ProjectCard
 						title="CarryFit"
 						href="https://carryon.fit/"
@@ -302,54 +293,42 @@
 				</div>
 			</section>
 
-			<section class="mt-5">
+			<section>
 				<h2 class="space-heading">Hobbies & Interests</h2>
 
-				<div class="mt-5 grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
+				<div class="card-grid">
 					<Card>
-						<div
-							class="flex size-[50px] items-center justify-center rounded-full bg-surface-3 text-[2rem] text-fg-1"
-						>
-							📚
-						</div>
-						<h3>Reading</h3>
+						<div class="icon-bubble mb-2">📚</div>
+						<h3 class="mb-2 text-2xl">Reading</h3>
 						<p>
 							I enjoy reading books on technology, science, and other topics to learn new things.
 						</p>
 					</Card>
 
 					<Card>
-						<div
-							class="flex size-[50px] items-center justify-center rounded-full bg-surface-3 text-[2rem] text-fg-1"
-						>
-							🧗
-						</div>
-						<h3>Rock Climbing</h3>
+						<div class="icon-bubble mb-2">🧗</div>
+						<h3 class="mb-2 text-2xl">Rock Climbing</h3>
 						<p>I like rock climbing to stay active and enjoy the outdoors.</p>
 					</Card>
 
 					<Card>
-						<div
-							class="flex size-[50px] items-center justify-center rounded-full bg-surface-3 text-[2rem] text-fg-1"
-						>
-							⛷️
-						</div>
-						<h3>Mountain Skiing</h3>
+						<div class="icon-bubble mb-2">⛷️</div>
+						<h3 class="mb-2 text-2xl">Mountain Skiing</h3>
 						<p>I enjoy mountain skiing in the winter.</p>
 					</Card>
 				</div>
 			</section>
 
-			<section class="mt-5">
+			<section>
 				<h2 class="space-heading">Programming Challenges</h2>
-				<p>
+				<p class="mb-5">
 					I enjoy participating in coding challenges to sharpen my skills and explore new
 					programming concepts.
 				</p>
 
-				<div class="mt-5 grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
+				<div class="card-grid">
 					<Card variant="default">
-						<h3>Advent of Code</h3>
+						<h3 class="mb-2 text-2xl">Advent of Code</h3>
 						<p>I've completed multiple years of Advent of Code challenges:</p>
 						<div class="my-2 flex flex-wrap gap-2">
 							<Badge interactive={true}>
@@ -374,7 +353,7 @@
 					</Card>
 
 					<Card variant="default">
-						<h3>LeetCode</h3>
+						<h3 class="mb-2 text-2xl">LeetCode</h3>
 						<p>
 							I practice algorithmic problem solving on LeetCode to improve my coding efficiency and
 							understanding of data structures.

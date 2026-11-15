@@ -10,16 +10,10 @@
 	const link = cva('no-underline transition-colors', {
 		variants: {
 			variant: {
-				default: 'font-semibold text-link hover:text-accent',
-				subtle: 'text-fg-2 hover:text-fg-1',
-				nav: 'font-semibold text-fg-1 hover:text-accent'
+				default: 'font-semibold text-link hover:text-accent'
 			},
 			hasArrow: {
 				true: 'group/link inline-flex items-center gap-1',
-				false: ''
-			},
-			underlined: {
-				true: 'underline hover:no-underline',
 				false: ''
 			}
 		}
@@ -30,7 +24,6 @@
 	const {
 		variant = 'default',
 		hasArrow = false,
-		underlined = false,
 		external = false,
 		class: className = '',
 		href,
@@ -38,7 +31,7 @@
 		...rest
 	}: Props = $props();
 
-	const linkClasses = $derived(cn(link({ variant, hasArrow, underlined }), className));
+	const linkClasses = $derived(cn(link({ variant, hasArrow }), className));
 </script>
 
 <a

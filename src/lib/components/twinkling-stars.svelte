@@ -99,7 +99,7 @@
 	class="pointer-events-none fixed inset-0 -z-1 transform-gpu overflow-hidden"
 	bind:this={starsContainer}
 >
-	{#each stars as star, i}
+	{#each stars as star, i (i)}
 		<div
 			class="absolute size-(--star-size) transform-gpu animate-twinkle opacity-(--star-opacity) will-change-[transform,opacity] motion-reduce:animate-none motion-reduce:opacity-[calc(var(--star-opacity)*0.7)]"
 			style="

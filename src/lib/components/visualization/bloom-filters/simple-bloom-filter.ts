@@ -17,19 +17,15 @@ export class SimpleBloomFilter {
 		const h1 = hash1(str, this.size);
 		const h2 = hash2(str, this.size);
 
-		// Step 1: Show first hash
 		steps.push({ type: 'hash1', value: h1 });
 
-		// Step 2: Show second hash
 		steps.push({ type: 'hash2', value: h2 });
 
-		// Step 3: Show binary representation
 		const positions = getHashPositions(str, this.size, this.numHashFunctions);
 		const binaryArray = new Array(this.size).fill('0');
 		positions.forEach((pos) => (binaryArray[pos] = '1'));
 		steps.push({ type: 'binary', value: binaryArray.join('') });
 
-		// Step 4+: Set each bit
 		positions.forEach((pos) => {
 			const wasSet = this.bitArray[pos];
 			steps.push({ type: 'setBit', index: pos, wasSet });
@@ -43,19 +39,15 @@ export class SimpleBloomFilter {
 		const h1 = hash1(str, this.size);
 		const h2 = hash2(str, this.size);
 
-		// Step 1: Show first hash
 		steps.push({ type: 'hash1', value: h1 });
 
-		// Step 2: Show second hash
 		steps.push({ type: 'hash2', value: h2 });
 
-		// Step 3: Show binary representation
 		const positions = getHashPositions(str, this.size, this.numHashFunctions);
 		const binaryArray = new Array(this.size).fill('0');
 		positions.forEach((pos) => (binaryArray[pos] = '1'));
 		steps.push({ type: 'binary', value: binaryArray.join('') });
 
-		// Step 4+: Check each bit
 		positions.forEach((pos) => {
 			steps.push({ type: 'setBit', index: pos, wasSet: this.bitArray[pos] });
 		});

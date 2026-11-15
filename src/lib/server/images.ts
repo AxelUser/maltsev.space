@@ -29,12 +29,10 @@ export function getOGImagePath(slug: string): string | undefined {
 	const ogImagePath = `/images/og/${slug}.jpg`;
 	const staticOgPath = path.join('static', ogImagePath);
 
-	// Check if OG image exists in static folder
 	if (fs.existsSync(staticOgPath)) {
 		return ogImagePath;
 	}
 
-	// Fallback to post hero image
 	const postHeroPath = `/images/posts/${slug}/hero.jpg`;
 	const staticPostHeroPath = path.join('static', postHeroPath);
 

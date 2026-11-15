@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Button, Link } from '$lib/components/ui';
+	import { Button, Card, Link } from '$lib/components/ui';
 	import { HeroPlanet, TagCloud, SEO, PostsGrid } from '$lib/components';
 	import { bio } from '$lib/bio';
 	import { OneColumnLayout } from '$lib/components/layouts';
@@ -30,16 +30,8 @@
 			isVisible ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'
 		]}
 	>
-		<h1
-			class="m-0 max-xs:text-[2rem] bg-linear-90/srgb from-brand to-accent bg-clip-text text-transparent [text-shadow:0_0_20px_rgba(76,170,255,0.3)]"
-		>
-			Howdy, I'm {bio.firstName}
-		</h1>
-		<p
-			class="m-0 max-w-[60ch] border-2 border-accent bg-accent/10 p-[0.3em] text-lg leading-normal font-semibold tracking-[0.02em] text-accent max-xs:border xs:p-[0.4em] xs:text-xl sm:p-[0.5em] sm:text-2xl [text-shadow:0_0_15px_rgba(76,170,255,0.4)]"
-		>
-			Space is dangerous — use tabs
-		</p>
+		<h1 class="space-hero">Howdy, I'm {bio.firstName}</h1>
+		<p class="space-tagline">Space is dangerous — use tabs</p>
 
 		<HeroPlanet />
 
@@ -71,10 +63,10 @@
 				</p>
 				<Link href="/about" hasArrow={true}>Learn more about me</Link>
 			</div>
-			<div class="bg-surface-2 p-5">
+			<Card>
 				<h3 class="mt-0 mb-5 text-lg text-fg-2">Professional Interests:</h3>
 				<TagCloud tags={bio.interests} />
-			</div>
+			</Card>
 		</section>
 	</div>
 </OneColumnLayout>

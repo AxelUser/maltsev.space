@@ -1,14 +1,14 @@
 ---
-date: "2025-06-24"
+date: '2025-06-24'
 tags:
- - "Algorithms"
+  - 'Algorithms'
 keywords:
- - "Bloom filters"
- - "Probabilistic data structures"
- - "Counting Bloom filters"
-title: "Grokking Bloom Filters: Counting Bloom Filter"
+  - 'Bloom filters'
+  - 'Probabilistic data structures'
+  - 'Counting Bloom filters'
+title: 'Grokking Bloom Filters: Counting Bloom Filter'
 preview: "Bloom filters can't remove elements — unless you let them count."
-series: "Grokking Bloom Filters"
+series: 'Grokking Bloom Filters'
 draft: false
 hero: /images/blog/009-counting-bloom-filters/hero.jpg
 ---
@@ -50,12 +50,12 @@ First, we insert both elements. Element A sets bits at positions 0, 5, and 8. Th
 ```mermaid
 graph TD
     A["Insert Element A<br/>Hash positions: 0, 5, 8"] --> A1["Set bits:<br/>bit[0] = 1<br/>bit[5] = 1<br/>bit[8] = 1"]
-    
+
     B["Insert Element B<br/>Hash positions: 5, 7, 9"] --> B1["Set bits:<br/>bit[5] = 1 (already set)<br/>bit[7] = 1<br/>bit[9] = 1"]
-    
+
     A1 --> C["Positions set: 0, 5, 7, 8, 9"]
     B1 --> C
-    
+
     style A fill:#22d3ee,color:#212529
     style B fill:#22d3ee,color:#212529
     style C fill:#22c55e,color:#212529
@@ -80,11 +80,11 @@ Now, let's attempt to delete Element A. The naive approach would be to reset its
 ```mermaid
 graph TD
     A["Current state:<br/>[1,0,0,0,0,1,0,1,1,1]<br/>Both A and B inserted"] --> B["❌ Attempt to delete Element A<br/>Reset positions: 0, 5, 8"]
-    
+
     B --> C["Naive deletion:<br/>bit[0] = 0<br/>bit[5] = 0 ⚠️ (shared with B!)<br/>bit[8] = 0"]
-    
+
     C --> D["Corrupted bit array:<br/>[0,0,0,0,0,0,0,1,0,1]<br/>Only positions 7, 9 remain set"]
-    
+
     style A fill:#495057,color:#f8f9fa
     style B fill:#dc2626,color:#f8f9fa
     style C fill:#f59e0b,color:#212529
@@ -96,13 +96,13 @@ The corruption becomes evident when we later check for Element B. We hash it to 
 ```mermaid
 graph TD
     A["Corrupted state:<br/>[0,0,0,0,0,0,0,1,0,1]<br/>Element A 'deleted'"] --> B["💥 Check Element B<br/>Hash positions: 5, 7, 9"]
-    
+
     B --> C["Check each position:<br/>bit[5] = 0 ❌<br/>bit[7] = 1 ✓<br/>bit[9] = 1 ✓"]
-    
+
     C --> D{"All bits set?"}
-    
+
     D -->|"No, bit[5] = 0"| E["FALSE NEGATIVE!<br/>Element B appears absent<br/>but was never deleted"]
-    
+
     style A fill:#dc2626,color:#f8f9fa
     style B fill:#f59e0b,color:#212529
     style D fill:#f59e0b,color:#212529
@@ -184,14 +184,14 @@ The key insight is that **multiple elements may share the same positions** — b
 ```mermaid
 graph TD
     A["Insert Element A<br/>Hash positions: 1, 4, 7"] --> A1["Increment counters:<br/>counter[1] = 0+1 = 1<br/>counter[4] = 0+1 = 1<br/>counter[7] = 0+1 = 1"]
-    
+
     A1 --> A2["Counter array after A:<br/>[0,1,0,0,1,0,0,1,0,0]"]
-    
+
     B["Insert Element B<br/>Hash positions: 4, 6, 9"] --> B1["Increment counters:<br/>counter[4] = 1+1 = 2 (shared!)<br/>counter[6] = 0+1 = 1<br/>counter[9] = 0+1 = 1"]
-    
+
     A2 --> C["Final counter array:<br/>[0,1,0,0,2,0,1,1,0,1]<br/>Position 4 shared by both elements"]
     B1 --> C
-    
+
     style A fill:#3b82f6,color:#f8f9fa
     style B fill:#3b82f6,color:#f8f9fa
     style C fill:#22c55e,color:#212529
@@ -221,11 +221,11 @@ The result is that other elements sharing those positions remain unaffected beca
 ```mermaid
 graph TD
     A["Current state:<br/>[0,1,0,0,2,0,1,1,0,1]<br/>Both A and B inserted"] --> B["Delete Element A<br/>Hash positions: 1, 4, 7"]
-    
+
     B --> C["Decrement counters:<br/>counter[1] = 1-1 = 0<br/>counter[4] = 2-1 = 1 (B still contributes!)<br/>counter[7] = 1-1 = 0"]
-    
+
     C --> D["✅ Updated counter array:<br/>[0,0,0,0,1,0,1,0,0,1]<br/>Element B's data preserved"]
-    
+
     style A fill:#495057,color:#f8f9fa
     style B fill:#3b82f6,color:#f8f9fa
     style D fill:#495057,color:#f8f9fa
@@ -359,24 +359,24 @@ Here's how dlCBF insertion works:
 ```mermaid
 graph TD
     A["Element: 'apple'<br/>Generate fingerprint: 0x4A2C"] --> B["Subtable 1<br/>Permute: 0x4A2C → 0x7B1D<br/>Bucket: hash(0x7B1D) % B = 3<br/>Load: 2 cells"]
-    
+
     A --> C["Subtable 2<br/>Permute: 0x4A2C → 0x9E8F<br/>Bucket: hash(0x9E8F) % B = 7<br/>Load: 1 cell"]
-    
+
     B --> D["Candidate buckets:<br/>Subtable 1 bucket 3: 2 cells<br/>Subtable 2 bucket 7: 1 cell ⭐"]
     C --> D
-    
+
     D --> E["Choose least loaded<br/>Subtable 2, bucket 7"]
-    
+
     E --> F["Check if fingerprint 0x9E8F<br/>already exists in bucket 7"]
-    
+
     F --> G{"Fingerprint<br/>exists?"}
-    
+
     G -->|Yes| H["Increment existing<br/>counter"]
     G -->|No| I["Insert new cell with<br/>fingerprint: 0x9E8F<br/> and counter: 1"]
-    
+
     H --> J["✅ Insertion complete"]
     I --> J
-    
+
     style A fill:#5d5fef,color:#f8f9fa
     style J fill:#22c55e,color:#212529
     style G fill:#f59e0b,color:#212529
