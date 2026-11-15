@@ -1,13 +1,13 @@
 ---
-date: "2018-10-26"
+date: '2018-10-26'
 tags:
-  - "C#"
+  - 'C#'
 keywords:
-  - "C#"
-  - ".Net"
-  - "Enums"
-title: "Shift Your C# Enums"
-preview: "Discover the simple yet powerful technique of using bitwise shift operator in C# Enums, and how it can improve the readability and maintainability of your code."
+  - 'C#'
+  - '.Net'
+  - 'Enums'
+title: 'Shift Your C# Enums'
+preview: 'Discover the simple yet powerful technique of using bitwise shift operator in C# Enums, and how it can improve the readability and maintainability of your code.'
 draft: false
 legacy: true
 hero: /images/blog/001-binary-shifts-for-flags/hero.jpg

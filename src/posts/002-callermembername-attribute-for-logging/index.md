@@ -1,11 +1,11 @@
 ---
-date: "2018-10-27"
+date: '2018-10-27'
 tags:
-  - "C#"
+  - 'C#'
 keywords:
-  - "C#"
-  - "CallerMemberName"
-title: "Using CallerMemberName for Improved Logging in C#"
+  - 'C#'
+  - 'CallerMemberName'
+title: 'Using CallerMemberName for Improved Logging in C#'
 preview: 'Learn how to use "magic" attributes in C#, such as CallerFilePath, CallerLineNumber, and CallerMemberName, to retrieve caller information and improve logging functionality.'
 draft: false
 legacy: true
@@ -26,7 +26,7 @@ These attributes allow you to change the default values of optional parameters i
 
 ## What is a Caller?
 
-In programming, a *caller* is the piece of code that invokes (calls) a method or function. Understanding the context of the caller can help in debugging and maintaining code, as it tells you where a particular method was called from within your application.
+In programming, a _caller_ is the piece of code that invokes (calls) a method or function. Understanding the context of the caller can help in debugging and maintaining code, as it tells you where a particular method was called from within your application.
 
 ## Default Behavior of Optional Parameters
 

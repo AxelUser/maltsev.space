@@ -45,7 +45,6 @@ Generated images are saved to:
 - **Format**: PNG with high quality
 - **Dimensions**: 1536 x 1024 pixels
 
-
 ## Files
 
 ### Core Files
@@ -71,14 +70,14 @@ To modify the OG image appearance, edit `og-template.html`:
 
 ```css
 .hero-background-container {
-    width: 1536px;
-    height: 1024px;
-    /* Modify container styling */
+	width: 1536px;
+	height: 1024px;
+	/* Modify container styling */
 }
 
 .space-title {
-    font-size: var(--font-size-8);
-    /* Adjust title styling */
+	font-size: var(--font-size-8);
+	/* Adjust title styling */
 }
 ```
 
@@ -88,7 +87,7 @@ To change how content is displayed, modify the `setContent` function in `og-temp
 
 ```javascript
 function setContent(title, preview, date, author, heroImageUrl) {
-    // Customize how content is populated
+	// Customize how content is populated
 }
 ```
 

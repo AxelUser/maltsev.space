@@ -1,19 +1,11 @@
 <script lang="ts">
 	import { Badge } from '$lib/components/ui';
 
-	export let tags: string[] = [];
+	const { tags = [] }: { tags?: string[] } = $props();
 </script>
 
-<div class="tag-cloud">
-	{#each tags as tag}
+<div class="flex flex-wrap gap-2">
+	{#each tags as tag (tag)}
 		<Badge>{tag}</Badge>
 	{/each}
 </div>
-
-<style>
-	.tag-cloud {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--gap-small);
-	}
-</style>

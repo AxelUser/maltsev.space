@@ -26,9 +26,12 @@
 		publishedTime,
 		modifiedTime,
 		author = bio.fullName,
-		keywords = [],
+		keywords: rawKeywords = [],
 		noindex = false
 	}: Props = $props();
+
+	// Callers may merge keywords with tags, so drop duplicates (also keeps meta tags unique)
+	const keywords = $derived([...new Set(rawKeywords)]);
 
 	const fullUrl = $derived(
 		url ? `${config.websiteUrl.replace(/\/$/, '')}${url}` : config.websiteUrl
@@ -37,7 +40,13 @@
 		image?.startsWith('http') ? image : `${config.websiteUrl.replace(/\/$/, '')}${image}`
 	);
 
-	// JSON-LD structured data
+	/** Serializes schema data into a JSON-LD script tag (`<` escaped so content can't close the tag). */
+	const jsonLd = (data: unknown) =>
+		'<script type="application/ld+json">' +
+		JSON.stringify(data).replace(/</g, '\\u003c') +
+		'</' +
+		'script>';
+
 	const personSchema = $derived({
 		'@context': 'https://schema.org',
 		'@type': 'Person',
@@ -94,7 +103,6 @@
 </script>
 
 <svelte:head>
-	<!-- Basic SEO -->
 	<title>{title}</title>
 	<meta name="description" content={description} />
 	<link rel="canonical" href={fullUrl} />
@@ -105,7 +113,6 @@
 		<meta name="robots" content="index, follow" />
 	{/if}
 
-	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content={type} />
 	<meta property="og:title" content={title} />
 	<meta property="og:description" content={description} />
@@ -126,12 +133,11 @@
 			<meta property="article:author" content={author} />
 		{/if}
 		<meta property="article:section" content="Technology" />
-		{#each keywords as keyword}
+		{#each keywords as keyword (keyword)}
 			<meta property="article:tag" content={keyword} />
 		{/each}
 	{/if}
 
-	<!-- Twitter Card -->
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content={title} />
 	<meta name="twitter:description" content={description} />
@@ -140,20 +146,20 @@
 	<meta name="twitter:site" content={bio.social.twitter} />
 	<meta name="twitter:creator" content={bio.social.twitter} />
 
-	<!-- JSON-LD Structured Data -->
-	<!-- Person Schema -->
-	{@html `<script type="application/ld+json">${JSON.stringify(personSchema)}</script>`}
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -- first-party data, `<` escaped -->
+	{@html jsonLd(personSchema)}
 
-	<!-- Website/Blog Schema -->
 	{#if type === 'website'}
-		{@html `<script type="application/ld+json">${JSON.stringify(websiteSchema)}</script>`}
+		<!-- eslint-disable-next-line svelte/no-at-html-tags -- first-party data, `<` escaped -->
+		{@html jsonLd(websiteSchema)}
 		{#if url && url.includes('/blog')}
-			{@html `<script type="application/ld+json">${JSON.stringify(blogSchema)}</script>`}
+			<!-- eslint-disable-next-line svelte/no-at-html-tags -- first-party data, `<` escaped -->
+			{@html jsonLd(blogSchema)}
 		{/if}
 	{/if}
 
-	<!-- Article Schema -->
 	{#if articleSchema}
-		{@html `<script type="application/ld+json">${JSON.stringify(articleSchema)}</script>`}
+		<!-- eslint-disable-next-line svelte/no-at-html-tags -- first-party data, `<` escaped -->
+		{@html jsonLd(articleSchema)}
 	{/if}
 </svelte:head>

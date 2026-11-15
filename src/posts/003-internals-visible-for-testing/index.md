@@ -1,13 +1,13 @@
 ---
-date: "2018-11-12"
+date: '2018-11-12'
 tags:
-  - "C#"
+  - 'C#'
 keywords:
-  - "C#"
-  - "testing"
-  - "InternalsVisibleTo"
-title: "Testing Private Code in C#: Breaking Encapsulation with InternalsVisibleTo Attribute"
-preview: "Learn about the different options available for testing private logic in C# and how the InternalsVisibleTo attribute can help you access internal members without compromising the encapsulation of your code."
+  - 'C#'
+  - 'testing'
+  - 'InternalsVisibleTo'
+title: 'Testing Private Code in C#: Breaking Encapsulation with InternalsVisibleTo Attribute'
+preview: 'Learn about the different options available for testing private logic in C# and how the InternalsVisibleTo attribute can help you access internal members without compromising the encapsulation of your code.'
 draft: false
 legacy: true
 hero: /images/blog/003-internals-visible-for-testing/hero.jpg

@@ -1,25 +1,25 @@
 <script lang="ts">
 	import { cva, type VariantProps } from 'class-variance-authority';
 	import type { SvelteHTMLElements } from 'svelte/elements';
+	import { cn } from '$lib/utils';
 
 	interface OwnProps {
 		class?: string;
 	}
 
-	const badge = cva('badge', {
+	const badge = cva('inline-block rounded-md transition-colors', {
 		variants: {
 			variant: {
-				default: 'default',
-				active: 'active',
-				subtle: 'subtle'
+				default: 'border border-brand/30 bg-brand/15 text-fg-2 hover:bg-brand/30 hover:text-fg-1',
+				active: 'border border-brand bg-brand text-fg-1',
+				subtle: 'bg-surface-2 text-fg-2 hover:bg-surface-3'
 			},
 			size: {
-				small: 'small',
-				medium: 'medium',
-				large: 'large'
+				small: 'px-1 py-0.5 text-xs',
+				medium: 'px-2 py-1 text-base'
 			},
 			interactive: {
-				true: 'interactive',
+				true: 'cursor-pointer',
 				false: ''
 			}
 		}
@@ -36,63 +36,9 @@
 		...rest
 	}: Props = $props();
 
-	const badgeClasses = $derived(badge({ variant, size, interactive, class: className }));
+	const badgeClasses = $derived(cn(badge({ variant, size, interactive }), className));
 </script>
 
 <span class={badgeClasses} {...rest}>
 	{@render children?.()}
 </span>
-
-<style>
-	.badge {
-		display: inline-block;
-		border-radius: var(--radius-1);
-		transition: all var(--animation-fade);
-	}
-
-	.default {
-		background-color: color-mix(in srgb, var(--brand) 15%, transparent);
-		color: var(--text-2);
-		border: 1px solid color-mix(in srgb, var(--brand) 30%, transparent);
-	}
-
-	.default:hover {
-		background-color: color-mix(in srgb, var(--brand) 20%, transparent);
-		color: var(--text-1);
-		cursor: default;
-	}
-
-	.active {
-		background-color: var(--brand);
-		color: var(--text-1);
-		border: 1px solid var(--brand);
-	}
-
-	.subtle {
-		background-color: var(--surface-2);
-		color: var(--text-2);
-	}
-
-	.subtle:hover {
-		background-color: var(--surface-3);
-	}
-
-	.small {
-		font-size: var(--font-size-0);
-		padding: calc(var(--size-1) * 0.5) var(--size-1);
-	}
-
-	.medium {
-		font-size: var(--font-size-1);
-		padding: var(--size-1) var(--size-2);
-	}
-
-	.large {
-		font-size: var(--font-size-2);
-		padding: var(--size-1) var(--size-3);
-	}
-
-	.interactive {
-		cursor: pointer;
-	}
-</style>

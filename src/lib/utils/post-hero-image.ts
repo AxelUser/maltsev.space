@@ -1,13 +1,14 @@
-const heroImages = import.meta.glob('/static/images/posts/*/hero.{jpg,jpeg,png,webp,avif}', {
-	eager: true,
-	query: {
-		enhanced: true
-	}
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-}) as Record<string, { default: any }>;
+import type { SvelteHTMLElements } from 'svelte/elements';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getPostHeroImage = (slug: string): any | undefined => {
+/** Anything `<enhanced:img src>` accepts: a URL or an imported, pre-processed picture. */
+export type EnhancedImageSrc = SvelteHTMLElements['enhanced:img']['src'];
+
+const heroImages = import.meta.glob<{ default: EnhancedImageSrc }>(
+	'/static/images/posts/*/hero.{jpg,jpeg,png,webp,avif}',
+	{ eager: true, query: { enhanced: true } }
+);
+
+export const getPostHeroImage = (slug: string): EnhancedImageSrc | undefined => {
 	if (!slug) return undefined;
 	const matchingImage = Object.entries(heroImages).find(([path]) => path.includes(slug));
 	return matchingImage ? matchingImage[1].default : undefined;

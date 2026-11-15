@@ -1,12 +1,12 @@
 ---
-date: "2020-06-22"
+date: '2020-06-22'
 tags:
-  - "C#"
+  - 'C#'
 keywords:
-  - "C#"
-  - "generics"
-title: "Unlocking the Power of Generics: Simulating Dictionary Behavior in C#"
-preview: "Do you want to improve performance of caching? Get rid of Dictionary and use just CLR for that!"
+  - 'C#'
+  - 'generics'
+title: 'Unlocking the Power of Generics: Simulating Dictionary Behavior in C#'
+preview: 'Do you want to improve performance of caching? Get rid of Dictionary and use just CLR for that!'
 draft: false
 legacy: true
 hero: /images/blog/005-dictionary-on-generics/hero.jpg

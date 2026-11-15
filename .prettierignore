@@ -4,3 +4,9 @@ pnpm-lock.yaml
 yarn.lock
 bun.lock
 bun.lockb
+
+# Post content: markdown hard line breaks rely on trailing spaces
+src/posts/
+
+# Static assets
+static/

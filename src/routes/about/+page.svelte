@@ -1,6 +1,5 @@
 <script lang="ts">
-	import Nebula from '$lib/components/nebula.svelte';
-	import { Timeline, TimelineItem, TagCloud, SEO, ProjectCard } from '$lib/components';
+	import { Timeline, TimelineItem, TagCloud, SEO, ProjectCard, PageHeader } from '$lib/components';
 	import { Card, Badge, Link } from '$lib/components/ui';
 	import { bio } from '$lib/bio';
 	import { OneColumnLayout } from '$lib/components/layouts';
@@ -14,23 +13,26 @@
 />
 
 <OneColumnLayout>
-	<div class="about-page">
-		<header class="about-header">
-			<Nebula />
-			<h1 class="space-title">About Me</h1>
-		</header>
+	<div class="pb-12">
+		<PageHeader title="About Me" />
 
-		<div class="about-content">
-			<section class="intro-section">
-				<div class="avatar-container">
-					<img src="/images/ava.jpg" alt="Avatar" class="avatar" loading="lazy" />
-					<div class="avatar-ring"></div>
+		<div class="flex flex-col gap-12">
+			<section
+				class="grid grid-cols-1 items-center gap-5 max-lg:text-center lg:grid-cols-[1fr_4fr] lg:gap-x-12"
+			>
+				<div class="relative size-[150px] shrink-0 max-lg:justify-self-center sm:size-[200px]">
+					<img
+						src="/images/ava.jpg"
+						alt="Avatar"
+						class="absolute top-1/2 left-1/2 size-[130px] -translate-1/2 rounded-full object-cover object-center sm:size-[180px]"
+						loading="lazy"
+					/>
+					<div class="absolute inset-0 animate-ring-pulse rounded-full border-2 border-brand"></div>
 				</div>
 
-				<div class="intro-text">
-					<h2 class="space-heading">Hello, I'm {bio.fullName}</h2>
-					<p class="tagline">Senior Software Engineer</p>
-					<div class="intro-text-content">
+				<div class="flex-1">
+					<h2 class="space-heading mt-0 max-lg:mx-auto">Hello, I'm {bio.fullName}</h2>
+					<div class="flex flex-col gap-2 max-lg:items-center">
 						<p>
 							I've been programming for fun and profit since 2014, focusing on distributed systems
 							and highload applications. My main stack is <b>C#</b>, <b>Kotlin</b>, and
@@ -43,8 +45,10 @@
 					</div>
 				</div>
 
-				<div class="contact-information">
-					<div class="button-group">
+				<div class="flex justify-around lg:col-span-2">
+					<div
+						class="mt-5 flex flex-wrap justify-start gap-5 max-sm:flex-col max-sm:items-center max-sm:gap-2"
+					>
 						<Link href={`mailto:${bio.social.email}`} external={true}>{bio.social.email}</Link>
 						<Link href={bio.social.github} external={true}>GitHub</Link>
 						<Link href={bio.social.linkedIn} external={true}>LinkedIn</Link>
@@ -294,22 +298,22 @@
 
 				<div class="card-grid">
 					<Card>
-						<div class="interest-icon books">📚</div>
-						<h3 class="section-title">Reading</h3>
+						<div class="icon-bubble mb-2">📚</div>
+						<h3 class="mb-2 text-2xl">Reading</h3>
 						<p>
 							I enjoy reading books on technology, science, and other topics to learn new things.
 						</p>
 					</Card>
 
 					<Card>
-						<div class="interest-icon climbing">🧗</div>
-						<h3 class="section-title">Rock Climbing</h3>
+						<div class="icon-bubble mb-2">🧗</div>
+						<h3 class="mb-2 text-2xl">Rock Climbing</h3>
 						<p>I like rock climbing to stay active and enjoy the outdoors.</p>
 					</Card>
 
 					<Card>
-						<div class="interest-icon skiing">⛷️</div>
-						<h3 class="section-title">Mountain Skiing</h3>
+						<div class="icon-bubble mb-2">⛷️</div>
+						<h3 class="mb-2 text-2xl">Mountain Skiing</h3>
 						<p>I enjoy mountain skiing in the winter.</p>
 					</Card>
 				</div>
@@ -317,16 +321,16 @@
 
 			<section>
 				<h2 class="space-heading">Programming Challenges</h2>
-				<p>
+				<p class="mb-5">
 					I enjoy participating in coding challenges to sharpen my skills and explore new
 					programming concepts.
 				</p>
 
 				<div class="card-grid">
 					<Card variant="default">
-						<h3 class="section-title">Advent of Code</h3>
+						<h3 class="mb-2 text-2xl">Advent of Code</h3>
 						<p>I've completed multiple years of Advent of Code challenges:</p>
-						<div class="badge-container">
+						<div class="my-2 flex flex-wrap gap-2">
 							<Badge interactive={true}>
 								<Link href="https://github.com/AxelUser/aoc-2023-kt" external={true}>2023</Link>
 							</Badge>
@@ -349,12 +353,12 @@
 					</Card>
 
 					<Card variant="default">
-						<h3 class="section-title">LeetCode</h3>
+						<h3 class="mb-2 text-2xl">LeetCode</h3>
 						<p>
 							I practice algorithmic problem solving on LeetCode to improve my coding efficiency and
 							understanding of data structures.
 						</p>
-						<div class="badge-container">
+						<div class="my-2 flex flex-wrap gap-2">
 							<Badge interactive={true}>
 								<Link href="https://github.com/AxelUser/leetcode-kt" external={true}
 									>View Solutions</Link
@@ -367,199 +371,3 @@
 		</div>
 	</div>
 </OneColumnLayout>
-
-<style>
-	@import 'open-props/media';
-	.about-page {
-		padding-bottom: var(--gap-large);
-	}
-
-	.about-content {
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap-large);
-	}
-
-	section {
-		margin-top: var(--gap);
-	}
-
-	.about-header {
-		height: 250px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		position: relative;
-		overflow: hidden;
-		margin-bottom: var(--gap-large);
-	}
-
-	.about-header .space-title {
-		font-size: var(--font-size-8);
-		color: var(--text-1);
-		text-shadow: 0 0 10px var(--brand);
-		z-index: 1;
-	}
-
-	.card-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-		gap: var(--gap);
-		margin-top: var(--gap);
-	}
-
-	.button-group {
-		display: flex;
-		justify-content: flex-start;
-		gap: var(--gap);
-		margin-top: var(--gap);
-		flex-wrap: wrap;
-	}
-
-	.badge-container {
-		display: flex;
-		gap: var(--gap-small);
-		flex-wrap: wrap;
-		margin-top: var(--gap-small);
-		margin-bottom: var(--gap-small);
-	}
-
-	.intro-section {
-		display: grid;
-		grid-template-columns: 1fr 4fr;
-		grid-template-areas: 'avatar intro' 'social social';
-		column-gap: var(--gap-large);
-		row-gap: var(--gap);
-		align-items: center;
-	}
-
-	.avatar-container {
-		grid-area: avatar;
-		position: relative;
-		width: 200px;
-		height: 200px;
-		flex-shrink: 0;
-	}
-
-	.avatar {
-		width: 180px;
-		height: 180px;
-		border-radius: 50%;
-		object-fit: cover;
-		object-position: center;
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-	}
-
-	.avatar-ring {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		border-radius: 50%;
-		border: 2px solid var(--brand);
-		animation: pulse 3s infinite ease-in-out;
-	}
-
-	@keyframes pulse {
-		0% {
-			transform: scale(0.95);
-			box-shadow: 0 0 0 0 rgba(var(--brand), 0.7);
-		}
-		70% {
-			transform: scale(1);
-			box-shadow: 0 0 0 15px rgba(var(--brand), 0);
-		}
-		100% {
-			transform: scale(0.95);
-			box-shadow: 0 0 0 0 rgba(var(--brand), 0);
-		}
-	}
-
-	.intro-text {
-		grid-area: intro;
-		flex: 1;
-	}
-
-	.intro-text h2 {
-		margin-top: 0;
-	}
-
-	.intro-text-content {
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap-small);
-	}
-
-	.contact-information {
-		display: flex;
-		justify-content: space-around;
-		grid-area: social;
-	}
-
-	.tagline {
-		font-size: var(--font-size-3);
-		color: var(--text-2);
-		margin-bottom: var(--gap);
-	}
-
-	.interest-icon {
-		width: 50px;
-		height: 50px;
-		border-radius: 50%;
-		background-color: var(--surface-3);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: var(--text-1);
-		font-size: var(--font-size-5);
-	}
-
-	@media (--lg-n-below) {
-		.intro-section {
-			grid-template-columns: 1fr;
-			grid-template-areas: 'avatar' 'intro' 'social';
-			text-align: center;
-			gap: var(--gap);
-
-			.avatar-container {
-				justify-self: center;
-			}
-		}
-
-		.intro-text .space-heading {
-			justify-self: center;
-		}
-	}
-
-	@media (--md-n-below) {
-		.about-header {
-			height: 200px;
-		}
-	}
-
-	@media (--sm-n-below) {
-		.about-header {
-			height: 150px;
-		}
-
-		.avatar-container {
-			width: 150px;
-			height: 150px;
-		}
-
-		.avatar {
-			width: 130px;
-			height: 130px;
-		}
-
-		.button-group {
-			flex-direction: column;
-			align-items: center;
-			gap: var(--gap-small);
-		}
-	}
-</style>

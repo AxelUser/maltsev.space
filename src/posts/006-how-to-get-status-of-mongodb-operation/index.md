@@ -1,9 +1,9 @@
 ---
-date: "2022-04-20"
+date: '2022-04-20'
 tags:
-  - "MongoDB"
-title: "Checking MongoDB Operation Status: A Simple Guide"
-preview: "Learn how to easily check the status of your MongoDB operations with this step-by-step guide."
+  - 'MongoDB'
+title: 'Checking MongoDB Operation Status: A Simple Guide'
+preview: 'Learn how to easily check the status of your MongoDB operations with this step-by-step guide.'
 draft: false
 hero: /images/blog/006-how-to-get-status-of-mongodb-operation/hero.jpg
 ---
@@ -44,16 +44,16 @@ To pass `JobId` into the comment when we start the delete operation, we can use 
 
 ```javascript
 db.runCommand({
-  delete: "Events",
-  ordered: false,
-  comment: "job:blog-test",
-  deletes: [
-    {
-      q: { clientId: 0 },
-      limit: 0,
-    },
-  ],
-})
+	delete: 'Events',
+	ordered: false,
+	comment: 'job:blog-test',
+	deletes: [
+		{
+			q: { clientId: 0 },
+			limit: 0
+		}
+	]
+});
 ```
 
 This MongoDB query is designed to delete all documents from the `"Events"` collection where the `"clientId"` field equals `0`. The query is executed using the `runCommand` method, which takes a single argument that is a document representing the command to be executed.
@@ -80,10 +80,10 @@ MongoDB query below uses the aggregate method to find a specific operation that 
 
 ```javascript
 db.aggregate([
-  { $currentOp: { localOps: true } },
-  { $match: { "command.comment": "job:blog-test" } },
-  { $limit: 1 },
-])
+	{ $currentOp: { localOps: true } },
+	{ $match: { 'command.comment': 'job:blog-test' } },
+	{ $limit: 1 }
+]);
 ```
 
 The first stage of the pipeline is `$currentOp`, which returns information about the current operations running on the server. The `localOps` option is set to `true`, which limits the output to only show operations running on the same node as the query.

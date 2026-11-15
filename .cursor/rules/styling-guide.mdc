@@ -1,126 +1,59 @@
 ---
-description: 
+description:
 globs: *.svelte
 alwaysApply: false
 ---
 # Styling Guide
 
-This project uses [Open Props](mdc:https:/open-props.style) for CSS custom properties along with our own theme variables defined in [app.css](mdc:src/app.css).
+This project uses [Tailwind CSS v4](https://tailwindcss.com) (via `@tailwindcss/vite`). All theme tokens live in [app.css](mdc:src/app.css). Style components with utility classes in markup; avoid `<style>` blocks unless something can't be expressed with utilities (e.g. `{@html}` content).
 
-## Open Props Integration
+## Theme colors
 
-Open Props provides supercharged CSS variables for consistent design. Include it in components as needed:
+Semantic colors follow the light/dark theme switch automatically. Each token is defined once in `app.css` as `light-dark(<light>, <dark>)`; the theme switch only sets `color-scheme` on `<html>`.
 
-```svelte
-<script>
-  // Component code
-</script>
-
-<style>
-  /* Use Open Props variables for spacing, sizing, etc. */
-  .card {
-    border-radius: var(--radius-2);
-    padding: var(--size-fluid-3);
-    box-shadow: var(--shadow-2);
-  }
-  
-  .grid-layout {
-    display: grid;
-    gap: var(--size-4);
-  }
-</style>
-```
-
-## Theme Color Variables
-
-Use the theme variables defined in [app.css](mdc:src/app.css) for consistent color theming that automatically adapts to light/dark modes:
+| Utility suffix | Meaning |
+| --- | --- |
+| `fg-1`, `fg-2` | primary / secondary text |
+| `surface-1` … `surface-4` | backgrounds, from base to most raised |
+| `brand`, `brand-fg` | brand color and text on it |
+| `link`, `accent` | links and highlights |
+| `star`, `planet`, `nebula` | space decorations |
 
 ```svelte
-<style>
-  .component {
-    /* Theme colors */
-    color: var(--text-1);
-    background-color: var(--surface-1);
-    border: 1px solid var(--surface-3);
-  }
-  
-  .accent {
-    color: var(--accent);
-  }
-  
-  .link {
-    color: var(--link);
-  }
-  
-  /* Special color sets */
-  .special-item {
-    color: var(--star);
-    background-color: var(--nebula);
-  }
-</style>
-```
-
-## Typography
-
-Use predefined typography classes:
-
-```svelte
-<div class="space-title">Page Title</div>
-<div class="space-subtitle">Subtitle text</div>
-<div class="space-heading">Section Heading</div>
-<div class="prose">
-  <p>Regular text content with proper styling.</p>
+<div class="rounded-md border border-surface-3 bg-surface-2 p-5 text-fg-1">
+	<a class="text-link hover:text-accent">Link</a>
+	<span class="bg-brand/15">Translucent brand tint</span>
 </div>
 ```
 
-## Layout
+## Design rules
 
-Use the OneColumnLayout component for consistent page layouts:
+Keep the design predictable: pick from these values instead of inventing new ones.
 
-```svelte
-<OneColumnLayout>
-  <!-- Page content here -->
-</OneColumnLayout>
-```
+| Concern | Rule |
+| --- | --- |
+| Spacing | `1`, `2`, `5`, `12` steps only. Sections `gap-12`, cards/grids `gap-5`, chips `gap-2`. |
+| Radius | Controls (buttons, badges, inputs, nav items) `rounded-md`. Containers (cards, banners, tiles) `rounded-2xl`. |
+| Borders | Dividers and page chrome `border-brand/20`. Boxes `border-surface-3`. |
+| Brand tint | Hover `bg-brand/15`, active/selected `bg-brand/30`. |
+| Glow | `color-mix(in srgb, var(--brand or --accent) N%, transparent)`, never hard-coded rgba. |
+| Meta text | `text-xs text-fg-2`. |
 
-## Responsive Design
+Boxes with a background use `Card`, not ad-hoc `bg-surface-2 p-5` divs.
 
-Utilize media query custom properties for responsive design:
+## Breakpoints
 
-```svelte
-<style>
-  .component {
-    width: 100%;
-  }
-  
-  @media (--md-n-above) {
-    .component {
-      width: 75%;
-    }
-  }
-  
-  @media (--lg-n-above) {
-    .component {
-      width: 50%;
-    }
-  }
-</style>
-```
+`xs` 360px, `sm` 480px, `md` 768px, `lg` 1024px, `xl` 1440px, `2xl` 1920px. Write mobile-first (`md:grid-cols-2`) or use `max-*` for "below" (`max-md:hidden`).
 
-## Spacing and Sizing
+## Typography
 
-Use consistent spacing variables:
+- `.space-title`, `.space-subtitle`, `.space-heading` — page-level headings (responsive). Pages start with `PageHeader`.
+- `.space-hero` + `.space-tagline` — gradient headline and accent pill for hero sections (home, error).
+- `.prose` — wrapper for rendered markdown.
 
-```svelte
-<style>
-  .component {
-    margin-bottom: var(--gap);
-    padding: var(--gap-small);
-  }
-  
-  .large-section {
-    margin-top: var(--gap-large);
-  }
-</style>
-```
+## Components
 
+- Variant components (`Button`, `Badge`, `Link`, `Card`) use `cva` with Tailwind classes; merge consumer classes with `cn()` from `$lib/utils` so overrides win.
+- Wrap pages in `OneColumnLayout`.
+- `BackBar` for "← Back to …" bars; `.card-grid` for responsive card grids; `.icon-bubble` for round emoji/icon holders.
+- Custom animations: `animate-twinkle`, `animate-ring-pulse`, `animate-placeholder-pulse` (set `[--pulse-min:…] [--pulse-max:…]`), `animate-gradient-shift`.

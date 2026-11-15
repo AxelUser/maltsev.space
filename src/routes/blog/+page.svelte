@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button, Badge } from '$lib/components/ui';
+	import { Button, Badge, Card } from '$lib/components/ui';
 	import { PageHeader, PostsGrid, SEO } from '$lib/components';
 	import { bio } from '$lib/bio';
 	import { OneColumnLayout } from '$lib/components/layouts';
@@ -35,12 +35,12 @@
 />
 
 <OneColumnLayout>
-	<div class="blog-page">
+	<div class="flex flex-col pb-12">
 		<PageHeader title="Blog" subtitle="Thoughts, ideas, and explorations" />
 
-		<section class="blog-filters">
-			<div class="filter-label">Filter by topic:</div>
-			<div class="tags-container">
+		<section class="mb-12 flex flex-wrap items-center gap-5 max-sm:flex-col max-sm:items-start">
+			<div class="text-lg text-fg-2">Filter by topic:</div>
+			<div class="flex flex-wrap gap-2">
 				{#each allTags as tag (tag)}
 					<Badge
 						variant={activeTag === tag ? 'active' : 'default'}
@@ -58,64 +58,17 @@
 			</div>
 		</section>
 
-		<section class="blog-posts">
+		<section>
 			{#if filteredPosts.length === 0}
-				<div class="no-results">
-					<p>No posts found matching the selected filter.</p>
+				<Card class="p-12 text-center">
+					<p class="mx-auto mb-5">No posts found matching the selected filter.</p>
 					<Button size="small" intent="secondary" onclick={() => (activeTag = undefined)}>
 						Clear filter
 					</Button>
-				</div>
+				</Card>
 			{:else}
 				<PostsGrid posts={filteredPosts} {activeTag} onTagClick={toggleTag} />
 			{/if}
 		</section>
 	</div>
 </OneColumnLayout>
-
-<style>
-	@import 'open-props/media';
-	.blog-page {
-		padding-bottom: var(--gap-large);
-		display: flex;
-		flex-direction: column;
-	}
-
-	.blog-filters {
-		margin-bottom: var(--gap-large);
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--gap);
-		align-items: center;
-	}
-
-	.filter-label {
-		font-size: var(--font-size-2);
-		color: var(--text-2);
-	}
-
-	.tags-container {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--gap-small);
-	}
-
-	.no-results {
-		text-align: center;
-		padding: var(--gap-large);
-		background-color: var(--surface-2);
-		border-radius: var(--radius-base);
-		margin-top: var(--gap);
-	}
-
-	.no-results p {
-		margin-bottom: var(--gap);
-	}
-
-	@media (--sm-n-below) {
-		.blog-filters {
-			flex-direction: column;
-			align-items: flex-start;
-		}
-	}
-</style>

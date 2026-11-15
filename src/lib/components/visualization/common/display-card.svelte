@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { cn } from '$lib/utils';
+
 	interface Props {
 		label: string;
 		value: string | number | null;
@@ -19,99 +21,33 @@
 
 	const isEmpty = $derived(value === null || value === undefined || value === '');
 	const displayValue = $derived(isEmpty && !showEmpty ? '—' : value);
+	const footnoteClass = $derived(
+		cn('text-center text-xs text-fg-2 opacity-70', variant === 'compact' && 'text-[0.5rem]')
+	);
 </script>
 
 <div
-	class="display-card"
-	class:compact={variant === 'compact'}
-	class:elevated={variant === 'elevated'}
-	class:centered={variant === 'centered'}
-	class:empty={isEmpty && !showEmpty}
+	class={cn(
+		'flex flex-col gap-2 rounded-md border border-surface-3 bg-surface-1 p-5 transition-all duration-200 ease-[ease]',
+		variant === 'compact' && 'mb-2 p-2 last:mb-0',
+		variant === 'elevated' && 'bg-surface-2 shadow-md',
+		variant === 'centered' && 'items-center text-center'
+	)}
 >
-	<div class="label">{label}</div>
-	<div class="value" class:fade={isEmpty && !showEmpty}>{displayValue}</div>
+	<div class="m-0 text-base font-semibold text-fg-2">{label}</div>
+	<div
+		class={cn(
+			'flex min-h-[1.5em] items-center justify-center rounded-xs bg-surface-2 p-2 text-center font-mono text-lg/normal font-bold text-fg-1 transition-opacity duration-300 ease-[ease]',
+			variant === 'elevated' && 'bg-surface-1',
+			isEmpty && !showEmpty && 'opacity-40'
+		)}
+	>
+		{displayValue}
+	</div>
 	{#if unit}
-		<div class="unit">{unit}</div>
+		<div class={footnoteClass}>{unit}</div>
 	{/if}
 	{#if description}
-		<div class="description">{description}</div>
+		<div class={footnoteClass}>{description}</div>
 	{/if}
 </div>
-
-<style>
-	.display-card {
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap-small);
-		background: var(--surface-1);
-		border-radius: var(--radius-2);
-		padding: var(--gap);
-		border: 1px solid var(--surface-3);
-		transition: all 0.2s ease;
-	}
-
-	.display-card.compact {
-		padding: var(--gap-small);
-		gap: var(--gap-small);
-		margin-bottom: var(--gap-small);
-	}
-
-	.display-card.compact:last-child {
-		margin-bottom: 0;
-	}
-
-	.display-card.elevated {
-		background: var(--surface-2);
-		box-shadow: var(--shadow-2);
-		border: 1px solid var(--surface-3);
-	}
-
-	.display-card.centered {
-		align-items: center;
-		text-align: center;
-	}
-
-	.label {
-		font-size: var(--font-size-1);
-		color: var(--text-2);
-		font-weight: var(--font-weight-6);
-		margin: 0;
-	}
-
-	.value {
-		font-size: var(--font-size-2);
-		font-family: var(--font-monospace-code);
-		color: var(--text-1);
-		font-weight: var(--font-weight-7);
-		background: var(--surface-2);
-		padding: var(--gap-small);
-		border-radius: var(--radius-1);
-		text-align: center;
-		min-height: 1.5em;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		transition: opacity 0.3s ease;
-	}
-
-	.display-card.elevated .value {
-		background: var(--surface-1);
-	}
-
-	.value.fade {
-		opacity: 0.4;
-	}
-
-	.unit,
-	.description {
-		font-size: var(--font-size-0);
-		color: var(--text-2);
-		opacity: 0.7;
-		text-align: center;
-	}
-
-	.display-card.compact .unit,
-	.display-card.compact .description {
-		font-size: var(--font-size-00);
-	}
-</style>

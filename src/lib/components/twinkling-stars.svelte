@@ -95,21 +95,23 @@
 
 <svelte:window onresize={handleResize} bind:innerWidth bind:innerHeight />
 
-<div class="stars-background" bind:this={starsContainer}>
-	{#each stars as star, i}
+<div
+	class="pointer-events-none fixed inset-0 -z-1 transform-gpu overflow-hidden"
+	bind:this={starsContainer}
+>
+	{#each stars as star, i (i)}
 		<div
-			class="star"
-			class:mobile={isMobile}
+			class="absolute size-(--star-size) transform-gpu animate-twinkle opacity-(--star-opacity) will-change-[transform,opacity] motion-reduce:animate-none motion-reduce:opacity-[calc(var(--star-opacity)*0.7)]"
 			style="
 				{isMobile && star.pixelX !== undefined && star.pixelY !== undefined
 				? `left: ${star.pixelX}px; top: ${star.pixelY}px;`
 				: `left: ${star.x}%; top: ${star.y}%;`}
 				--star-size: {star.size}rem; 
 				--star-opacity: {star.opacity}; 
-				--animation-delay: {star.delay}s;
+				animation-delay: {star.delay}s;
 			"
 		>
-			<svg viewBox="0 0 100 100" class="star-svg">
+			<svg viewBox="0 0 100 100" class="size-full transform-gpu">
 				<defs>
 					<radialGradient id="starGradient-{i}" cx="50%" cy="50%" r="60%">
 						<stop offset="0%" style="stop-color: var(--star); stop-opacity: 1;" />
@@ -144,63 +146,9 @@
 					   Z"
 					fill="url(#starGradient-{i})"
 					filter={isMobile ? 'none' : `url(#starGlow-${i})`}
-					class="star-path"
+					class="[vector-effect:non-scaling-stroke]"
 				/>
 			</svg>
 		</div>
 	{/each}
 </div>
-
-<style>
-	.stars-background {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		z-index: -1;
-		pointer-events: none;
-		overflow: hidden;
-		transform: translate3d(0, 0, 0);
-	}
-
-	.star {
-		position: absolute;
-		width: var(--star-size);
-		height: var(--star-size);
-		opacity: var(--star-opacity);
-		animation: twinkle 3s infinite ease-in-out;
-		animation-delay: var(--animation-delay);
-		will-change: transform, opacity;
-		transform: translate3d(0, 0, 0);
-	}
-
-	.star-svg {
-		width: 100%;
-		height: 100%;
-		transform: translate3d(0, 0, 0);
-	}
-
-	.star-path {
-		vector-effect: non-scaling-stroke;
-	}
-
-	@keyframes twinkle {
-		0%,
-		100% {
-			opacity: calc(var(--star-opacity) * 0.3);
-			transform: translate3d(0, 0, 0) scale(0.8);
-		}
-		50% {
-			opacity: var(--star-opacity);
-			transform: translate3d(0, 0, 0) scale(1);
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.star {
-			animation: none;
-			opacity: calc(var(--star-opacity) * 0.7);
-		}
-	}
-</style>

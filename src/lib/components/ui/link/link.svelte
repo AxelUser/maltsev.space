@@ -1,24 +1,19 @@
 <script lang="ts">
 	import { cva, type VariantProps } from 'class-variance-authority';
 	import type { SvelteHTMLElements } from 'svelte/elements';
+	import { cn } from '$lib/utils';
 
 	interface OwnProps {
 		external?: boolean;
 	}
 
-	const link = cva('link', {
+	const link = cva('no-underline transition-colors', {
 		variants: {
 			variant: {
-				default: 'default',
-				subtle: 'subtle',
-				nav: 'nav'
+				default: 'font-semibold text-link hover:text-accent'
 			},
 			hasArrow: {
-				true: 'has-arrow',
-				false: ''
-			},
-			underlined: {
-				true: 'underlined',
+				true: 'group/link inline-flex items-center gap-1',
 				false: ''
 			}
 		}
@@ -29,7 +24,6 @@
 	const {
 		variant = 'default',
 		hasArrow = false,
-		underlined = false,
 		external = false,
 		class: className = '',
 		href,
@@ -37,7 +31,7 @@
 		...rest
 	}: Props = $props();
 
-	const linkClasses = $derived(link({ variant, hasArrow, underlined, class: className }));
+	const linkClasses = $derived(cn(link({ variant, hasArrow }), className));
 </script>
 
 <a
@@ -49,61 +43,6 @@
 >
 	{@render children?.()}
 	{#if hasArrow}
-		<span class="arrow">→</span>
+		<span class="transition-transform group-hover/link:translate-x-1">→</span>
 	{/if}
 </a>
-
-<style>
-	.link {
-		text-decoration: none;
-		transition: all var(--animation-fade);
-	}
-
-	.default {
-		color: var(--link);
-		font-weight: var(--font-weight-6);
-	}
-
-	.default:hover {
-		color: var(--accent);
-	}
-
-	.subtle {
-		color: var(--text-2);
-	}
-
-	.subtle:hover {
-		color: var(--text-1);
-	}
-
-	.nav {
-		color: var(--text-1);
-		font-weight: var(--font-weight-6);
-	}
-
-	.nav:hover {
-		color: var(--accent);
-	}
-
-	.has-arrow {
-		display: inline-flex;
-		align-items: center;
-		gap: var(--size-1);
-	}
-
-	.underlined {
-		text-decoration: underline;
-	}
-
-	.underlined:hover {
-		text-decoration: none;
-	}
-
-	.arrow {
-		transition: transform var(--animation-fade);
-	}
-
-	.link:hover .arrow {
-		transform: translateX(var(--size-1));
-	}
-</style>

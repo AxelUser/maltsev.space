@@ -65,20 +65,16 @@ async function generateOGImage(title, preview, date, author, heroImageBase64, ou
 	const browser = await chromium.launch();
 	const page = await browser.newPage();
 
-	// Set the viewport to exactly match our OG image dimensions
 	await page.setViewportSize({ width: 1536, height: 1024 });
 
-	// Load the HTML template
 	const templatePath = join(__dirname, 'og-template.html');
 	const templateContent = readFileSync(templatePath, 'utf-8');
 
-	// Load the page with the template
 	await page.setContent(templateContent, { waitUntil: 'domcontentloaded' });
 
-	// Wait for fonts to load
+	// networkidle: web fonts must finish loading before the screenshot
 	await page.waitForLoadState('networkidle');
 
-	// Inject the content
 	await page.evaluate(
 		(data) => {
 			window.setContent(data.title, data.preview, data.date, data.author, data.heroImageBase64);
@@ -86,7 +82,6 @@ async function generateOGImage(title, preview, date, author, heroImageBase64, ou
 		{ title, preview, date, author, heroImageBase64 }
 	);
 
-	// Wait for the image to load if it exists
 	if (heroImageBase64) {
 		await page
 			.waitForFunction(
@@ -101,14 +96,12 @@ async function generateOGImage(title, preview, date, author, heroImageBase64, ou
 			});
 	}
 
-	// Take screenshot
 	const screenshot = await page.screenshot({
 		type: 'jpeg',
 		quality: 90,
 		clip: { x: 0, y: 0, width: 1536, height: 1024 }
 	});
 
-	// Save the image
 	writeFileSync(outputPath, screenshot);
 
 	await browser.close();
@@ -121,13 +114,11 @@ async function generateAllOGImages() {
 		console.log('🔄 Force mode enabled - will regenerate all images');
 	}
 
-	// Ensure output directory exists
 	const outputDir = join(__dirname, '..', 'static', 'images', 'og');
 	if (!existsSync(outputDir)) {
 		mkdirSync(outputDir, { recursive: true });
 	}
 
-	// Find all blog post markdown files
 	const postFiles = await glob('src/posts/*/index.md', {
 		cwd: join(__dirname, '..')
 	});
@@ -153,10 +144,9 @@ async function generateAllOGImages() {
 				continue;
 			}
 
-			// Extract slug from path
 			const normalizedPath = postFile.replace(/\\/g, '/');
 			const pathParts = normalizedPath.split('/');
-			const slug = pathParts[pathParts.length - 2]; // Get the directory name before index.md
+			const slug = pathParts[pathParts.length - 2]; // src/posts/<slug>/index.md
 
 			if (!slug) {
 				console.warn(`⚠️  Could not extract slug from path: ${postFile}`);
@@ -165,7 +155,6 @@ async function generateAllOGImages() {
 
 			const outputPath = join(outputDir, `${slug}.jpg`);
 
-			// Check if OG image already exists (unless force mode is enabled)
 			if (!forceRegenerate && existsSync(outputPath)) {
 				console.log(`⏭️  Skipping ${slug}: OG image already exists`);
 				skippedCount++;
@@ -196,5 +185,4 @@ async function generateAllOGImages() {
 	console.log(`📊 Generated: ${generatedCount} images, Skipped: ${skippedCount} existing images`);
 }
 
-// Run the script
 generateAllOGImages().catch(console.error);

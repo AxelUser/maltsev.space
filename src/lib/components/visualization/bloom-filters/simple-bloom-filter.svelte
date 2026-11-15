@@ -167,35 +167,33 @@
 	);
 </script>
 
-<div class="bloom-filter-container">
-	<div class="layout">
-		<!-- Bloom Filter -->
-		<div class="main-content">
-			<!-- Hash Values Display -->
-			<div class="hash-display">
+<div class="mx-auto rounded-md border border-surface-3 bg-surface-2 p-5 font-sans">
+	<div class="grid grid-cols-1 items-start gap-5 md:grid-cols-[1fr_250px] md:gap-12">
+		<div class="min-w-0">
+			<div class="mb-5 grid grid-cols-[repeat(auto-fit,minmax(50px,1fr))] gap-5">
 				<DisplayCard label="Hash 1:" value={hash1Value} variant="centered" showEmpty={false} />
 				<DisplayCard label="Hash 2:" value={hash2Value} variant="centered" showEmpty={false} />
 			</div>
 
-			<!-- Binary Representation -->
-			<div class="binary-display">
-				<label>Mapped Bits:</label>
+			<div class="mb-5 rounded-md border border-surface-3 bg-surface-1 p-5 text-center">
+				<div class="mb-5 text-base font-semibold text-fg-2">Mapped Bits:</div>
 				{#if binaryValue !== ''}
-					<div class="binary-grid">
-						{#each binaryGroups as group, groupIndex}
+					<div
+						class="mx-auto grid max-w-[200px] grid-cols-1 justify-center gap-5 md:max-w-[600px] md:grid-cols-[repeat(auto-fit,minmax(120px,1fr))]"
+					>
+						{#each binaryGroups as group, groupIndex (groupIndex)}
 							<BitSegment bits={group} startIndex={groupIndex * 4} type="binary" />
 						{/each}
 					</div>
 				{:else}
-					<div class="binary-placeholder">
-						<span class="placeholder">— Nothing yet —</span>
+					<div class="p-5">
+						<span class="font-mono text-fg-2 opacity-50">— Nothing yet —</span>
 					</div>
 				{/if}
 			</div>
 
-			<!-- User Input Section -->
 			{#if userInputEnabled}
-				<div class="input-section">
+				<div class="mb-5 flex flex-col gap-2">
 					<LabeledInput
 						bind:value={inputValue}
 						disabled={isAnimating}
@@ -203,7 +201,7 @@
 						onkeydown={(e) => e.key === 'Enter' && handleInsert()}
 					/>
 
-					<div class="button-group">
+					<div class="flex flex-wrap justify-center gap-2">
 						<Button
 							intent="primary"
 							onclick={handleInsert}
@@ -223,11 +221,12 @@
 				</div>
 			{/if}
 
-			<!-- Result Display -->
 			{#if result !== null && lastOperation}
-				<div class="result-display">
-					<span class="operation">{lastOperation === 'insert' ? 'Inserted' : 'Check'}:</span>
-					<span class="result" class:positive={result} class:negative={!result}>
+				<div class="mb-5 rounded-md border border-surface-3 bg-surface-1 p-5 text-center">
+					<span class="mr-2 font-semibold text-fg-2"
+						>{lastOperation === 'insert' ? 'Inserted' : 'Check'}:</span
+					>
+					<span class={result ? 'text-accent' : 'text-fg-2'}>
 						{lastOperation === 'insert'
 							? 'Element added'
 							: result
@@ -237,11 +236,12 @@
 				</div>
 			{/if}
 
-			<!-- Bit Array Visualization -->
-			<div class="binary-display">
-				<label>Bit Array:</label>
-				<div class="binary-grid">
-					{#each bitGroups as group, groupIndex}
+			<div class="mb-5 rounded-md border border-surface-3 bg-surface-1 p-5 text-center">
+				<div class="mb-5 text-base font-semibold text-fg-2">Bit Array:</div>
+				<div
+					class="mx-auto grid max-w-[200px] grid-cols-1 justify-center gap-5 md:max-w-[600px] md:grid-cols-[repeat(auto-fit,minmax(120px,1fr))]"
+				>
+					{#each bitGroups as group, groupIndex (groupIndex)}
 						<BitSegment
 							bits={group}
 							startIndex={groupIndex * 4}
@@ -253,8 +253,7 @@
 				</div>
 			</div>
 		</div>
-		<!-- Parameters -->
-		<div class="parameters-column">
+		<div class="max-md:-order-1 md:sticky md:top-5">
 			<ParameterGroup
 				title="Parameters"
 				parameters={[
@@ -266,129 +265,3 @@
 		</div>
 	</div>
 </div>
-
-<style>
-	@import 'open-props/media';
-
-	.bloom-filter-container {
-		margin: 0 auto;
-		padding: var(--gap);
-		font-family: var(--font-system-ui);
-		background: var(--surface-2);
-		border-radius: var(--radius-2);
-		border: 1px solid var(--surface-3);
-	}
-
-	.layout {
-		display: grid;
-		grid-template-columns: 1fr 250px;
-		gap: var(--gap-large);
-		align-items: start;
-	}
-
-	.parameters-column {
-		position: sticky;
-		top: var(--gap);
-	}
-
-	.main-content {
-		min-width: 0;
-	}
-
-	.hash-display {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
-		gap: var(--gap);
-		margin-bottom: var(--gap);
-	}
-
-	.binary-display {
-		text-align: center;
-		margin-bottom: var(--gap);
-		padding: var(--gap);
-		background: var(--surface-1);
-		border-radius: var(--radius-2);
-		border: 1px solid var(--surface-3);
-	}
-
-	.binary-display label {
-		display: block;
-		font-size: var(--font-size-1);
-		color: var(--text-2);
-		font-weight: var(--font-weight-6);
-		margin-bottom: var(--gap);
-	}
-
-	.binary-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-		gap: var(--gap);
-		justify-content: center;
-		max-width: 600px;
-		margin: 0 auto;
-	}
-
-	.binary-placeholder {
-		padding: var(--gap);
-	}
-
-	.placeholder {
-		font-family: var(--font-monospace-code);
-		color: var(--text-2);
-		opacity: 0.5;
-	}
-
-	.input-section {
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap-small);
-		margin-bottom: var(--gap);
-	}
-
-	.button-group {
-		display: flex;
-		gap: var(--gap-small);
-		justify-content: center;
-		flex-wrap: wrap;
-	}
-
-	.result-display {
-		text-align: center;
-		margin-bottom: var(--gap);
-		padding: var(--gap);
-		border-radius: var(--radius-2);
-		background: var(--surface-1);
-		border: 1px solid var(--surface-3);
-	}
-
-	.operation {
-		font-weight: var(--font-weight-6);
-		color: var(--text-2);
-		margin-right: var(--gap-small);
-	}
-
-	.result.positive {
-		color: var(--accent);
-	}
-
-	.result.negative {
-		color: var(--text-2);
-	}
-
-	@media (--md-n-below) {
-		.layout {
-			grid-template-columns: 1fr;
-			gap: var(--gap);
-		}
-
-		.parameters-column {
-			position: static;
-			order: -1;
-		}
-
-		.binary-grid {
-			grid-template-columns: 1fr;
-			max-width: 200px;
-		}
-	}
-</style>

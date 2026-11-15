@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Button, Link } from '$lib/components/ui';
+	import { Button, Card, Link } from '$lib/components/ui';
 	import { HeroPlanet, TagCloud, SEO, PostsGrid } from '$lib/components';
 	import { bio } from '$lib/bio';
 	import { OneColumnLayout } from '$lib/components/layouts';
@@ -24,31 +24,38 @@
 />
 
 <OneColumnLayout>
-	<div class="hero" class:visible={isVisible}>
-		<h1>Howdy, I'm {bio.firstName}</h1>
-		<p class="slogan">Space is dangerous — use tabs</p>
+	<div
+		class={[
+			'flex min-h-[90vh] flex-col items-center justify-center gap-12 text-center transition-[opacity,transform] duration-1000 ease-[ease]',
+			isVisible ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'
+		]}
+	>
+		<h1 class="space-hero">Howdy, I'm {bio.firstName}</h1>
+		<p class="space-tagline">Space is dangerous — use tabs</p>
 
 		<HeroPlanet />
 
-		<div class="cta-buttons">
+		<div class="mt-5 flex gap-5 max-sm:w-full max-sm:max-w-[200px] max-sm:flex-col">
 			<Button href="/blog">Read Blog</Button>
 			<Button href="/about" intent="secondary">About Me</Button>
 		</div>
 	</div>
 
-	<div class="info">
+	<div class="flex flex-col gap-12">
 		<section>
 			<h2 class="space-heading">Latest Articles</h2>
 
 			<PostsGrid posts={data.posts} />
 
-			<div class="view-all">
+			<div class="mt-12 text-center">
 				<Link href="/blog" hasArrow={true}>View All Posts</Link>
 			</div>
 		</section>
 
-		<section class="about-grid">
-			<div class="about-text">
+		<section
+			class="grid grid-cols-1 items-start gap-12 md:grid-cols-2 lg:grid-cols-[3fr_2fr] lg:gap-24"
+		>
+			<div class="flex flex-col gap-5">
 				<h2 class="space-heading">About Me</h2>
 				<p>
 					Software Developer at JetBrains with focus on distributed systems and highload
@@ -56,142 +63,10 @@
 				</p>
 				<Link href="/about" hasArrow={true}>Learn more about me</Link>
 			</div>
-			<div class="skills-container">
-				<h3>Professional Interests:</h3>
+			<Card>
+				<h3 class="mt-0 mb-5 text-lg text-fg-2">Professional Interests:</h3>
 				<TagCloud tags={bio.interests} />
-			</div>
+			</Card>
 		</section>
 	</div>
 </OneColumnLayout>
-
-<style lang="postcss">
-	@import 'open-props/media';
-
-	.hero {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		text-align: center;
-		min-height: 90vh;
-		opacity: 0;
-		transform: translateY(20px);
-		transition:
-			opacity 1s ease,
-			transform 1s ease;
-		gap: var(--gap-large);
-
-		h1 {
-			margin: 0;
-			background: linear-gradient(90deg, var(--brand), var(--accent));
-			-webkit-background-clip: text;
-			background-clip: text;
-			color: transparent;
-			text-shadow: 0 0 20px rgba(76, 170, 255, 0.3);
-		}
-
-		p {
-			margin: 0;
-			max-width: 60ch;
-		}
-	}
-
-	.hero.visible {
-		opacity: 1;
-		transform: translateY(0);
-	}
-
-	.cta-buttons {
-		display: flex;
-		gap: var(--gap);
-		margin-top: var(--gap);
-	}
-
-	.info {
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap-large);
-	}
-
-	.view-all {
-		margin-top: var(--gap-large);
-		text-align: center;
-	}
-
-	.about-grid {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: var(--gap-large);
-		align-items: start;
-	}
-
-	.about-text {
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap);
-	}
-
-	.skills-container {
-		background-color: var(--surface-2);
-		padding: var(--gap);
-		border-radius: var(--radius-base);
-		box-shadow: var(--shadow-base);
-	}
-
-	.skills-container h3 {
-		margin-top: 0;
-		margin-bottom: var(--gap);
-		font-size: var(--font-size-2);
-		color: var(--text-2);
-	}
-
-	@media (--lg-n-above) {
-		.about-grid {
-			grid-template-columns: 3fr 2fr;
-			gap: calc(var(--gap-large) * 2);
-		}
-	}
-
-	@media (--md-n-below) {
-		.about-grid {
-			grid-template-columns: 1fr;
-		}
-	}
-
-	@media (--sm-n-below) {
-		.cta-buttons {
-			flex-direction: column;
-			width: 100%;
-			max-width: 200px;
-		}
-
-		.slogan {
-			font-size: var(--font-size-3);
-			padding: 0.4em;
-		}
-	}
-
-	@media (--xs-n-below) {
-		.slogan {
-			font-size: var(--font-size-2);
-			border-width: 1px;
-			padding: 0.3em;
-		}
-
-		.hero h1 {
-			font-size: var(--font-size-5);
-		}
-	}
-
-	.slogan {
-		font-size: var(--font-size-4);
-		font-weight: 600;
-		color: var(--accent);
-		text-shadow: 0 0 15px rgba(76, 170, 255, 0.4);
-		letter-spacing: 0.02em;
-		padding: 0.5em;
-		border: 2px solid var(--accent);
-		border-radius: var(--radius-base);
-		background: color-mix(in srgb, var(--accent) 10%, transparent);
-	}
-</style>
