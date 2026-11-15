@@ -14,7 +14,7 @@
 
 <OneColumnLayout>
 	<div class="pb-12">
-		<PageHeader title="About Me" subtitle="Senior Software Engineer" />
+		<PageHeader title="About Me" />
 
 		<div class="flex flex-col gap-12">
 			<section

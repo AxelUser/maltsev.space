@@ -14,10 +14,7 @@
 </svelte:head>
 
 <div class="flex flex-col pb-12">
-	<PageHeader
-		title="My AI Art Experiments"
-		subtitle="Just my experiments with AI art and creativity"
-	/>
+	<PageHeader title="My AI Art Experiments" />
 
 	<section class="mb-12">
 		<div class="grid grid-cols-1 gap-5 lg:gap-12">
