@@ -31,8 +31,8 @@
 				</div>
 
 				<div class="flex-1">
-					<h2 class="space-heading mt-0">Hello, I'm {bio.fullName}</h2>
-					<div class="flex flex-col gap-2">
+					<h2 class="space-heading mt-0 max-lg:mx-auto">Hello, I'm {bio.fullName}</h2>
+					<div class="flex flex-col gap-2 max-lg:items-center">
 						<p>
 							I've been programming for fun and profit since 2014, focusing on distributed systems
 							and highload applications. My main stack is <b>C#</b>, <b>Kotlin</b>, and

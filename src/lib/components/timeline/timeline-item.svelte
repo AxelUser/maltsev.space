@@ -26,7 +26,7 @@
 
 <div class="relative mb-12">
 	<div
-		class="absolute top-[5px] -left-5 size-3 rounded-full border-3 border-surface-1 bg-accent sm:-left-6 sm:size-4 md:-left-[37px]"
+		class="absolute top-1.5 -left-[27px] size-4 rounded-full border-3 border-surface-1 bg-accent md:-left-[37px]"
 	></div>
 	<div>
 		<div
