@@ -18,18 +18,18 @@
 	}: Props = $props();
 </script>
 
-<div class="flex flex-col items-center gap-2 rounded-md border border-surface-3 bg-surface-2 p-2">
+<div class="flex flex-col items-center gap-2 border border-line bg-surface p-2">
 	<div class="flex gap-1">
 		{#each bits as bit, bitIndex (bitIndex)}
 			{@const absoluteIndex = startIndex + bitIndex}
 			<div
 				class={cn(
-					'flex size-5 items-center justify-center rounded-xs border border-surface-3 bg-surface-1 font-mono text-xs font-bold text-fg-2 transition-all duration-300 ease-[ease] min-[601px]:size-6 min-[601px]:text-lg',
-					type === 'binary' && bit === '1' && 'border-accent bg-accent text-surface-1',
-					type === 'bitarray' && bit === true && 'bg-surface-3 text-fg-1',
+					'flex size-5 items-center justify-center border border-line bg-canvas font-mono text-xs font-bold text-ink-2 transition-all duration-300 ease-[ease] min-[601px]:size-6 min-[601px]:text-lg',
+					type === 'binary' && bit === '1' && 'border-livery-4 bg-livery-4 text-on-livery',
+					type === 'bitarray' && bit === true && 'bg-line text-ink',
 					highlightedBits.has(absoluteIndex) && 'z-1 scale-110 border-2',
-					bitColors.get(absoluteIndex) === 'blue' && 'border-accent bg-accent text-surface-1',
-					bitColors.get(absoluteIndex) === 'red' && 'border-fg-2 bg-surface-4 text-fg-1'
+					bitColors.get(absoluteIndex) === 'blue' && 'border-livery-4 bg-livery-4 text-on-livery',
+					bitColors.get(absoluteIndex) === 'red' && 'border-ink-2 bg-line-2 text-ink'
 				)}
 			>
 				{type === 'binary' ? bit : bit ? '1' : '0'}
@@ -39,7 +39,7 @@
 	<div class="flex justify-center gap-1">
 		{#each bits.keys() as bitIndex (bitIndex)}
 			{@const absoluteIndex = startIndex + bitIndex}
-			<span class="w-5 text-center font-mono text-xs text-fg-2 min-[601px]:w-6"
+			<span class="w-5 text-center font-mono text-xs text-ink-2 min-[601px]:w-6"
 				>{absoluteIndex}</span
 			>
 		{/each}

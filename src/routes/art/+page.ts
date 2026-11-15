@@ -1,9 +1,5 @@
-import { getAllCollections } from '$lib/art.js';
+import { getAllCollections } from '$lib/content';
 
-export async function load() {
-	const collections = getAllCollections();
-
-	return {
-		collections
-	};
+export function load() {
+	return { collections: getAllCollections() };
 }

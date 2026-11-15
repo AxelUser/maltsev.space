@@ -167,7 +167,7 @@
 	);
 </script>
 
-<div class="mx-auto rounded-md border border-surface-3 bg-surface-2 p-5 font-sans">
+<div class="mx-auto border border-line bg-surface p-5 font-sans">
 	<div class="grid grid-cols-1 items-start gap-5 md:grid-cols-[1fr_250px] md:gap-12">
 		<div class="min-w-0">
 			<div class="mb-5 grid grid-cols-[repeat(auto-fit,minmax(50px,1fr))] gap-5">
@@ -175,8 +175,8 @@
 				<DisplayCard label="Hash 2:" value={hash2Value} variant="centered" showEmpty={false} />
 			</div>
 
-			<div class="mb-5 rounded-md border border-surface-3 bg-surface-1 p-5 text-center">
-				<div class="mb-5 text-base font-semibold text-fg-2">Mapped Bits:</div>
+			<div class="mb-5 border border-line bg-canvas p-5 text-center">
+				<div class="mb-5 text-base font-semibold text-ink-2">Mapped Bits:</div>
 				{#if binaryValue !== ''}
 					<div
 						class="mx-auto grid max-w-[200px] grid-cols-1 justify-center gap-5 md:max-w-[600px] md:grid-cols-[repeat(auto-fit,minmax(120px,1fr))]"
@@ -187,7 +187,7 @@
 					</div>
 				{:else}
 					<div class="p-5">
-						<span class="font-mono text-fg-2 opacity-50">— Nothing yet —</span>
+						<span class="font-mono text-ink-2 opacity-50">— Nothing yet —</span>
 					</div>
 				{/if}
 			</div>
@@ -202,31 +202,23 @@
 					/>
 
 					<div class="flex flex-wrap justify-center gap-2">
-						<Button
-							intent="primary"
-							onclick={handleInsert}
-							disabled={isAnimating || !inputValue.trim()}
-						>
+						<Button onclick={handleInsert} disabled={isAnimating || !inputValue.trim()}>
 							Insert
 						</Button>
-						<Button
-							intent="primary"
-							onclick={handleCheck}
-							disabled={isAnimating || !inputValue.trim()}
-						>
+						<Button onclick={handleCheck} disabled={isAnimating || !inputValue.trim()}>
 							Check
 						</Button>
-						<Button intent="secondary" onclick={handleReset} disabled={isAnimating}>Reset</Button>
+						<Button variant="ghost" onclick={handleReset} disabled={isAnimating}>Reset</Button>
 					</div>
 				</div>
 			{/if}
 
 			{#if result !== null && lastOperation}
-				<div class="mb-5 rounded-md border border-surface-3 bg-surface-1 p-5 text-center">
-					<span class="mr-2 font-semibold text-fg-2"
+				<div class="mb-5 border border-line bg-canvas p-5 text-center">
+					<span class="mr-2 font-semibold text-ink-2"
 						>{lastOperation === 'insert' ? 'Inserted' : 'Check'}:</span
 					>
-					<span class={result ? 'text-accent' : 'text-fg-2'}>
+					<span class={result ? 'text-livery-4' : 'text-ink-2'}>
 						{lastOperation === 'insert'
 							? 'Element added'
 							: result
@@ -236,8 +228,8 @@
 				</div>
 			{/if}
 
-			<div class="mb-5 rounded-md border border-surface-3 bg-surface-1 p-5 text-center">
-				<div class="mb-5 text-base font-semibold text-fg-2">Bit Array:</div>
+			<div class="mb-5 border border-line bg-canvas p-5 text-center">
+				<div class="mb-5 text-base font-semibold text-ink-2">Bit Array:</div>
 				<div
 					class="mx-auto grid max-w-[200px] grid-cols-1 justify-center gap-5 md:max-w-[600px] md:grid-cols-[repeat(auto-fit,minmax(120px,1fr))]"
 				>

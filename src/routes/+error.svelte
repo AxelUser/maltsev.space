@@ -1,38 +1,40 @@
 <script lang="ts">
-	import { Button, Link } from '$lib/components/ui';
-	import { PostsGrid } from '$lib/components';
-	import { OneColumnLayout } from '$lib/components/layouts';
+	import { page } from '$app/state';
+	import { Container } from '$lib/components/layout';
+	import { Button, SectionHeading } from '$lib/components/ui';
+	import { PostRows } from '$lib/components/posts';
 	import { getPosts } from '$lib/posts';
 
-	import { page } from '$app/state';
-
-	const recommendedPosts = getPosts(2);
+	const recommendedPosts = getPosts(3);
 </script>
 
 <svelte:head>
 	<title>Oops! Lost in Space</title>
+	<meta name="robots" content="noindex" />
 </svelte:head>
 
-<OneColumnLayout>
-	<div class="flex min-h-[40vh] flex-col items-center justify-center gap-12 text-center">
-		<h1 class="space-hero">Error {page.status}</h1>
-		<p class="space-tagline">Oops! We've drifted into unknown space coordinates!</p>
-
-		<div class="mt-5 flex gap-5 max-sm:w-full max-sm:max-w-[200px] max-sm:flex-col">
-			<Button href="/">Go Home</Button>
-			<Button href="/blog" intent="secondary">Read Blog</Button>
+<Container>
+	<section class="pt-14 pb-16 sm:pt-[72px]">
+		<p class="eyebrow mt-0 mb-7">Error {page.status}</p>
+		<h1
+			class="m-0 text-[clamp(42px,6.4vw,88px)]/[0.98] font-light tracking-[-0.02em] font-stretch-[115%]"
+		>
+			<span class="block text-ink-3">Signal lost.</span>
+			<span class="block font-semibold"
+				>Error {page.status}<span class="text-livery-1">.</span></span
+			>
+		</h1>
+		<p class="mt-9 mb-0 max-w-[31em] text-[18px] text-ink-2">
+			Oops! We've drifted into unknown space coordinates!
+		</p>
+		<div class="mt-9 flex flex-wrap gap-3">
+			<Button href="/">Go home</Button>
+			<Button href="/blog" variant="ghost">Read the notes</Button>
 		</div>
-	</div>
+	</section>
 
-	<div class="mt-12">
-		<section>
-			<h2 class="space-heading">While You're Here...</h2>
-
-			<PostsGrid posts={recommendedPosts} />
-
-			<div class="mt-12 text-center">
-				<Link href="/blog" hasArrow={true}>View All Posts</Link>
-			</div>
-		</section>
-	</div>
-</OneColumnLayout>
+	<section class="pb-24">
+		<SectionHeading title="While you're here" aside="All notes →" href="/blog" />
+		<PostRows posts={recommendedPosts} />
+	</section>
+</Container>

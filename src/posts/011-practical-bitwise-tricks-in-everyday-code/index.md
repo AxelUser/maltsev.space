@@ -8,6 +8,8 @@ keywords:
 title: 'Practical Bitwise Tricks in Everyday Code'
 preview: "An opinionated and short collection of bitwise tricks that make sense at an average 1x engineer's code."
 draft: false
+aiCover: true
+coverCaption: "0x2A: the answer, in hex."
 ---
 
 I’m not exactly a big fan of writing bitwise operations everywhere. Don’t get me wrong, I still enjoy this kind of “brain gymnastics”, but sometimes it gets out of hand.

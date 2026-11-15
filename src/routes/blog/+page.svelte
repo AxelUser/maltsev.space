@@ -1,30 +1,24 @@
 <script lang="ts">
-	import { Button, Badge, Card } from '$lib/components/ui';
-	import { PageHeader, PostsGrid, SEO } from '$lib/components';
-	import { bio } from '$lib/bio';
-	import { OneColumnLayout } from '$lib/components/layouts';
+	import { SEO } from '$lib/components';
+	import { Container } from '$lib/components/layout';
+	import { Button, Chip, PageHeader } from '$lib/components/ui';
+	import { PostsByYear, SeriesCard } from '$lib/components/posts';
+	import { bio, tagStyle } from '$lib/content';
 
 	const { data } = $props();
 
-	let activeTag = $state<string | undefined>(undefined);
+	let activeTag = $state<string | null>(null);
 
-	function toggleTag(tag: string) {
-		activeTag = activeTag === tag ? undefined : tag;
-	}
-
-	function getAllTags() {
-		const tagsSet = new Set<string>();
-		data.posts.forEach((post) => {
-			post.tags.forEach((tag) => tagsSet.add(tag));
-		});
-		return Array.from(tagsSet);
-	}
+	const tags = [...new Set(data.posts.flatMap((post) => post.tags))];
 
 	const filteredPosts = $derived(
 		activeTag ? data.posts.filter((post) => post.tags.includes(activeTag!)) : data.posts
 	);
 
-	const allTags = getAllTags();
+	// Every series, parts in reading order (posts arrive newest first)
+	const series = [...new Set(data.posts.map((post) => post.series).filter(Boolean))].map(
+		(name) => ({ name, parts: data.posts.filter((post) => post.series === name).reverse() })
+	);
 </script>
 
 <SEO
@@ -34,41 +28,39 @@
 	keywords={['blog', 'software engineering', 'programming', 'distributed systems', 'C#', 'Go']}
 />
 
-<OneColumnLayout>
-	<div class="flex flex-col pb-12">
-		<PageHeader title="Blog" subtitle="Thoughts, ideas, and explorations" />
+<Container class="pb-24">
+	<PageHeader
+		kicker="Blog"
+		title="Notes"
+		lead="Long-form notes on things I use at work or just find interesting. Opinions are my own."
+	/>
 
-		<section class="mb-12 flex flex-wrap items-center gap-5 max-sm:flex-col max-sm:items-start">
-			<div class="text-lg text-fg-2">Filter by topic:</div>
-			<div class="flex flex-wrap gap-2">
-				{#each allTags as tag (tag)}
-					<Badge
-						variant={activeTag === tag ? 'active' : 'default'}
-						interactive={true}
-						onclick={() => toggleTag(tag)}
-					>
-						{tag}
-					</Badge>
-				{/each}
-				{#if activeTag}
-					<Button size="small" intent="secondary" onclick={() => (activeTag = undefined)}>
-						Clear filter
-					</Button>
-				{/if}
-			</div>
-		</section>
+	{#each series as { name, parts } (name)}
+		<div class="mt-2 mb-9">
+			<SeriesCard {name} posts={parts} />
+		</div>
+	{/each}
 
-		<section>
-			{#if filteredPosts.length === 0}
-				<Card class="p-12 text-center">
-					<p class="mx-auto mb-5">No posts found matching the selected filter.</p>
-					<Button size="small" intent="secondary" onclick={() => (activeTag = undefined)}>
-						Clear filter
-					</Button>
-				</Card>
-			{:else}
-				<PostsGrid posts={filteredPosts} {activeTag} onTagClick={toggleTag} />
-			{/if}
-		</section>
+	<div class="flex flex-wrap gap-1.5" role="group" aria-label="Filter by topic">
+		<Chip pressed={activeTag === null} onclick={() => (activeTag = null)}>All</Chip>
+		{#each tags as tag (tag)}
+			{@const style = tagStyle(tag)}
+			<Chip
+				pressed={activeTag === tag}
+				color={style.color}
+				onclick={() => (activeTag = activeTag === tag ? null : tag)}
+			>
+				{style.label}
+			</Chip>
+		{/each}
 	</div>
-</OneColumnLayout>
+
+	{#if filteredPosts.length > 0}
+		<PostsByYear posts={filteredPosts} />
+	{:else}
+		<div class="hud mt-11 p-10 text-center">
+			<p class="mt-0 mb-5 text-ink-2">No notes on this topic yet.</p>
+			<Button variant="ghost" onclick={() => (activeTag = null)}>Show all notes</Button>
+		</div>
+	{/if}
+</Container>

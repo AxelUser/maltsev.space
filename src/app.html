@@ -14,6 +14,15 @@
 		<link rel="apple-touch-icon" sizes="180x180" href="%sveltekit.assets%/apple-touch-icon.png" />
 		<meta name="apple-mobile-web-app-title" content="Maltsev.Space" />
 		<link rel="manifest" href="%sveltekit.assets%/site.webmanifest" />
+		<meta name="theme-color" media="(prefers-color-scheme: light)" content="#eef0f2" />
+		<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#070a0f" />
+		<!-- Apply the saved Day / Night choice before first paint; Auto leaves it to the OS -->
+		<script>
+			try {
+				var t = localStorage.getItem('theme');
+				if (t === 'light' || t === 'dark') document.documentElement.setAttribute('color-scheme', t);
+			} catch (e) {}
+		</script>
 		%sveltekit.head%
 	</head>
 

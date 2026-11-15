@@ -11,6 +11,8 @@ preview: 'Learn about the different options available for testing private logic 
 draft: false
 legacy: true
 hero: /images/blog/003-internals-visible-for-testing/hero.jpg
+aiCover: true
+coverCaption: "A test harness plugged straight into the hull's internals."
 ---
 
 ## About Tests for Private Code

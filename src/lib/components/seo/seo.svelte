@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { config } from '$lib/config';
-	import { bio } from '$lib/bio';
+	import { bio } from '$lib/content';
 
 	interface Props {
 		title?: string;
@@ -18,7 +18,7 @@
 
 	const {
 		title = config.websiteTitle,
-		description = `${bio.fullName} - Senior Software Engineer focused on distributed systems and highload applications. Blog about C#, Go, system design, and performance optimization.`,
+		description = `${bio.fullName} - ${bio.role} at ${bio.company}, focused on distributed systems and highload applications. Blog about C#, Go, system design, and performance optimization.`,
 		image = '/images/ava.jpg',
 		imageAlt = `${bio.fullName} - Software Engineer`,
 		url,
@@ -51,9 +51,8 @@
 		'@context': 'https://schema.org',
 		'@type': 'Person',
 		name: bio.fullName,
-		jobTitle: 'Senior Software Engineer',
-		description:
-			'Senior Software Engineer focused on distributed systems and highload applications',
+		jobTitle: bio.role,
+		description: `${bio.role} at ${bio.company}, focused on distributed systems and highload applications`,
 		url: config.websiteUrl,
 		image: `${config.websiteUrl}images/ava.jpg`,
 		sameAs: [bio.social.github, bio.social.linkedIn].filter(Boolean)

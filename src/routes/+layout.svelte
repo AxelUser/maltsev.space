@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Header, Footer, TwinklingStars } from '$lib/components';
+	import { SiteHeader, SiteFooter, Starfield } from '$lib/components/layout';
 	import { browser, dev } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { theme, applyTheme } from '$lib/stores/theme';
+	import '$lib/stores/theme';
 	import '../app.css';
 	import posthog from 'posthog-js';
 	import { PUBLIC_POSTHOG_API_KEY, PUBLIC_POSTHOG_HOST } from '$env/static/public';
@@ -10,11 +10,10 @@
 
 	const { children } = $props();
 
-	const isLocalhost = $state(browser && window.location.hostname === 'localhost');
+	const analyticsEnabled = browser && !dev && window.location.hostname !== 'localhost';
 
 	onMount(() => {
-		if (browser && !dev && !isLocalhost) {
-			applyTheme($theme);
+		if (analyticsEnabled) {
 			posthog.init(PUBLIC_POSTHOG_API_KEY, {
 				api_host: PUBLIC_POSTHOG_HOST,
 				person_profiles: 'always',
@@ -24,7 +23,7 @@
 		}
 	});
 
-	if (browser && !dev && !isLocalhost) {
+	if (analyticsEnabled) {
 		beforeNavigate(() => posthog.capture('$pageleave'));
 		afterNavigate(() => posthog.capture('$pageview'));
 	}
@@ -35,12 +34,11 @@
 	<link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
 </svelte:head>
 
-<div class="relative z-0 flex min-h-screen flex-col bg-surface-1">
-	<Header />
-	<TwinklingStars />
-	<main class="flex-1 py-12">
+<Starfield />
+<div class="relative flex min-h-svh flex-col">
+	<SiteHeader />
+	<main class="flex-1">
 		{@render children()}
 	</main>
-
-	<Footer />
+	<SiteFooter />
 </div>

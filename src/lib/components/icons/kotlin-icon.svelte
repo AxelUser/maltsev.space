@@ -16,7 +16,7 @@
 	xmlns:xlink="http://www.w3.org/1999/xlink"
 	><defs
 		><linearGradient
-			id="a"
+			id="kotlin-a"
 			x1="73.714"
 			y1="910.226"
 			x2="105.452"
@@ -28,7 +28,7 @@
 				stop-color="#8371d9"
 			/></linearGradient
 		><linearGradient
-			id="b"
+			id="kotlin-b"
 			x1="69.813"
 			y1="905.226"
 			x2="102.279"
@@ -40,11 +40,11 @@
 				stop-color="#f28e0e"
 			/></linearGradient
 		></defs
-	><title>file_type_kotlin</title><path
+	><path
 		d="M2,2V30H30v-.047l-6.95-7L16.1,15.946l6.95-7.012L29.938,2Z"
-		style="fill:url(#a)"
+		style="fill:url(#kotlin-a)"
 	/><path
 		d="M16.318,2,2,16.318V30h.124L16.132,15.992l-.031-.031L23.05,8.95,29.938,2Z"
-		style="fill:url(#b)"
+		style="fill:url(#kotlin-b)"
 	/></svg
 >
