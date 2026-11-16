@@ -12,7 +12,7 @@ title: 'SIMD Within a Register: How I Doubled Hash Table Lookup Performance'
 preview: 'It started with a simple thought: four bytes in a hash table bucket look just like an integer. Luckily, this one idea led to a deep dive into bit-twiddling and a 2x performance boost.'
 draft: false
 aiCover: true
-coverCaption: "Four bytes checked in one move."
+coverCaption: "No need to inspect each one separately if you have a powerful scanner."
 ---
 
 <script>
