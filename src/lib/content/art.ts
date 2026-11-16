@@ -23,7 +23,7 @@ export interface VisualCollection extends CollectionBase {
 
 export type ArtCollection = MusicCollection | VisualCollection;
 
-/** Each entry gets a section on /art and its own page at /art/<id>. */
+/** Each entry gets a section on /misc and its own page at /misc/<id>. */
 const collections: ArtCollection[] = [
 	{
 		id: 'music',
@@ -40,7 +40,7 @@ const collections: ArtCollection[] = [
 		kind: 'visual',
 		title: 'Busya',
 		description:
-			'Images capturing the adorable essence of my beloved Japanese Chin pup named Busya, crafted with affection using StableDiffusion technology.',
+			'Images capturing the adorable essence of my beloved Japanese Chin pup named Busya, crafted with affection using Stable Diffusion neural network when it was cool.',
 		images: [
 			'peter-the-great.png',
 			'mantle-01.png',

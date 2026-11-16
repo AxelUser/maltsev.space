@@ -14,7 +14,7 @@ export async function GET() {
 		{ path: '', lastmod: getLastModified('src/routes/+page.svelte') },
 		{ path: '/about', lastmod: getLastModified('src/routes/about/+page.svelte') },
 		{ path: '/blog', lastmod: getLastModified('src/routes/blog/+page.svelte') },
-		{ path: '/art', lastmod: getLastModified('src/routes/art/+page.svelte') }
+		{ path: '/misc', lastmod: getLastModified('src/routes/misc/+page.svelte') }
 	];
 
 	const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
@@ -41,7 +41,7 @@ export async function GET() {
 		.map(
 			(collection) => `
 	<url>
-		<loc>${baseUrl}/art/${collection.id}</loc>
+		<loc>${baseUrl}/misc/${collection.id}</loc>
 		<lastmod>${getLastModified('src/lib/content/art.ts')}</lastmod>
 	</url>`
 		)

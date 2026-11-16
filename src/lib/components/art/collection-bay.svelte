@@ -14,7 +14,7 @@
 	const { collection, position }: Props = $props();
 
 	const kind = $derived(collectionKinds[collection.kind]);
-	const href = $derived(`/art/${collection.id}`);
+	const href = $derived(`/misc/${collection.id}`);
 </script>
 
 <section

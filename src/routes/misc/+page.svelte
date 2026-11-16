@@ -8,17 +8,17 @@
 </script>
 
 <SEO
-	title="Art"
-	description="Things I make outside of code: music and AI-generated pictures. Each collection is a separate experiment."
-	url="/art"
-	keywords={['art', 'music', 'stable diffusion', 'ai art']}
+	title="Misc"
+	description="Outside of code. Just things I enjoy making."
+	url="/misc"
+	keywords={['misc', 'art', 'music', 'stable diffusion', 'ai art']}
 />
 
 <Container class="pb-[72px]">
 	<PageHeader
-		kicker="Art"
+		kicker="Misc"
 		title="Things I make"
-		lead="Outside of code. Each collection is a separate experiment with its own page."
+		lead="Outside of code. Just things I enjoy making."
 	/>
 
 	{#each data.collections as collection, i (collection.id)}

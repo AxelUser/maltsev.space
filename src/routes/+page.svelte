@@ -46,9 +46,9 @@
 	/>
 	{#if artCover}
 		<DestinationCard
-			href="/art"
+			href="/misc"
 			image={artCover}
-			kicker="Art"
+			kicker="Misc"
 			title="Things I make"
 			text="Pictures and music."
 		/>

@@ -7,7 +7,7 @@ const config = {
 const sections = [
 	{ href: '/blog', label: 'Blog', color: 'var(--color-livery-1)' },
 	{ href: '/about', label: 'About', color: 'var(--color-livery-2)' },
-	{ href: '/art', label: 'Art', color: 'var(--color-livery-4)' }
+	{ href: '/misc', label: 'Misc', color: 'var(--color-livery-4)' }
 ];
 
 export { config, sections };

@@ -13,7 +13,7 @@
 <SEO
 	title={collection.title}
 	description={collection.description}
-	url="/art/{collection.id}"
+	url="/misc/{collection.id}"
 	image={collection.kind === 'visual'
 		? `/images/art/${collection.id}/${collection.images[0]}`
 		: undefined}
@@ -23,7 +23,7 @@
 	<PageHeader
 		title={collection.title}
 		lead={collection.description}
-		back={{ href: '/art', label: 'Art' }}
+		back={{ href: '/misc', label: 'Misc' }}
 	/>
 
 	{#if collection.kind === 'music'}
