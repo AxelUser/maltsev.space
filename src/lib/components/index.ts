@@ -1,18 +1,10 @@
-export { default as Header } from './header.svelte';
-export { default as Footer } from './footer.svelte';
-export { default as PageHeader } from './page-header.svelte';
-export { default as TwinklingStars } from './twinkling-stars.svelte';
-export { default as ContentCard } from './content-card.svelte';
-export { default as HeroPlanet } from './hero-planet.svelte';
-export { default as ThemeSwitch } from './theme-switch.svelte';
-export { default as Lightbox } from './lightbox.svelte';
-export { default as SEO } from './seo/seo.svelte';
-export { default as PostsGrid } from './posts-grid.svelte';
-export { default as Scrollbox } from './scrollbox.svelte';
-export { default as SeriesBanner } from './series-banner.svelte';
-export { default as ArticleHero } from './article-hero.svelte';
-export { default as BackBar } from './back-bar.svelte';
-export { default as ProjectCard } from './project-card.svelte';
-export * from './timeline';
-export * from './tag-cloud';
+export * from './ui';
+export * from './layout';
+export * from './posts';
+export * from './home';
+export * from './about';
+export * from './art';
 export * from './icons';
+export { default as SEO } from './seo/seo.svelte';
+// Imported by markdown posts
+export { default as Scrollbox } from './scrollbox.svelte';

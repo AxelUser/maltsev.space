@@ -1,36 +1,30 @@
 <script lang="ts">
 	import '../../../svgbob.css';
-	import { Button, Card, Link } from '$lib/components/ui';
-	import { ArticleHero, BackBar, PostsGrid, SEO, SeriesBanner } from '$lib/components';
-	import { bio } from '$lib/bio';
+	import { SEO } from '$lib/components';
+	import { Container } from '$lib/components/layout';
+	import { Frame, Tag } from '$lib/components/ui';
+	import { PostPager, PostRows, SeriesParts } from '$lib/components/posts';
 	import mermaid from 'mermaid';
-	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
 	import { getPostHeroImage } from '$lib/utils';
-	import { OneColumnLayout } from '$lib/components/layouts';
+
 	const { data }: PageProps = $props();
 
-	onMount(() => {
-		mermaid.initialize({
-			theme: 'dark'
-		});
-	});
+	const isDark = () =>
+		document.documentElement.getAttribute('color-scheme') === 'dark' ||
+		(!document.documentElement.hasAttribute('color-scheme') &&
+			matchMedia('(prefers-color-scheme: dark)').matches);
 
 	$effect(() => {
-		if (data.content) {
-			mermaid.run({
-				querySelector: '.mermaid'
-			});
+		if (data.content && document.querySelector('.mermaid')) {
+			mermaid.initialize({ startOnLoad: false, theme: isDark() ? 'dark' : 'neutral' });
+			mermaid.run({ querySelector: '.mermaid' });
 		}
 	});
 
-	const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
-
 	const heroImage = $derived(getPostHeroImage(data.slug));
-
 	const publishedTime = $derived(data.date ? new Date(data.date).toISOString() : undefined);
-
-	const allKeywords = $derived([...(data.keywords || []), ...(data.tags || [])]);
+	const allKeywords = $derived([...(data.keywords || []), ...data.tags]);
 </script>
 
 <SEO
@@ -53,74 +47,67 @@
 	/>
 </svelte:head>
 
-<ArticleHero
-	title={data.title}
-	date={data.date}
-	isoDate={publishedTime}
-	preview={data.preview}
-	author={bio.fullName}
-	{heroImage}
-	placeholder={data.placeholderUrl}
-	views={data.views}
-	readingTimeMinutes={data.readingTimeMinutes}
-/>
+<Container as="article" class="pb-24">
+	<header class="mx-auto max-w-[760px] pt-14 pb-8 sm:pt-[72px]">
+		<p class="eyebrow m-0">
+			<a href="/blog" class="no-underline hover:text-ink">Notes</a> / {data.number}
+		</p>
+		<h1
+			class="mt-4 mb-0 text-[clamp(32px,4.8vw,52px)]/[1.08] font-semibold tracking-[-0.015em] font-stretch-[108%]"
+		>
+			{data.title}
+		</h1>
+		{#if data.preview}
+			<p class="mt-5 mb-0 max-w-[40em] text-[18px] text-ink-2">{data.preview}</p>
+		{/if}
+		<div class="eyebrow mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
+			<time datetime={publishedTime}>{data.date}</time>
+			{#if data.readingTimeMinutes}
+				<span>{data.readingTimeMinutes} min read</span>
+			{/if}
+			{#if data.views}
+				<span>{data.views.toLocaleString('en-US')} views</span>
+			{/if}
+			{#each data.tags as tag (tag)}
+				<Tag {tag} />
+			{/each}
+		</div>
+	</header>
 
-<OneColumnLayout>
-	<article class="mx-auto max-w-[70ch] rounded-2xl bg-surface-1/95 pb-12">
-		<BackBar href="/blog" label="Back to all posts" />
+	{#if heroImage}
+		<figure class="mx-auto mt-2 mb-14 max-w-[1040px]">
+			<Frame
+				src={heroImage}
+				alt=""
+				placeholder={data.placeholderUrl}
+				priority
+				ai={data.aiCover}
+				sizes="(min-width: 1104px) 1040px, 100vw"
+			/>
+			{#if data.coverCaption}
+				<figcaption class="eyebrow mt-1.5 text-right">
+					{data.coverCaption}
+				</figcaption>
+			{/if}
+		</figure>
+	{/if}
 
-		{#if data.series && data.series.length > 0}
-			<SeriesBanner posts={data.series} />
+	<div class="mx-auto max-w-article">
+		{#if data.seriesName}
+			<SeriesParts name={data.seriesName} posts={data.series} current={data.slug} />
 		{/if}
 
 		<div class="prose">
 			{@render data.content()}
 		</div>
 
-		<footer class="mt-12 flex flex-col gap-5 border-t border-brand/20 pt-5">
-			<div>
-				<Button href="/blog">← Back to all posts</Button>
-			</div>
+		{#if data.referencedPosts.length > 0}
+			<section class="mt-14" aria-labelledby="linked-notes">
+				<h2 id="linked-notes" class="eyebrow mb-4">Notes linked from this one</h2>
+				<PostRows posts={data.referencedPosts} />
+			</section>
+		{/if}
 
-			{#if data.series && data.series.length > 0}
-				<SeriesBanner posts={data.series} />
-			{/if}
-
-			<Card>
-				<div class="mb-5 text-center text-lg font-medium text-fg-1">
-					Enjoyed this post? Share it with the universe!
-				</div>
-				<div class="flex flex-wrap justify-center gap-5">
-					<Link
-						href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(data.title)}&url=${encodeURIComponent(pageUrl)}`}
-						external={true}
-						aria-label="Share on Twitter"
-					>
-						Twitter
-					</Link>
-					<Link
-						href={`https://www.linkedin.com/shareArticle?mini=true&title=${encodeURIComponent(data.title)}&url=${encodeURIComponent(pageUrl)}`}
-						external={true}
-						aria-label="Share on LinkedIn"
-					>
-						LinkedIn
-					</Link>
-					<Link
-						href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`}
-						external={true}
-						aria-label="Share on Facebook"
-					>
-						Facebook
-					</Link>
-				</div>
-			</Card>
-		</footer>
-	</article>
-
-	{#if data.referencedPost && data.referencedPost.length > 0}
-		<div class="mt-5 flex flex-col items-center gap-12">
-			<h2 class="max-md:text-2xl">Want to read more?</h2>
-			<PostsGrid posts={data.referencedPost} />
-		</div>
-	{/if}
-</OneColumnLayout>
+		<PostPager older={data.neighbours.older} newer={data.neighbours.newer} />
+	</div>
+</Container>

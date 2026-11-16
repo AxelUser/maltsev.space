@@ -17,6 +17,7 @@ function getPosts(
 
 			return {
 				slug,
+				number: slug.split('-')[0],
 				date: metadata.date ?? raise(`Date is missing in post ${slug}`),
 				title: metadata.title ?? raise(`Title is missing in post ${slug}`),
 				preview: metadata.preview ?? raise(`Preview is missing in post ${slug}`),
@@ -55,4 +56,12 @@ function getSeries(series: string): PostPreview[] {
 		});
 }
 
-export { getPosts, getSeries };
+/** The posts published right before and after `slug`, by date. */
+function getNeighbours(slug: string): { older?: PostPreview; newer?: PostPreview } {
+	const posts = getPosts();
+	const i = posts.findIndex((post) => post.slug === slug);
+	if (i < 0) return {};
+	return { newer: posts[i - 1], older: posts[i + 1] };
+}
+
+export { getPosts, getSeries, getNeighbours };

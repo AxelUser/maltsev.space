@@ -1,4 +1,4 @@
-import { bio } from '$lib/bio';
+import { bio } from '$lib/content';
 import { config } from '$lib/config';
 import { getPosts } from '$lib/posts';
 

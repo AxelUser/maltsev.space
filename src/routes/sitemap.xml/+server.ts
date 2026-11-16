@@ -1,6 +1,6 @@
 import { config } from '$lib/config';
 import { getPosts } from '$lib/posts';
-import { getAllCollections } from '$lib/art';
+import { getAllCollections } from '$lib/content';
 import { getLastModified } from '$lib/server/git';
 
 export const prerender = true;
@@ -42,7 +42,7 @@ export async function GET() {
 			(collection) => `
 	<url>
 		<loc>${baseUrl}/art/${collection.id}</loc>
-		<lastmod>${getLastModified('src/lib/art.ts')}</lastmod>
+		<lastmod>${getLastModified('src/lib/content/art.ts')}</lastmod>
 	</url>`
 		)
 		.join('')}

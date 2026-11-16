@@ -1,0 +1,6 @@
+{
+	"C#": { "label": "C# / .NET", "livery": 1 },
+	"Bitwise": { "label": "Bit tricks", "livery": 2 },
+	"MongoDB": { "label": "Databases", "livery": 3 },
+	"Algorithms": { "label": "Data structures", "livery": 4 }
+}

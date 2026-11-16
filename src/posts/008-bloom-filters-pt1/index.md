@@ -12,6 +12,8 @@ preview: 'How a tiny data structure cuts memory usage by 90% — while helping s
 series: 'Grokking Bloom Filters'
 draft: false
 hero: /images/blog/008-bloom-filters-pt1/hero.jpg
+aiCover: true
+coverCaption: "Have you seen this before? Probably."
 ---
 
 <script>

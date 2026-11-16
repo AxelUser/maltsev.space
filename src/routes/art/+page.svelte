@@ -1,31 +1,27 @@
 <script lang="ts">
-	import type { PageData } from './$types';
-	import { ContentCard, PageHeader } from '$lib/components';
+	import { SEO } from '$lib/components';
+	import { Container } from '$lib/components/layout';
+	import { PageHeader } from '$lib/components/ui';
+	import { CollectionBay } from '$lib/components/art';
 
-	const { data }: { data: PageData } = $props();
+	const { data } = $props();
 </script>
 
-<svelte:head>
-	<title>Art</title>
-	<meta
-		name="description"
-		content="A personal collection of my humble experiments and explorations with AI-generated art."
+<SEO
+	title="Art"
+	description="Things I make outside of code: music and AI-generated pictures. Each collection is a separate experiment."
+	url="/art"
+	keywords={['art', 'music', 'stable diffusion', 'ai art']}
+/>
+
+<Container class="pb-[72px]">
+	<PageHeader
+		kicker="Art"
+		title="Things I make"
+		lead="Outside of code. Each collection is a separate experiment with its own page."
 	/>
-</svelte:head>
 
-<div class="flex flex-col pb-12">
-	<PageHeader title="My AI Art Experiments" />
-
-	<section class="mb-12">
-		<div class="grid grid-cols-1 gap-5 lg:gap-12">
-			{#each data.collections as collection (collection.id)}
-				<ContentCard
-					href="/art/{collection.id}"
-					title={collection.title}
-					description={collection.description}
-					metadata="{collection.images.length} images"
-				/>
-			{/each}
-		</div>
-	</section>
-</div>
+	{#each data.collections as collection, i (collection.id)}
+		<CollectionBay {collection} position={i + 1} />
+	{/each}
+</Container>

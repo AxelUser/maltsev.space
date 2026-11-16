@@ -1,8 +1,31 @@
 <script lang="ts">
-	import { Timeline, TimelineItem, TagCloud, SEO, ProjectCard, PageHeader } from '$lib/components';
-	import { Card, Badge, Link } from '$lib/components/ui';
-	import { bio } from '$lib/bio';
-	import { OneColumnLayout } from '$lib/components/layouts';
+	import { SEO } from '$lib/components';
+	import { Container } from '$lib/components/layout';
+	import { PillLinks, SectionHeading } from '$lib/components/ui';
+	import {
+		CareerTimeline,
+		ChallengeList,
+		HobbyList,
+		Portrait,
+		ProjectCard,
+		StackList
+	} from '$lib/components/about';
+	import {
+		bio,
+		career,
+		careerStart,
+		challenges,
+		challengesIntro,
+		hobbies,
+		projects
+	} from '$lib/content';
+	import avatar from '/static/images/ava.jpg?enhanced';
+
+	const contacts = [
+		{ label: bio.social.email, url: `mailto:${bio.social.email}` },
+		{ label: 'GitHub', url: bio.social.github },
+		{ label: 'LinkedIn', url: bio.social.linkedIn }
+	];
 </script>
 
 <SEO
@@ -12,362 +35,58 @@
 	keywords={['about', 'software engineer', 'career', 'experience', 'distributed systems']}
 />
 
-<OneColumnLayout>
-	<div class="pb-12">
-		<PageHeader title="About Me" />
-
-		<div class="flex flex-col gap-12">
-			<section
-				class="grid grid-cols-1 items-center gap-5 max-lg:text-center lg:grid-cols-[1fr_4fr] lg:gap-x-12"
+<Container>
+	<section
+		class="grid items-start gap-6 pt-14 pb-10 sm:pt-[72px] lg:grid-cols-[300px_1fr] lg:gap-16"
+	>
+		<Portrait src={avatar} alt={bio.fullName} />
+		<div>
+			<span class="eyebrow">About</span>
+			<h1
+				class="mt-2.5 mb-0 text-[clamp(38px,5vw,60px)]/[1.02] font-semibold tracking-[-0.02em] font-stretch-[112%]"
 			>
-				<div class="relative size-[150px] shrink-0 max-lg:justify-self-center sm:size-[200px]">
-					<img
-						src="/images/ava.jpg"
-						alt="Avatar"
-						class="absolute top-1/2 left-1/2 size-[130px] -translate-1/2 rounded-full object-cover object-center sm:size-[180px]"
-						loading="lazy"
-					/>
-					<div class="absolute inset-0 animate-ring-pulse rounded-full border-2 border-brand"></div>
-				</div>
-
-				<div class="flex-1">
-					<h2 class="space-heading mt-0 max-lg:mx-auto">Hello, I'm {bio.fullName}</h2>
-					<div class="flex flex-col gap-2 max-lg:items-center">
-						<p>
-							I've been programming for fun and profit since 2014, focusing on distributed systems
-							and highload applications. My main stack is <b>C#</b>, <b>Kotlin</b>, and
-							<b>TypeScript</b>, but I'm also proficient in <b>Go</b>.
-						</p>
-						<p>
-							<b>Fun fact:</b> I was born on the 11th of April, just a day before Yuri Gagarin's flight.
-							Poehali! 🚀
-						</p>
-					</div>
-				</div>
-
-				<div class="flex justify-around lg:col-span-2">
-					<div
-						class="mt-5 flex flex-wrap justify-start gap-5 max-sm:flex-col max-sm:items-center max-sm:gap-2"
-					>
-						<Link href={`mailto:${bio.social.email}`} external={true}>{bio.social.email}</Link>
-						<Link href={bio.social.github} external={true}>GitHub</Link>
-						<Link href={bio.social.linkedIn} external={true}>LinkedIn</Link>
-					</div>
-				</div>
-			</section>
-
-			<section>
-				<h2 class="space-heading">My Journey</h2>
-				<Timeline>
-					<TimelineItem
-						date="June 2026–present"
-						title="JetBrains"
-						role="Software Developer"
-						companyDescription="JetBrains is a global software company that builds developer tools and IDEs, including IntelliJ IDEA, PyCharm, Rider, and the Kotlin programming language."
-						companyUrl="https://www.jetbrains.com/"
-						technologies={['C#', 'Kotlin']}
-					></TimelineItem>
-
-					<TimelineItem
-						date="August 2020–June 2026"
-						title="Infobip"
-						role="Senior Software Engineer"
-						companyDescription="Infobip is a global Communications Platform as a Service (CPaaS) provider offering APIs for messaging, voice, video, and contact center services."
-						companyUrl="https://www.infobip.com/"
-						technologies={[
-							'C#',
-							'Kotlin',
-							'Go (Golang)',
-							'TypeScript',
-							'React',
-							'ASP.NET',
-							'Spring Boot',
-							'Kafka',
-							'MongoDB'
-						]}
-					>
-						<ul>
-							<li>
-								Designed and implemented fault-tolerant architecture in Kotlin and C# for 4
-								real-time audience-segmentation services, processing up to 50,000 events per second.
-								One delivered feature replaced an external product through internal dogfooding.
-							</li>
-							<li>
-								Led a zero-downtime migration of 3 microservices and ~1 TB of data from a MongoDB
-								replica set to a sharded cluster.
-							</li>
-							<li>
-								Improved platform performance by optimizing MongoDB query p95 latency and
-								redesigning the leader-election algorithm, achieving a 5–10× improvement in key
-								technical metrics.
-							</li>
-							<li>
-								Developed internal tools in C# and Go to automate maintenance and troubleshooting.
-							</li>
-						</ul>
-					</TimelineItem>
-
-					<TimelineItem
-						date="August 2019–August 2020"
-						title="Veeam Software"
-						role="Software Engineer"
-						companyDescription="Veeam Software is the global leader in backup and data recovery solutions for virtual machines, serving over 550,000 customers across more than 30 countries."
-						companyUrl="https://www.veeam.com/"
-						technologies={['C#', 'Azure', 'TypeScript', 'React', 'ASP.NET', 'PostgreSQL']}
-					>
-						<ul>
-							<li>
-								Built a RESTful integration between Veeam Backup for Azure and Veeam Backup &
-								Replication using C#, ASP.NET Core, and Swagger-documented APIs.
-							</li>
-							<li>
-								Implemented a real-time notification center in Veeam Backup for Azure using
-								WebSockets.
-							</li>
-							<li>
-								Engineered an event-driven data synchronization pipeline handling thousands of daily
-								entity updates, ensuring eventual consistency between two major products.
-							</li>
-						</ul>
-					</TimelineItem>
-
-					<TimelineItem
-						date="October 2017–August 2019"
-						title="Kontur"
-						role="Software Engineer"
-						companyDescription="Kontur is Russia's second-largest SaaS provider, offering 70+ cloud services for accounting, compliance, and e-government to 2.2 million business customers in Russia and abroad."
-						companyUrl="https://kontur.ru/"
-						technologies={[
-							'C#',
-							'.NET Framework',
-							'TypeScript',
-							'React',
-							'ASP.NET',
-							'WCF',
-							'MSSQL Server'
-						]}
-					>
-						<ul>
-							<li>
-								Delivered 5 enterprise features for Kontur Extern using C#/.NET and React for B2B
-								clients.
-							</li>
-							<li>
-								Refactored the monolithic backend by replacing the global context with scoped
-								services in ASP.NET, enabling batch document processing per request.
-							</li>
-							<li>Migrated a legacy JavaScript UI to React, Redux, and TypeScript.</li>
-						</ul>
-					</TimelineItem>
-
-					<TimelineItem
-						date="April 2018–December 2019"
-						title="Freelancing"
-						role="Software Engineer"
-						companyDescription="Independent contractor working on mobile application development."
-						companyUrl="https://www.upwork.com/"
-						technologies={['C#', 'Xamarin', 'Android', 'Realm', 'MVVM']}
-					>
-						<ul>
-							<li>
-								Optimized the rendering pipeline of a Xamarin.Forms Android app, increasing frame
-								rate from 30–35 FPS to a steady 55–60 FPS (+70%), significantly improving the user
-								experience.
-							</li>
-							<li>
-								Implemented custom caching and a full offline mode using the Realm database,
-								reducing remote API calls and improving load times.
-							</li>
-							<li>
-								Refactored legacy code into a clean MVVM architecture, shortening feature lead time
-								and boosting unit-test coverage to nearly 90%.
-							</li>
-						</ul>
-					</TimelineItem>
-
-					<TimelineItem
-						date="October 2015–August 2017"
-						title="PRO IT"
-						role="Software Developer"
-						companyDescription="PRO IT is a Russian software company developing web-based electronic document workflow systems for government agencies, with over 100 employees."
-						technologies={['C#', '.NET Framework', 'ASP.NET', 'React', 'MSSQL Server', 'LINQ']}
-					>
-						<ul>
-							<li>
-								Engineered a push-based scheduling daemon, reducing client polling traffic by
-								approximately 80%.
-							</li>
-							<li>
-								Developed self-service admin panels, enabling support staff to resolve ~90% of
-								common tickets without involving engineers.
-							</li>
-							<li>
-								Refactored a jQuery codebase to Knockout.js (MVVM), halving front-end defect rates
-								and speeding up feature delivery.
-							</li>
-							<li>
-								Optimized heavy LINQ queries in Entity Framework for Oracle, cutting average query
-								latency from 1 minute to 4–5 seconds.
-							</li>
-						</ul>
-					</TimelineItem>
-
-					<TimelineItem
-						date="December 2014–October 2015"
-						title="Kai Development"
-						role="Junior Software Engineer"
-						companyDescription="Kai Development is a Russian software engineering studio specializing in web-based business and government automation. Since 2007, the company has delivered 45+ projects, including the legal-tech spin-off XSUD for Russian ministries and major corporations."
-						companyUrl="https://kaidev.ru/"
-						technologies={[
-							'C#',
-							'.NET Framework',
-							'PHP',
-							'JavaScript',
-							'Java',
-							'Android',
-							'MSSQL Server',
-							'Transact-SQL'
-						]}
-					>
-						<ul>
-							<li>
-								Developed a jQuery-based WYSIWYG admin panel for the XSUD project blog and
-								introduced semantic versioning for post markup in ASP.NET MVC, reducing publishing
-								time and increasing click-through rates by ~35% within 4 months.
-							</li>
-							<li>
-								Designed and launched an offline-capable Android app for the Safe-Childhood Map
-								project within 2 months.
-							</li>
-							<li>
-								Refactored CPU-heavy business logic into parameterized Microsoft SQL Server stored
-								procedures, reducing p95 latency from 30 seconds to under 5 seconds.
-							</li>
-						</ul>
-					</TimelineItem>
-				</Timeline>
-			</section>
-
-			<section>
-				<h2 class="space-heading">Professional Interests</h2>
-				<Card variant="default">
-					<TagCloud tags={bio.interests} />
-				</Card>
-			</section>
-
-			<section>
-				<h2 class="space-heading">Personal Projects</h2>
-				<div class="card-grid">
-					<ProjectCard
-						title="CarryFit"
-						href="https://carryon.fit/"
-						icon="/images/projects/carryfit.png"
-						technologies={['Svelte 5', 'TailwindCSS', 'TypeScript']}
-					>
-						An online tool that helps travelers check if their carry-on luggage meets size
-						requirements for different airlines worldwide. Simply enter your bag's dimensions to
-						instantly see which of 150+ airlines will accept it as cabin baggage.
-					</ProjectCard>
-
-					<ProjectCard
-						title="HumbleHire"
-						href="https://humblehire.cv/"
-						icon="/images/projects/humble-hire.png"
-						technologies={['Svelte 5', 'TailwindCSS', 'TypeScript']}
-					>
-						HumbleHire is a free, open-source CV builder that runs entirely in your browser. You
-						keep one master CV with your whole history in it, branch a tailored copy for each job
-						you apply to, and export a clean PDF to send.
-					</ProjectCard>
-
-					<ProjectCard
-						title="MongoTransit"
-						href="https://github.com/AxelUser/MongoTransit"
-						icon="🔄"
-						technologies={['C#', 'MongoDB']}
-					>
-						A tool for automatic replication of documents between MongoDB clusters. Supports
-						iterative transfers, sharded collections, and configurable synchronization parameters,
-						making it ideal for database migrations and data synchronization tasks.
-					</ProjectCard>
-				</div>
-			</section>
-
-			<section>
-				<h2 class="space-heading">Hobbies & Interests</h2>
-
-				<div class="card-grid">
-					<Card>
-						<div class="icon-bubble mb-2">📚</div>
-						<h3 class="mb-2 text-2xl">Reading</h3>
-						<p>
-							I enjoy reading books on technology, science, and other topics to learn new things.
-						</p>
-					</Card>
-
-					<Card>
-						<div class="icon-bubble mb-2">🧗</div>
-						<h3 class="mb-2 text-2xl">Rock Climbing</h3>
-						<p>I like rock climbing to stay active and enjoy the outdoors.</p>
-					</Card>
-
-					<Card>
-						<div class="icon-bubble mb-2">⛷️</div>
-						<h3 class="mb-2 text-2xl">Mountain Skiing</h3>
-						<p>I enjoy mountain skiing in the winter.</p>
-					</Card>
-				</div>
-			</section>
-
-			<section>
-				<h2 class="space-heading">Programming Challenges</h2>
-				<p class="mb-5">
-					I enjoy participating in coding challenges to sharpen my skills and explore new
-					programming concepts.
-				</p>
-
-				<div class="card-grid">
-					<Card variant="default">
-						<h3 class="mb-2 text-2xl">Advent of Code</h3>
-						<p>I've completed multiple years of Advent of Code challenges:</p>
-						<div class="my-2 flex flex-wrap gap-2">
-							<Badge interactive={true}>
-								<Link href="https://github.com/AxelUser/aoc-2023-kt" external={true}>2023</Link>
-							</Badge>
-							<Badge interactive={true}>
-								<Link href="https://github.com/AxelUser/aoc-2022" external={true}>2022</Link>
-							</Badge>
-							<Badge interactive={true}>
-								<Link href="https://github.com/AxelUser/aoc-2021" external={true}>2021</Link>
-							</Badge>
-							<Badge interactive={true}>
-								<Link href="https://github.com/AxelUser/AdventOfCode2020" external={true}>2020</Link
-								>
-							</Badge>
-							<Badge interactive={true}>
-								<Link href="https://github.com/AxelUser/advent-of-code-2017" external={true}
-									>2017</Link
-								>
-							</Badge>
-						</div>
-					</Card>
-
-					<Card variant="default">
-						<h3 class="mb-2 text-2xl">LeetCode</h3>
-						<p>
-							I practice algorithmic problem solving on LeetCode to improve my coding efficiency and
-							understanding of data structures.
-						</p>
-						<div class="my-2 flex flex-wrap gap-2">
-							<Badge interactive={true}>
-								<Link href="https://github.com/AxelUser/leetcode-kt" external={true}
-									>View Solutions</Link
-								>
-							</Badge>
-						</div>
-					</Card>
-				</div>
-			</section>
+				{bio.fullName}
+			</h1>
+			<p class="mt-2.5 mb-7 text-ink-2">{bio.role} at {bio.company}</p>
+			{#each bio.about as paragraph (paragraph)}
+				<p class="mt-0 mb-[1.1em] max-w-[36em]">{paragraph}</p>
+			{/each}
+			<p
+				class="mt-0 mb-[1.1em] max-w-[36em] border-l-[3px] border-livery-3 pl-3.5 text-[15px] text-ink-2"
+			>
+				<b class="font-semibold text-ink">Fun fact:</b>
+				{bio.funFact}
+			</p>
+			<StackList items={bio.stack} />
+			<div class="mt-6">
+				<PillLinks links={contacts} />
+			</div>
 		</div>
-	</div>
-</OneColumnLayout>
+	</section>
+
+	<section class="pt-10" aria-labelledby="projects">
+		<SectionHeading id="projects" title="Side projects" aside="things I build for myself" />
+		<div class="grid gap-5 lg:grid-cols-3">
+			{#each projects as project (project.title)}
+				<ProjectCard {project} />
+			{/each}
+		</div>
+	</section>
+
+	<section class="pt-10" aria-labelledby="trajectory">
+		<SectionHeading id="trajectory" title="Trajectory" aside="since {careerStart}" />
+		<CareerTimeline jobs={career} />
+	</section>
+
+	<section class="grid gap-6 pt-10 pb-24 lg:grid-cols-2 lg:gap-16">
+		<div>
+			<SectionHeading title="Off the clock" />
+			<HobbyList {hobbies} />
+		</div>
+		<div>
+			<SectionHeading title="Puzzles" />
+			<p class="mt-0 mb-4 text-[15px] text-ink-2">{challengesIntro}</p>
+			<ChallengeList {challenges} />
+		</div>
+	</section>
+</Container>

@@ -3,6 +3,7 @@ export interface PostPreview {
 	date: string;
 	preview: string;
 	slug: string;
+	number: string;
 	series: string;
 	tags: string[];
 	draft: boolean;

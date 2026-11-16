@@ -10,6 +10,8 @@ preview: 'Learn how to use "magic" attributes in C#, such as CallerFilePath, Cal
 draft: false
 legacy: true
 hero: /images/blog/002-callermembername-attribute-for-logging/hero.jpg
+aiCover: true
+coverCaption: "The log already knows who called."
 ---
 
 In software development, especially when working with large codebases, tracking down where and how methods are called can be a challenging task. Debugging and logging become essential tools in a developer's toolkit to understand the flow of execution and identify issues.

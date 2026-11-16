@@ -10,6 +10,8 @@ preview: 'Do you want to improve performance of caching? Get rid of Dictionary a
 draft: false
 legacy: true
 hero: /images/blog/005-dictionary-on-generics/hero.jpg
+aiCover: true
+coverCaption: "It's generic. I can do whatever I want, right?"
 ---
 
 ## Disclaimer

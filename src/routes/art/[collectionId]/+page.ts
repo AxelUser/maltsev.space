@@ -1,4 +1,4 @@
-import { getCollection } from '$lib/art.js';
+import { getCollection } from '$lib/content';
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
@@ -9,7 +9,5 @@ export const load: PageLoad = async ({ params }) => {
 		throw error(404, 'Collection not found');
 	}
 
-	return {
-		collection
-	};
+	return { collection };
 };

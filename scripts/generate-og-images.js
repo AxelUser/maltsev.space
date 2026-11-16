@@ -4,85 +4,78 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { glob } from 'glob';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const root = join(__dirname, '..');
 
 const forceRegenerate = process.argv.includes('--force');
+const WIDTH = 1536;
+const HEIGHT = 1024;
+const AUTHOR = 'Aleksey Maltsev';
 
+// Shared with src/lib/content/taxonomy.ts
+const tagStyles = JSON.parse(readFileSync(join(root, 'src/lib/content/tags.json'), 'utf-8'));
+
+/**
+ * Minimal front-matter reader: `key: value` pairs and `key:` followed by `  - item` lists.
+ * Good enough for the fields used here (title, preview, date, draft, tags).
+ */
 function extractFrontmatter(content) {
-	const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---/;
-	const match = content.match(frontmatterRegex);
-
+	const match = content.match(/^---\s*\r?\n([\s\S]*?)\r?\n---/);
 	if (!match) return {};
 
+	const unquote = (s) => s.trim().replace(/^["']|["']$/g, '');
 	const frontmatter = {};
-	const lines = match[1].split('\n');
+	let listKey = null;
 
-	for (const line of lines) {
-		const colonIndex = line.indexOf(':');
-		if (colonIndex !== -1) {
-			const key = line.substring(0, colonIndex).trim();
-			const value = line
-				.substring(colonIndex + 1)
-				.trim()
-				.replace(/^["']|["']$/g, '');
-			frontmatter[key] = value;
+	for (const line of match[1].split(/\r?\n/)) {
+		const item = line.match(/^\s+-\s+(.*)$/);
+		if (item && listKey) {
+			frontmatter[listKey].push(unquote(item[1]));
+			continue;
+		}
+
+		const colon = line.indexOf(':');
+		if (colon === -1) continue;
+
+		const key = line.substring(0, colon).trim();
+		const value = line.substring(colon + 1).trim();
+		if (value === '') {
+			frontmatter[key] = [];
+			listKey = key;
+		} else {
+			frontmatter[key] = unquote(value);
+			listKey = null;
 		}
 	}
 
 	return frontmatter;
 }
 
-function formatDate(dateString) {
-	try {
-		const date = new Date(dateString);
-		return date.toLocaleDateString('en-US', {
-			year: 'numeric',
-			month: 'long',
-			day: 'numeric'
-		});
-	} catch {
-		return dateString;
-	}
-}
-
 function getHeroImageAsBase64(slug) {
-	try {
-		const imagePath = join(__dirname, '..', 'static', 'images', 'posts', slug, 'hero.jpg');
-		if (existsSync(imagePath)) {
-			const imageBuffer = readFileSync(imagePath);
-			const base64 = imageBuffer.toString('base64');
-			return `data:image/jpeg;base64,${base64}`;
-		}
-		return null;
-	} catch (error) {
-		console.warn(`⚠️  Could not load hero image for ${slug}:`, error.message);
-		return null;
-	}
+	const imagePath = join(root, 'static', 'images', 'posts', slug, 'hero.jpg');
+	if (!existsSync(imagePath)) return null;
+	return `data:image/jpeg;base64,${readFileSync(imagePath).toString('base64')}`;
 }
 
-async function generateOGImage(title, preview, date, author, heroImageBase64, outputPath) {
-	const browser = await chromium.launch();
-	const page = await browser.newPage();
+function resolveTags(tags = []) {
+	return tags.map((tag) => {
+		const style = tagStyles[tag];
+		return style
+			? { label: style.label, color: `--livery-${style.livery}` }
+			: { label: tag, color: '--ink-3' };
+	});
+}
 
-	await page.setViewportSize({ width: 1536, height: 1024 });
+async function renderOGImage(page, data, outputPath) {
+	await page.setContent(readFileSync(join(__dirname, 'og-template.html'), 'utf-8'), {
+		waitUntil: 'networkidle'
+	});
 
-	const templatePath = join(__dirname, 'og-template.html');
-	const templateContent = readFileSync(templatePath, 'utf-8');
+	await page.evaluate((d) => window.setContent(d), data);
 
-	await page.setContent(templateContent, { waitUntil: 'domcontentloaded' });
-
-	// networkidle: web fonts must finish loading before the screenshot
-	await page.waitForLoadState('networkidle');
-
-	await page.evaluate(
-		(data) => {
-			window.setContent(data.title, data.preview, data.date, data.author, data.heroImageBase64);
-		},
-		{ title, preview, date, author, heroImageBase64 }
-	);
-
-	if (heroImageBase64) {
+	// Web fonts and the cover must be ready before the screenshot
+	await page.evaluate(() => document.fonts.ready);
+	if (data.heroImageBase64) {
 		await page
 			.waitForFunction(
 				() => {
@@ -91,94 +84,88 @@ async function generateOGImage(title, preview, date, author, heroImageBase64, ou
 				},
 				{ timeout: 5000 }
 			)
-			.catch(() => {
-				console.warn('⚠️  Image loading timeout - proceeding with screenshot');
-			});
+			.catch(() => console.warn('⚠️  Image loading timeout - proceeding with screenshot'));
 	}
 
 	const screenshot = await page.screenshot({
 		type: 'jpeg',
 		quality: 90,
-		clip: { x: 0, y: 0, width: 1536, height: 1024 }
+		clip: { x: 0, y: 0, width: WIDTH, height: HEIGHT }
 	});
-
 	writeFileSync(outputPath, screenshot);
-
-	await browser.close();
 }
 
 async function generateAllOGImages() {
 	console.log('🚀 Starting OG image generation with Playwright...');
+	if (forceRegenerate) console.log('🔄 Force mode enabled - will regenerate all images');
 
-	if (forceRegenerate) {
-		console.log('🔄 Force mode enabled - will regenerate all images');
-	}
+	const outputDir = join(root, 'static', 'images', 'og');
+	if (!existsSync(outputDir)) mkdirSync(outputDir, { recursive: true });
 
-	const outputDir = join(__dirname, '..', 'static', 'images', 'og');
-	if (!existsSync(outputDir)) {
-		mkdirSync(outputDir, { recursive: true });
-	}
-
-	const postFiles = await glob('src/posts/*/index.md', {
-		cwd: join(__dirname, '..')
-	});
-
+	const postFiles = await glob('src/posts/*/index.md', { cwd: root });
 	console.log(`📄 Found ${postFiles.length} blog posts`);
 
+	let browser;
+	let page;
 	let generatedCount = 0;
 	let skippedCount = 0;
 
-	for (const postFile of postFiles) {
-		try {
-			const fullPath = join(__dirname, '..', postFile);
-			const content = readFileSync(fullPath, 'utf-8');
-			const frontmatter = extractFrontmatter(content);
+	try {
+		for (const postFile of postFiles) {
+			try {
+				const frontmatter = extractFrontmatter(readFileSync(join(root, postFile), 'utf-8'));
 
-			if (!frontmatter.title) {
-				console.warn(`⚠️  Skipping ${postFile}: No title found`);
-				continue;
+				if (!frontmatter.title) {
+					console.warn(`⚠️  Skipping ${postFile}: No title found`);
+					continue;
+				}
+				if (frontmatter.draft === 'true') {
+					console.log(`📝 Skipping draft: ${frontmatter.title}`);
+					continue;
+				}
+
+				const slug = postFile.replace(/\\/g, '/').split('/').at(-2); // src/posts/<slug>/index.md
+				const outputPath = join(outputDir, `${slug}.jpg`);
+
+				if (!forceRegenerate && existsSync(outputPath)) {
+					console.log(`⏭️  Skipping ${slug}: OG image already exists`);
+					skippedCount++;
+					continue;
+				}
+
+				// Launch lazily: nothing to do on most builds
+				if (!browser) {
+					browser = await chromium.launch();
+					page = await browser.newPage({ viewport: { width: WIDTH, height: HEIGHT } });
+				}
+
+				const heroImageBase64 = getHeroImageAsBase64(slug);
+				const action = existsSync(outputPath) ? 'Regenerating' : 'Generating';
+				console.log(`🎨 ${action} OG image for: ${frontmatter.title} (slug: ${slug})`);
+
+				await renderOGImage(
+					page,
+					{
+						title: frontmatter.title,
+						preview: frontmatter.preview || '',
+						date: frontmatter.date,
+						number: slug.split('-')[0],
+						author: AUTHOR,
+						tags: resolveTags(frontmatter.tags),
+						caption: frontmatter.coverCaption || '',
+						heroImageBase64
+					},
+					outputPath
+				);
+
+				console.log(`✅ Generated: ${slug}.jpg`);
+				generatedCount++;
+			} catch (error) {
+				console.error(`❌ Error generating OG image for ${postFile}:`, error.message);
 			}
-
-			if (frontmatter.draft === 'true') {
-				console.log(`📝 Skipping draft: ${frontmatter.title}`);
-				continue;
-			}
-
-			const normalizedPath = postFile.replace(/\\/g, '/');
-			const pathParts = normalizedPath.split('/');
-			const slug = pathParts[pathParts.length - 2]; // src/posts/<slug>/index.md
-
-			if (!slug) {
-				console.warn(`⚠️  Could not extract slug from path: ${postFile}`);
-				continue;
-			}
-
-			const outputPath = join(outputDir, `${slug}.jpg`);
-
-			if (!forceRegenerate && existsSync(outputPath)) {
-				console.log(`⏭️  Skipping ${slug}: OG image already exists`);
-				skippedCount++;
-				continue;
-			}
-
-			const title = frontmatter.title;
-			const preview = frontmatter.preview || '';
-			const date = formatDate(frontmatter.date);
-			const author = 'Aleksey Maltsev';
-			const heroImageBase64 = getHeroImageAsBase64(slug);
-
-			const action = existsSync(outputPath) ? 'Regenerating' : 'Generating';
-			console.log(
-				`🎨 ${action} OG image for: ${title} (slug: ${slug})${heroImageBase64 ? ' with hero image' : ' without hero image'}`
-			);
-
-			await generateOGImage(title, preview, date, author, heroImageBase64, outputPath);
-
-			console.log(`✅ Generated: ${slug}.jpg`);
-			generatedCount++;
-		} catch (error) {
-			console.error(`❌ Error generating OG image for ${postFile}:`, error.message);
 		}
+	} finally {
+		await browser?.close();
 	}
 
 	console.log(`🎉 OG image generation complete!`);

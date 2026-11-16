@@ -59,15 +59,15 @@
 	}
 </script>
 
-<div class="mx-auto rounded-md border border-surface-3 bg-surface-2 p-5 font-sans">
-	<h2 class="m-0 mb-12 text-center text-2xl leading-tight font-bold text-fg-1">
+<div class="mx-auto border border-line bg-surface p-5 font-sans">
+	<h2 class="m-0 mb-12 text-center text-2xl leading-tight font-bold text-ink">
 		Bloom Filter Parameter Calculator
 	</h2>
 
 	<div class="grid grid-cols-1 items-start gap-5 md:grid-cols-[1fr_300px] md:gap-12">
 		<div class="min-w-0">
-			<div class="mb-5 rounded-md border border-surface-3 bg-surface-1 p-5">
-				<h3 class="m-0 mb-5 text-lg leading-tight font-semibold text-fg-1">Input Parameters</h3>
+			<div class="mb-5 border border-line bg-canvas p-5">
+				<h3 class="m-0 mb-5 text-lg leading-tight font-semibold text-ink">Input Parameters</h3>
 
 				<LabeledInput
 					label="Expected Elements (n):"
@@ -90,16 +90,16 @@
 					id="false-positive-rate"
 				/>
 
-				<div class="my-5 rounded-xs bg-surface-2 p-2">
-					<h4 class="mt-5 mb-2 text-base leading-tight font-semibold text-fg-2">
+				<div class="my-5 bg-surface p-2">
+					<h4 class="mt-5 mb-2 text-base leading-tight font-semibold text-ink-2">
 						Calculation Mode
 					</h4>
 					<div class="flex flex-col gap-2">
-						<label class="flex cursor-pointer items-center gap-2 text-base text-fg-1">
+						<label class="flex cursor-pointer items-center gap-2 text-base text-ink">
 							<input type="radio" bind:group={calculationMode} value="optimal" />
 							Calculate optimal parameters
 						</label>
-						<label class="flex cursor-pointer items-center gap-2 text-base text-fg-1">
+						<label class="flex cursor-pointer items-center gap-2 text-base text-ink">
 							<input type="radio" bind:group={calculationMode} value="custom" />
 							Use custom parameters
 						</label>
@@ -107,7 +107,7 @@
 				</div>
 
 				{#if calculationMode === 'custom'}
-					<div class="rounded-xs border border-dashed border-surface-3 bg-surface-2 p-5">
+					<div class="border border-dashed border-line bg-surface p-5">
 						<LabeledInput
 							label="Bit Array Size (m):"
 							bind:value={customM}
@@ -131,8 +131,8 @@
 				{/if}
 			</div>
 
-			<div class="mb-5 rounded-md border border-surface-3 bg-surface-1 p-5">
-				<h3 class="m-0 mb-5 text-lg leading-tight font-semibold text-fg-1">Calculated Results</h3>
+			<div class="mb-5 border border-line bg-canvas p-5">
+				<h3 class="m-0 mb-5 text-lg leading-tight font-semibold text-ink">Calculated Results</h3>
 
 				<div class="grid grid-cols-1 gap-5 md:grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
 					<DisplayCard
@@ -199,10 +199,12 @@
 				cardVariant="compact"
 			/>
 
-			<div class="mb-5 rounded-md bg-surface-1 p-2 md:p-5">
+			<div class="mb-5 bg-canvas p-2 md:p-5">
 				<h3 class="m-0 mb-5 text-lg leading-tight font-semibold">Quick Presets</h3>
 				<div class="flex flex-col gap-2">
 					<Button
+						variant="ghost"
+						class="justify-center"
 						onclick={() => {
 							expectedElements = 1000;
 							falsePositiveRate = 0.01;
@@ -212,6 +214,8 @@
 						Small (1K, 1%)
 					</Button>
 					<Button
+						variant="ghost"
+						class="justify-center"
 						onclick={() => {
 							expectedElements = 100000;
 							falsePositiveRate = 0.01;
@@ -221,6 +225,8 @@
 						Medium (100K, 1%)
 					</Button>
 					<Button
+						variant="ghost"
+						class="justify-center"
 						onclick={() => {
 							expectedElements = 1000000;
 							falsePositiveRate = 0.001;
