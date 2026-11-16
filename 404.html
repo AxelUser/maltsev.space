@@ -14,31 +14,38 @@
 		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 		<meta name="apple-mobile-web-app-title" content="Maltsev.Space" />
 		<link rel="manifest" href="/site.webmanifest" />
+		<meta name="theme-color" media="(prefers-color-scheme: light)" content="#eef0f2" />
+		<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#070a0f" />
+		<!-- Apply the saved Day / Night choice before first paint; Auto leaves it to the OS -->
+		<script>
+			try {
+				var t = localStorage.getItem('theme');
+				if (t === 'light' || t === 'dark') document.documentElement.setAttribute('color-scheme', t);
+			} catch (e) {}
+		</script>
 		
-		<link rel="modulepreload" href="/_app/immutable/entry/start.4ZqgXUXm.js">
-		<link rel="modulepreload" href="/_app/immutable/chunks/_G3uY4bq.js">
-		<link rel="modulepreload" href="/_app/immutable/chunks/Be58OnX5.js">
-		<link rel="modulepreload" href="/_app/immutable/chunks/DcHiUdir.js">
-		<link rel="modulepreload" href="/_app/immutable/chunks/CYgJF_JY.js">
-		<link rel="modulepreload" href="/_app/immutable/entry/app.CH63OMYC.js">
+		<link rel="modulepreload" href="/_app/immutable/entry/start.BQzCVP3C.js">
+		<link rel="modulepreload" href="/_app/immutable/chunks/BjOuH20t.js">
+		<link rel="modulepreload" href="/_app/immutable/chunks/BxEk1QRg.js">
+		<link rel="modulepreload" href="/_app/immutable/entry/app.vCGwsyli.js">
 		<link rel="modulepreload" href="/_app/immutable/chunks/Dp1pzeXC.js">
-		<link rel="modulepreload" href="/_app/immutable/chunks/BJkNQAS9.js">
-		<link rel="modulepreload" href="/_app/immutable/chunks/CXDqjdPY.js">
+		<link rel="modulepreload" href="/_app/immutable/chunks/CMrRElF7.js">
+		<link rel="modulepreload" href="/_app/immutable/chunks/qScWTwYE.js">
 	</head>
 
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">
 			<script>
 				{
-					__sveltekit_1hz0btd = {
+					__sveltekit_15e8am6 = {
 						base: ""
 					};
 
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("/_app/immutable/entry/start.4ZqgXUXm.js"),
-						import("/_app/immutable/entry/app.CH63OMYC.js")
+						import("/_app/immutable/entry/start.BQzCVP3C.js"),
+						import("/_app/immutable/entry/app.vCGwsyli.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element);
 					});
