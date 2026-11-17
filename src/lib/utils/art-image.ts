@@ -1,8 +1,9 @@
 import type { EnhancedImageSrc } from './post-hero-image';
 
+// srcset standard widths + 2048 for the full-screen lightbox. Glob options must be literals.
 const artImages = import.meta.glob<{ default: EnhancedImageSrc }>(
 	'/static/images/art/*/*.{jpg,jpeg,png,webp,avif}',
-	{ eager: true, query: { enhanced: true } }
+	{ eager: true, query: { enhanced: true, w: '256;512;768;960;1152;1536;2048' } }
 );
 
 /**

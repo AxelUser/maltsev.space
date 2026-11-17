@@ -25,7 +25,7 @@
 		live,
 		caption,
 		ai = [],
-		sizes = '(min-width: 1104px) 1040px, 100vw'
+		sizes = '(min-width: 1104px) 1040px, 85vw'
 	}: Props = $props();
 
 	let playing = $state(false);

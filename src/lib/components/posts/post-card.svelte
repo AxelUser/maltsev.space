@@ -17,7 +17,7 @@
 							{...zoom}
 							src={getPostHeroImage(post.slug)}
 							placeholder={post.placeholder}
-							sizes="(min-width: 1180px) 360px, (min-width: 900px) 30vw, (min-width: 640px) 46vw, 100vw"
+							sizes="(min-width: 900px) 360px, (min-width: 640px) 50vw, 85vw"
 						/>
 					{/snippet}
 				</HoverZoom.Target>
