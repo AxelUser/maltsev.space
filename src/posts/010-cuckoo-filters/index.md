@@ -12,6 +12,7 @@ draft: false
 hero: /images/blog/010-cuckoo-filters/hero.jpg
 aiCover: [Image]
 coverCaption: "The cuckoo has moved into someone else's nest."
+liveCover: true
 ---
 
 <script>
