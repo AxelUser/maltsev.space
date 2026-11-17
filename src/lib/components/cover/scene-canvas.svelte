@@ -1,7 +1,7 @@
 <!--
 	@component
-	Renders a `CanvasScene` at a fixed resolution, stretched to fill its box. Draws one frame on
-	mount, then animates while `isRunning`; scene time stops while paused.
+	Renders a `CanvasScene` at a fixed resolution, stretched to fill its box. Draws one frame once
+	`create` resolves, then animates while `isRunning`; scene time stops while paused.
 
 	<SceneCanvas create={createScene} width={384} height={256} {isRunning} {onready} pixelated />
 -->
@@ -10,10 +10,10 @@
 	import { AnimationFrames } from 'runed';
 	import type { ClassValue } from 'clsx';
 	import { cn } from '$lib/utils';
-	import type { CanvasScene } from './types';
+	import type { CanvasScene, CanvasSceneFactory } from './types';
 
 	interface Props {
-		create: (canvas: HTMLCanvasElement) => CanvasScene;
+		create: CanvasSceneFactory;
 		/** Render resolution, not display size. */
 		width: number;
 		height: number;
@@ -59,17 +59,25 @@
 	);
 
 	onMount(() => {
-		try {
-			scene = create(canvas);
-			scene.render(t);
-		} catch (err) {
-			console.error('SceneCanvas: could not start the scene', err);
-			onerror?.(err);
-			return;
-		}
-		created = true;
-		onready?.();
+		let unmounted = false;
+		(async () => {
+			try {
+				const s = await create(canvas);
+				// Unmounted before `create` resolved.
+				if (unmounted) return s.dispose();
+				scene = s;
+				scene.render(t);
+			} catch (err) {
+				if (unmounted) return;
+				console.error('SceneCanvas: could not start the scene', err);
+				onerror?.(err);
+				return;
+			}
+			created = true;
+			onready?.();
+		})();
 		return () => {
+			unmounted = true;
 			frames.stop();
 			scene?.dispose();
 			scene = undefined;

@@ -14,6 +14,9 @@ export type LiveCoverComponent = Component<LiveCoverProps>;
 
 export type LiveCoverLoader = () => Promise<{ default: LiveCoverComponent }>;
 
+/** May be async, e.g. to compile shaders before the first frame. */
+export type CanvasSceneFactory = (canvas: HTMLCanvasElement) => CanvasScene | Promise<CanvasScene>;
+
 /** Imperative scene driven by `SceneCanvas`. */
 export interface CanvasScene {
 	/** Draw the frame at `t` seconds. */

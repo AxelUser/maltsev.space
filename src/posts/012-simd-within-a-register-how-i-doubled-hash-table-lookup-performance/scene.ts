@@ -378,10 +378,11 @@ export interface HarborOptions {
 	detecting?: () => boolean;
 }
 
-export function createHarborScene(
+/** Resolves once all shaders are compiled. */
+export async function createHarborScene(
 	canvas: HTMLCanvasElement,
 	{ detecting = () => false }: HarborOptions = {}
-): HarborScene {
+): Promise<HarborScene> {
 	const trash: { dispose(): void }[] = [];
 	const keep = <T extends { dispose(): void }>(x: T): T => (trash.push(x), x);
 
@@ -1273,11 +1274,30 @@ export function createHarborScene(
 		renderer.render(post.scene, cam2d);
 	}
 
-	return {
-		render,
-		dispose() {
-			for (const x of trash) x.dispose();
-			renderer.dispose();
-		}
+	const dispose = () => {
+		for (const x of trash) x.dispose();
+		renderer.dispose();
 	};
+
+	// Compile shaders without blocking; otherwise the first render() waits for every program to link.
+	try {
+		// Programs depend on the active render target, so match what render() uses for each pass.
+		renderer.setRenderTarget(target);
+		const offscreen = [
+			renderer.compileAsync(sky.scene, cam2d),
+			renderer.compileAsync(under.scene, cam2d),
+			renderer.compileAsync(bgScene, camera),
+			renderer.compileAsync(far.scene, cam2d),
+			renderer.compileAsync(scene, camera),
+			renderer.compileAsync(hud.scene, cam2d),
+			renderer.compileAsync(caption.scene, cam2d)
+		];
+		renderer.setRenderTarget(null);
+		await Promise.all([...offscreen, renderer.compileAsync(post.scene, cam2d)]);
+	} catch (err) {
+		dispose();
+		throw err;
+	}
+
+	return { render, dispose };
 }
