@@ -1,0 +1,182 @@
+name: Performance
+
+# Measures every page kind on desktop and mobile (perf/pages.ts).
+# - PR: compares the PR with its base and posts a sticky comment.
+# - Push to main: compares with the last recorded run and appends to the perf-data branch.
+# Sizes and timings are reported, never enforced; the job fails only if a page errors.
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: perf-${{ github.event.pull_request.number || github.ref }}
+  # Superseded PR runs are dropped; runs on main queue up so history writes never race.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  # The build reads these; empty keeps analytics off and no secrets are needed.
+  PUBLIC_POSTHOG_API_KEY: ''
+  PUBLIC_POSTHOG_HOST: ''
+  POSTHOG_ANALYTICS_API_KEY: ''
+  POSTHOG_ANALYTICS_PROJECT_ID: ''
+
+jobs:
+  perf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Build head
+        run: |
+          pnpm exec vite build
+          mkdir -p perf-builds
+          mv build perf-builds/head
+
+      # Built in a separate worktree; measured with this PR's perf suite so both sides use the same code.
+      - name: Build base
+        id: base-build
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git worktree add --detach "$RUNNER_TEMP/base" "$BASE_SHA"
+          cd "$RUNNER_TEMP/base"
+          pnpm install --frozen-lockfile
+          pnpm exec vite build
+          mv build "$GITHUB_WORKSPACE/perf-builds/base"
+
+      - name: Measure base
+        if: steps.base-build.outcome == 'success'
+        continue-on-error: true
+        env:
+          PERF_BUILD_DIR: perf-builds/base
+          PERF_OUT: perf-results/base
+        run: pnpm perf
+
+      - name: Measure head
+        id: head-measure
+        continue-on-error: true
+        env:
+          PERF_BUILD_DIR: perf-builds/head
+          PERF_OUT: perf-results/head
+        run: pnpm perf
+
+      - name: Load history
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: |
+          if git ls-remote --exit-code --heads origin perf-data > /dev/null; then
+            git fetch origin perf-data
+            git worktree add -B perf-data perf-data origin/perf-data
+          else
+            git worktree add --orphan -b perf-data perf-data
+          fi
+
+      - name: Report
+        if: ${{ !cancelled() && hashFiles('perf-results/head/**') != '' }}
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          if [ "$EVENT" = pull_request ]; then
+            head_label="this PR (${HEAD_SHA::7})"
+          else
+            head_label="\`$REF_NAME\` (${HEAD_SHA::7})"
+          fi
+          base_args=()
+          if [ -d perf-results/base ]; then
+            base_args=(--base perf-results/base --base-label "\`$BASE_REF\` (${BASE_SHA::7})")
+          elif [ -f perf-data/history.jsonl ]; then
+            base_args=(--base-history perf-data/history.jsonl)
+          fi
+          node perf/report.mjs --head perf-results/head "${base_args[@]}" \
+            --head-label "$head_label" \
+            --history-url "https://github.com/$GITHUB_REPOSITORY/tree/perf-data" \
+            --out perf-results/report.md
+          cat perf-results/report.md >> "$GITHUB_STEP_SUMMARY"
+
+      # Fork PRs get a read-only token and can't comment; the job summary still has the report.
+      - name: Comment on PR
+        if: ${{ github.event_name == 'pull_request' && !cancelled() && hashFiles('perf-results/report.md') != '' }}
+        continue-on-error: true
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('perf-results/report.md', 'utf8');
+            const marker = '<!-- perf-report -->';
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number, per_page: 100
+            });
+            const previous = comments.find(
+              (c) => c.user?.login === 'github-actions[bot]' && c.body?.includes(marker)
+            );
+            if (previous) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: previous.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
+
+      - name: Record history
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && steps.head-measure.outcome == 'success'
+        run: |
+          node perf/history.mjs --results perf-results/head --data perf-data \
+            --sha "$GITHUB_SHA" \
+            --date "$(git log -1 --format=%cI)" \
+            --subject "$(git log -1 --format=%s)" \
+            --repo "$GITHUB_REPOSITORY"
+          cd perf-data
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add history.jsonl README.md
+          git commit -m "perf: ${GITHUB_SHA::7}"
+          git push origin perf-data
+
+      - name: Upload results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: perf-results
+          path: perf-results/
+          if-no-files-found: ignore
+
+      - name: Fail if a page errored
+        if: steps.head-measure.outcome == 'failure'
+        run: |
+          echo "::error::Perf suite failed: a page errored or returned an unexpected status. See 'Measure head'."
+          exit 1

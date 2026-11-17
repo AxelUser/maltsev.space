@@ -69,7 +69,12 @@
 	});
 </script>
 
-<div bind:this={root} class="relative size-full">
+<!-- data-live-cover: read by the perf tests (perf/pages.ts) to time when the scene shows. -->
+<div
+	bind:this={root}
+	class="relative size-full"
+	data-live-cover={playing ? 'playing' : canAnimate && !failed ? 'loading' : 'still'}
+>
 	{@render fallback?.()}
 	{#if Scene}
 		<div

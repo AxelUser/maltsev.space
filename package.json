@@ -15,7 +15,8 @@
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build",
 		"generate-og": "node scripts/generate-og-images.js",
-		"generate-og:force": "node scripts/generate-og-images.js --force"
+		"generate-og:force": "node scripts/generate-og-images.js --force",
+		"perf": "playwright test -c perf/playwright.config.ts"
 	},
 	"devDependencies": {
 		"@chromatic-com/storybook": "^4",
