@@ -1,6 +1,6 @@
 import type { LiveCoverLoader } from '$lib/components/cover/types';
 
-// Lazy: each cover (and whatever it imports, e.g. three.js) becomes its own chunk.
+// Not eager, so each cover and its dependencies (e.g. three.js) get their own chunk.
 const liveCovers = import.meta.glob('/src/posts/*/live-cover.svelte') as Record<
 	string,
 	LiveCoverLoader

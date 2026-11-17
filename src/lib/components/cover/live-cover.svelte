@@ -1,12 +1,10 @@
 <!--
 	@component
-	Shell for an animated cover. Always renders `fallback` (the still image), which is all that
-	server rendering, phones, tablets and reduced-motion readers ever see. On other devices it
-	lazy-loads the scene, fades it in over the fallback once its first frame is drawn, and runs it
-	only while it is in the viewport (hidden tabs pause on their own, as animation frames stop firing).
-	`playing` is bindable and tells whether the scene (rather than the fallback) is on screen.
+	Shows an animated cover over a still `fallback`. The scene is loaded only on non-mobile devices
+	with a hovering pointer and no reduced-motion preference, and runs only while in the viewport.
+	Everyone else, and the server render, gets the fallback. `playing` is true while the scene shows.
 
-	<LiveCover load={() => import('./live-cover.svelte')} fallback={still} bind:playing />
+	<LiveCover load={getPostLiveCover(slug)} fallback={still} bind:playing />
 -->
 <script lang="ts">
 	import type { Snippet } from 'svelte';
@@ -23,8 +21,6 @@
 
 	let { load, fallback, playing = $bindable(false) }: Props = $props();
 
-	// Not a phone or tablet (saves their battery), drives a precise hovering pointer, and the reader
-	// hasn't asked for reduced motion.
 	const mobile = isMobileDevice();
 	const desktopMotion = new MediaQuery(
 		'(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)',

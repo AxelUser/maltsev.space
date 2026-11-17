@@ -1,11 +1,7 @@
 <!--
 	@component
-	Responsive image that fills its box and shows a tiny blurred placeholder until it loads.
-	`class` lands on the `<img>` itself, so it composes with `HoverZoom.Target`:
-
-	<HoverZoom.Target>
-		{#snippet child({ props })}<Picture {...props} src={hero} placeholder={blur} />{/snippet}
-	</HoverZoom.Target>
+	Responsive image that fills its box, with a blurred placeholder until it loads.
+	`class` goes on the `<img>`.
 -->
 <script lang="ts">
 	import type { ClassValue } from 'clsx';
@@ -14,11 +10,10 @@
 	interface Props {
 		src?: EnhancedImageSrc;
 		alt?: string;
-		/** `sizes` hint for the responsive image, e.g. `(min-width: 900px) 560px, 100vw`. */
 		sizes?: string;
-		/** Tiny blurred preview (data URL) shown until the image arrives. */
+		/** Data URL. */
 		placeholder?: string;
-		/** Above-the-fold images load eagerly with high priority. */
+		/** Load eagerly with high priority (above the fold). */
 		priority?: boolean;
 		class?: ClassValue;
 	}
@@ -32,7 +27,7 @@
 		class: className
 	}: Props = $props();
 
-	// The placeholder is the <img>'s own background, so transforms move both together.
+	// Set on the <img> itself so transforms also apply to the placeholder.
 	const style = $derived(placeholder ? `background-image:url(${placeholder})` : undefined);
 	const classes = $derived(cn('block size-full bg-cover bg-center object-cover', className));
 </script>

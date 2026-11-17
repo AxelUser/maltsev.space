@@ -1,8 +1,7 @@
 <!--
 	@component
-	A post's hero: framed image with an optional caption. With `live`, the image becomes the fallback
-	of a `LiveCover` that plays on desktop. `ai` lists which of the two is AI-generated; the flag
-	shows only while that one is on screen.
+	Post hero: framed image and caption, with a `LiveCover` on top when `live` is set.
+	The AI flag shows only while a variant listed in `ai` is visible.
 -->
 <script lang="ts">
 	import type { EnhancedImageSrc } from '$lib/utils';
@@ -12,11 +11,10 @@
 
 	interface Props {
 		image?: EnhancedImageSrc;
-		/** Tiny blurred preview (data URL) shown until the image arrives. */
+		/** Data URL. */
 		placeholder?: string;
 		live?: LiveCoverLoader;
 		caption?: string;
-		/** Which cover variants are AI-generated (front matter `aiCover`). */
 		ai?: AiCoverKind[];
 		sizes?: string;
 	}

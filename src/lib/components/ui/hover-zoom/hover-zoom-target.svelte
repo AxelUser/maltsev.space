@@ -1,8 +1,7 @@
 <!--
 	@component
-	Scales up while the enclosing `HoverZoom.Area` is hovered or keyboard-focused. Clip it with an
-	`overflow-hidden` parent (e.g. `Frame`). Use `child` to put the classes straight on your element
-	instead of adding a wrapper:
+	Scales up while its `HoverZoom.Area` is hovered or focused; clip it with an `overflow-hidden`
+	parent such as `Frame`. Renders a `div`; use `child` to apply the classes to your own element:
 
 	<HoverZoom.Target>
 		{#snippet child({ props })}<Picture {...props} src={hero} />{/snippet}

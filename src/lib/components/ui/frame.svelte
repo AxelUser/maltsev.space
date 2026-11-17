@@ -1,7 +1,6 @@
 <!--
 	@component
-	HUD corner brackets around a 3:2 clipped box. Purely decorative: put any content inside
-	(a `Picture`, a live cover, an `AiFlag`, which is positioned against the clipped box).
+	HUD corner brackets around a clipped 3:2 box for any content.
 
 	<Frame><Picture src={hero} /></Frame>
 -->

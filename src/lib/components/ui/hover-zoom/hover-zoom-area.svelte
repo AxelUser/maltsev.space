@@ -1,8 +1,7 @@
 <!--
 	@component
-	The region whose hover (or keyboard focus) zooms every `HoverZoom.Target` inside it.
-	CSS-only: it marks the element as the `zoom` Tailwind group, so no state or JS runs.
-	Renders a `div`, or hand it your own element through `child` (merge `props.class` in):
+	Hovering or focusing this element zooms the `HoverZoom.Target`s inside it (CSS-only, via the
+	Tailwind group `zoom`). Renders a `div`; use `child` to render your own element instead:
 
 	<HoverZoom.Area>
 		{#snippet child({ props })}<a {href} class={cn(props.class, 'block')}>…</a>{/snippet}

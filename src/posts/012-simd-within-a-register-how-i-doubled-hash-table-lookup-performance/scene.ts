@@ -11,7 +11,7 @@
  */
 import * as THREE from 'three';
 
-/** Internal render resolution (PS1-ish 3:2); the canvas is upscaled with pixelated sampling. */
+/** Render resolution (PS1-ish 3:2). */
 export const W = 384;
 export const H = 256;
 export const LOOP = 12;
@@ -1181,14 +1181,13 @@ export function createHarborScene(canvas: HTMLCanvasElement): HarborScene {
 		if (bs) hud.sprite(bs[0], bs[1], 8, [0.35, 0.15, 0.02], 0.5);
 		hud.commit();
 
-		// passes
 		renderer.setRenderTarget(target);
 		renderer.clear();
 		renderer.render(sky.scene, cam2d);
 		renderer.render(under.scene, cam2d);
 		renderer.render(bgScene, camera);
 		renderer.render(far.scene, cam2d);
-		renderer.clearDepth(); // the harbor paints over the far silhouettes, as in the original
+		renderer.clearDepth(); // the harbor always draws over the far silhouettes
 		renderer.render(scene, camera);
 		renderer.render(hud.scene, cam2d);
 		renderer.setRenderTarget(null);

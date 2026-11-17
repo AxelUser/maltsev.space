@@ -1,6 +1,6 @@
 <!--
 	@component
-	Live cover: PS1-style harbor at dusk, a drone scanning four container "lanes" (see ./scene.ts).
+	PS1-style harbor at dusk: a drone scans four containers. The scene is in ./scene.ts.
 -->
 <script lang="ts">
 	import { SceneCanvas, type LiveCoverProps } from '$lib/components/cover';

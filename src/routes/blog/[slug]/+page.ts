@@ -15,7 +15,7 @@ function referencedSlugs(links: string[] | undefined, self: string): string[] {
 	return [...new Set(slugs)];
 }
 
-/** Front matter `aiCover: [Image, Live]`: which cover variants carry the AI flag. */
+/** Validates front matter `aiCover`, e.g. `[Image, Live]`. */
 function aiCover(slug: string, value: unknown): AiCoverKind[] {
 	if (value == null) return [];
 	const kinds = Array.isArray(value) ? value : [value];
@@ -27,7 +27,7 @@ function aiCover(slug: string, value: unknown): AiCoverKind[] {
 	return kinds;
 }
 
-/** The post's `live-cover.svelte` loader, when front matter sets `liveCover: true`. */
+/** Loader for the post's `live-cover.svelte`, if front matter sets `liveCover: true`. */
 function liveCover(slug: string, enabled: boolean): LiveCoverLoader | undefined {
 	if (!enabled) return undefined;
 	const loader = getPostLiveCover(slug);

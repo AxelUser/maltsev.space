@@ -1,8 +1,7 @@
 <!--
 	@component
-	Runs an imperative `CanvasScene` (three.js, 2D canvas, …) at a fixed internal resolution,
-	upscaled to fill its box. Draws a first frame on mount, then animates only while `isRunning`.
-	Scene time pauses with it, so the animation resumes where it stopped.
+	Renders a `CanvasScene` at a fixed resolution, stretched to fill its box. Draws one frame on
+	mount, then animates while `isRunning`; scene time stops while paused.
 
 	<SceneCanvas create={createScene} width={384} height={256} {isRunning} {onready} pixelated />
 -->
@@ -15,15 +14,15 @@
 
 	interface Props {
 		create: (canvas: HTMLCanvasElement) => CanvasScene;
-		/** Internal render resolution. */
+		/** Render resolution, not display size. */
 		width: number;
 		height: number;
 		isRunning: boolean;
-		/** Frame-rate cap; `0` renders every animation frame. */
+		/** `0` = uncapped. */
 		fps?: number;
-		/** Scene time (seconds) of the first frame. */
+		/** Seconds. */
 		startAt?: number;
-		/** Upscale with nearest-neighbour sampling (for low-res, retro scenes). */
+		/** Nearest-neighbour upscaling. */
 		pixelated?: boolean;
 		onready?: () => void;
 		class?: ClassValue;
@@ -48,12 +47,12 @@
 
 	const frames = new AnimationFrames(
 		({ delta }) => {
-			// Clamp so a resume (or a long hitch) doesn't jump the scene ahead.
+			// Capped so resuming after a pause doesn't skip ahead.
 			t += Math.min(delta, 100) / 1000;
 			scene?.render(t);
 		},
-		// runed skips a frame when its instantaneous fps exceeds the cap; +1 absorbs vsync jitter
-		// so a 30 fps cap really yields 30 on a 60 Hz display.
+		// runed drops frames whose measured fps exceeds the cap; without +1, timing jitter turns
+		// 30 fps on a 60 Hz display into ~20.
 		{ immediate: false, fpsLimit: () => (fps ? fps + 1 : 0) }
 	);
 
@@ -62,7 +61,7 @@
 			scene = create(canvas);
 			scene.render(t);
 		} catch (err) {
-			console.error('Live cover: could not start the scene', err);
+			console.error('SceneCanvas: could not start the scene', err);
 			return;
 		}
 		created = true;
