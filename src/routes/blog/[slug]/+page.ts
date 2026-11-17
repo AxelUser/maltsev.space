@@ -1,19 +1,10 @@
-import { getNeighbours, getPosts, getSeries } from '$lib/posts';
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
-import { config } from '$lib/config';
 import { getPostLiveCover } from '$lib/utils';
 import { AI_COVER_KINDS, type AiCoverKind, type LiveCoverLoader } from '$lib/components/cover';
 
-/** Slugs of other notes this post links to (front-matter `links`, filled by remark-links-to-references). */
-function referencedSlugs(links: string[] | undefined, self: string): string[] {
-	if (!links) return [];
-	const slugs = links
-		.filter((link) => link.includes(config.websiteUrl))
-		.map((link) => link.substring(link.indexOf('/blog/') + 6).split('#')[0])
-		.filter((slug) => slug.length > 0 && slug !== self);
-	return [...new Set(slugs)];
-}
+// Don't import $lib/posts: this load also runs in the client and would bundle every post.
+// Series, neighbours and referenced posts come from +page.server.ts.
 
 /** Validates front matter `aiCover`, e.g. `[Image, Live]`. */
 function aiCover(slug: string, value: unknown): AiCoverKind[] {
@@ -38,9 +29,6 @@ function liveCover(slug: string, enabled: boolean): LiveCoverLoader | undefined 
 export const load: PageLoad = async ({ params, data }) => {
 	try {
 		const post = await import(`../../../posts/${params.slug}/index.md`);
-		const series = getSeries(post.metadata.series);
-		const slugs = referencedSlugs(post.metadata.links as string[] | undefined, params.slug);
-
 		return {
 			content: post.default,
 			title: post.metadata.title as string,
@@ -56,12 +44,7 @@ export const load: PageLoad = async ({ params, data }) => {
 			coverCaption: post.metadata.coverCaption as string | undefined,
 			liveCover: liveCover(params.slug, !!post.metadata.liveCover),
 			seriesName: post.metadata.series as string | undefined,
-			series,
-			neighbours: getNeighbours(params.slug),
-			referencedPosts: slugs.length > 0 ? getPosts(null, 'published', slugs) : [],
-			placeholderUrl: data.placeholderUrl,
-			views: data.views,
-			ogImagePath: data.ogImagePath
+			...data
 		};
 	} catch (err) {
 		console.error(err);

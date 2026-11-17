@@ -3,9 +3,17 @@
 	import { Container } from '$lib/components/layout';
 	import { Button, SectionHeading } from '$lib/components/ui';
 	import { PostRows } from '$lib/components/posts';
-	import { getPosts } from '$lib/posts';
+	import type { PostPreview } from '$lib/types';
+	import { onMount } from 'svelte';
 
-	const recommendedPosts = getPosts(3);
+	let recommendedPosts = $state<PostPreview[]>([]);
+
+	// Not a static import: SvelteKit loads this component on every page at startup, and
+	// $lib/posts would bundle every post with it.
+	onMount(async () => {
+		const { getPosts } = await import('$lib/posts');
+		recommendedPosts = getPosts(3);
+	});
 </script>
 
 <svelte:head>
@@ -33,8 +41,10 @@
 		</div>
 	</section>
 
-	<section class="pb-24">
-		<SectionHeading title="While you're here" aside="All notes →" href="/blog" />
-		<PostRows posts={recommendedPosts} />
-	</section>
+	{#if recommendedPosts.length > 0}
+		<section class="pb-24">
+			<SectionHeading title="While you're here" aside="All notes →" href="/blog" />
+			<PostRows posts={recommendedPosts} />
+		</section>
+	{/if}
 </Container>
