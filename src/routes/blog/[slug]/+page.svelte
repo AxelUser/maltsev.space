@@ -5,7 +5,6 @@
 	import { Tag } from '$lib/components/ui';
 	import { PostCover } from '$lib/components/cover';
 	import { PostPager, PostRows, SeriesParts } from '$lib/components/posts';
-	import mermaid from 'mermaid';
 	import type { PageProps } from './$types';
 	import { getPostHeroImage } from '$lib/utils';
 
@@ -17,10 +16,14 @@
 			matchMedia('(prefers-color-scheme: dark)').matches);
 
 	$effect(() => {
-		if (data.content && document.querySelector('.mermaid')) {
-			mermaid.initialize({ startOnLoad: false, theme: isDark() ? 'dark' : 'neutral' });
-			mermaid.run({ querySelector: '.mermaid' });
-		}
+		if (!data.content || !document.querySelector('.mermaid')) return;
+		// FIXME: This should be anyway rendered as static svg for each post, using runtime mermaid is not efficient.
+		import('mermaid')
+			.then(({ default: mermaid }) => {
+				mermaid.initialize({ startOnLoad: false, theme: isDark() ? 'dark' : 'neutral' });
+				mermaid.run({ querySelector: '.mermaid' });
+			})
+			.catch((err) => console.error('Could not load mermaid', err));
 	});
 
 	const heroImage = $derived(getPostHeroImage(data.slug));
