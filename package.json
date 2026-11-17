@@ -15,7 +15,8 @@
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build",
 		"generate-og": "node scripts/generate-og-images.js",
-		"generate-og:force": "node scripts/generate-og-images.js --force"
+		"generate-og:force": "node scripts/generate-og-images.js --force",
+		"perf": "playwright test -c perf/playwright.config.ts"
 	},
 	"devDependencies": {
 		"@chromatic-com/storybook": "^4",
@@ -32,6 +33,7 @@
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
 		"@tailwindcss/vite": "^4.3.5",
 		"@types/node": "^24.0.10",
+		"@types/three": "^0.187.0",
 		"@vitest/browser": "latest",
 		"@vitest/coverage-v8": "latest",
 		"eslint": "^9.18.0",
@@ -56,11 +58,6 @@
 		"vite-plugin-qrcode": "^0.2.4",
 		"vitest": "latest"
 	},
-	"pnpm": {
-		"onlyBuiltDependencies": [
-			"esbuild"
-		]
-	},
 	"dependencies": {
 		"@fontsource-variable/saira": "^5.3.0",
 		"@fontsource/ibm-plex-mono": "^5.3.0",
@@ -76,9 +73,11 @@
 		"rehype-slug": "^6.0.0",
 		"remark-math": "3.0.0",
 		"remark-svgbob": "^2.0.0",
+		"runed": "^0.38.0",
 		"sharp": "^0.34.2",
 		"shiki": "^3.3.0",
 		"tailwind-merge": "^3.7.0",
+		"three": "^0.187.0",
 		"unist-util-visit": "^5.0.0"
 	}
 }

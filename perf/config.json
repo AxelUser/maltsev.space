@@ -1,0 +1,7 @@
+{
+	"regression": {
+		"$comment": "A JS size change is flagged when it grows by more than both of these.",
+		"minBytes": 5120,
+		"minPercent": 5
+	}
+}

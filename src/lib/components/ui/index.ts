@@ -9,3 +9,6 @@ export { default as Tag } from './tag.svelte';
 export { default as TechList } from './tech-list.svelte';
 export { default as Thumb } from './thumb.svelte';
 export { default as AiFlag } from './ai-flag.svelte';
+export { default as Picture } from './picture.svelte';
+export * as HoverZoom from './hover-zoom';
+export { default as LoadingOverlay } from './loading-overlay.svelte';

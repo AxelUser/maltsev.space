@@ -8,7 +8,7 @@ keywords:
 title: 'Practical Bitwise Tricks in Everyday Code'
 preview: "An opinionated and short collection of bitwise tricks that make sense at an average 1x engineer's code."
 draft: false
-aiCover: true
+aiCover: [Image]
 coverCaption: "0x2A: the answer, in hex."
 ---
 

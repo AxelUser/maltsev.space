@@ -2,9 +2,9 @@
 	import '../../../svgbob.css';
 	import { SEO } from '$lib/components';
 	import { Container } from '$lib/components/layout';
-	import { Frame, Tag } from '$lib/components/ui';
+	import { Tag } from '$lib/components/ui';
+	import { PostCover } from '$lib/components/cover';
 	import { PostPager, PostRows, SeriesParts } from '$lib/components/posts';
-	import mermaid from 'mermaid';
 	import type { PageProps } from './$types';
 	import { getPostHeroImage } from '$lib/utils';
 
@@ -16,10 +16,14 @@
 			matchMedia('(prefers-color-scheme: dark)').matches);
 
 	$effect(() => {
-		if (data.content && document.querySelector('.mermaid')) {
-			mermaid.initialize({ startOnLoad: false, theme: isDark() ? 'dark' : 'neutral' });
-			mermaid.run({ querySelector: '.mermaid' });
-		}
+		if (!data.content || !document.querySelector('.mermaid')) return;
+		// FIXME: This should be anyway rendered as static svg for each post, using runtime mermaid is not efficient.
+		import('mermaid')
+			.then(({ default: mermaid }) => {
+				mermaid.initialize({ startOnLoad: false, theme: isDark() ? 'dark' : 'neutral' });
+				mermaid.run({ querySelector: '.mermaid' });
+			})
+			.catch((err) => console.error('Could not load mermaid', err));
 	});
 
 	const heroImage = $derived(getPostHeroImage(data.slug));
@@ -74,23 +78,13 @@
 		</div>
 	</header>
 
-	{#if heroImage}
-		<figure class="mx-auto mt-2 mb-14 max-w-[1040px]">
-			<Frame
-				src={heroImage}
-				alt=""
-				placeholder={data.placeholderUrl}
-				priority
-				ai={data.aiCover}
-				sizes="(min-width: 1104px) 1040px, 100vw"
-			/>
-			{#if data.coverCaption}
-				<figcaption class="eyebrow mt-1.5 text-right">
-					{data.coverCaption}
-				</figcaption>
-			{/if}
-		</figure>
-	{/if}
+	<PostCover
+		image={heroImage}
+		placeholder={data.placeholderUrl}
+		live={data.liveCover}
+		caption={data.coverCaption}
+		ai={data.aiCover}
+	/>
 
 	<div class="mx-auto max-w-article">
 		{#if data.seriesName}

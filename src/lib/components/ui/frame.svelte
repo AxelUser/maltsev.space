@@ -1,57 +1,25 @@
 <!--
 	@component
-	Zooms on hover of an ancestor with the `group` class.
+	HUD corner brackets around a clipped 3:2 box for any content.
+
+	<Frame><Picture src={hero} /></Frame>
 -->
 <script lang="ts">
-	import type { EnhancedImageSrc } from '$lib/utils';
-	import { aiLabel, cn } from '$lib/utils';
-	import AiFlag from './ai-flag.svelte';
+	import type { Snippet } from 'svelte';
+	import type { ClassValue } from 'clsx';
+	import { cn } from '$lib/utils';
 
 	interface Props {
-		src?: EnhancedImageSrc;
-		alt?: string;
-		/** `sizes` hint for the responsive image, e.g. `(min-width: 900px) 560px, 100vw`. */
-		sizes?: string;
-		/** Tiny blurred preview (data URL) shown until the image arrives. */
-		placeholder?: string;
-		/** Above-the-fold images load eagerly with high priority. */
-		priority?: boolean;
-		/** Flags the image as AI-generated; a string names the tool. */
-		ai?: boolean | string;
 		size?: 'sm' | 'md';
-		class?: string;
+		class?: ClassValue;
+		children?: Snippet;
 	}
 
-	const {
-		src,
-		alt = '',
-		sizes = '100vw',
-		placeholder,
-		priority = false,
-		ai = false,
-		size = 'md',
-		class: className
-	}: Props = $props();
-
-	const label = $derived(aiLabel(ai));
+	const { size = 'md', class: className, children }: Props = $props();
 </script>
 
-<div class={cn('hud relative', size === 'sm' ? 'p-2' : 'p-2.5', className)}>
-	<div
-		class="aspect-[3/2] overflow-hidden bg-surface bg-cover bg-center shadow-frame"
-		style:background-image={placeholder ? `url(${placeholder})` : undefined}
-	>
-		{#if src}
-			<enhanced:img
-				{src}
-				{alt}
-				{sizes}
-				loading={priority ? 'eager' : 'lazy'}
-				fetchpriority={priority ? 'high' : 'auto'}
-				decoding="async"
-				class="block size-full object-cover transition-transform duration-500 ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.02]"
-			/>
-		{/if}
+<div class={cn('hud', size === 'sm' ? 'p-2' : 'p-2.5', className)}>
+	<div class="relative aspect-[3/2] overflow-hidden bg-surface shadow-frame">
+		{@render children?.()}
 	</div>
-	{#if label}<AiFlag {label} />{/if}
 </div>

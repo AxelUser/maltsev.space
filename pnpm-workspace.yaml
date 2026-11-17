@@ -1,0 +1,6 @@
+allowBuilds:
+  esbuild: true
+  # Not needed: sharp ships prebuilt binaries; the others are postinstall banners/checks.
+  core-js: false
+  protobufjs: false
+  sharp: false

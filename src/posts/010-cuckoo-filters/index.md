@@ -10,7 +10,7 @@ preview: 'Meet the data structure that refuses trade-offs: identical footprint t
 series: 'Grokking Bloom Filters'
 draft: false
 hero: /images/blog/010-cuckoo-filters/hero.jpg
-aiCover: true
+aiCover: [Image]
 coverCaption: "The cuckoo has moved into someone else's nest."
 ---
 

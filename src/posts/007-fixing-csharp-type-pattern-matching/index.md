@@ -11,7 +11,7 @@ title: 'Fixing C# type pattern-matching'
 preview: "Craving Kotlin's secure pattern matching on sealed classes for your C# code? Discover how the Visitor Pattern can satisfy your longing!"
 draft: false
 hero: /images/blog/007-fixing-csharp-type-pattern-matching/hero.jpg
-aiCover: true
+aiCover: [Image]
 coverCaption: "Didn't expect a Visitor, did you?"
 ---
 
