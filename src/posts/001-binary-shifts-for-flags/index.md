@@ -11,7 +11,7 @@ preview: 'Discover the simple yet powerful technique of using bitwise shift oper
 draft: false
 legacy: true
 hero: /images/blog/001-binary-shifts-for-flags/hero.jpg
-aiCover: true
+aiCover: [Image]
 coverCaption: "Like in games, strafing and shifting are rewarding."
 ---
 

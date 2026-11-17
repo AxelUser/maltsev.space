@@ -10,7 +10,7 @@ preview: 'Learn how to use "magic" attributes in C#, such as CallerFilePath, Cal
 draft: false
 legacy: true
 hero: /images/blog/002-callermembername-attribute-for-logging/hero.jpg
-aiCover: true
+aiCover: [Image]
 coverCaption: "The log already knows who called."
 ---
 

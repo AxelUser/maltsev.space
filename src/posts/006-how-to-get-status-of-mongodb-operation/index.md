@@ -6,7 +6,7 @@ title: 'Checking MongoDB Operation Status: A Simple Guide'
 preview: 'Learn how to easily check the status of your MongoDB operations with this step-by-step guide.'
 draft: false
 hero: /images/blog/006-how-to-get-status-of-mongodb-operation/hero.jpg
-aiCover: true
+aiCover: [Image]
 coverCaption: "Checking in on a long-running operation."
 ---
 

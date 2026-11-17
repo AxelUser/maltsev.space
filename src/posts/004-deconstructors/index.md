@@ -12,7 +12,7 @@ preview: 'How and when to use deconstruction syntax-sugar for your custom types 
 draft: false
 legacy: true
 hero: /images/blog/004-deconstructors/hero.jpg
-aiCover: true
+aiCover: [Image]
 coverCaption: "There's just something satisfying about deconstructing things."
 ---
 

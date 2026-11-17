@@ -11,7 +11,7 @@ preview: "Bloom filters can't remove elements — unless you let them count."
 series: 'Grokking Bloom Filters'
 draft: false
 hero: /images/blog/009-counting-bloom-filters/hero.jpg
-aiCover: true
+aiCover: [Image]
 coverCaption: "Taking samples and keeping count."
 ---
 
