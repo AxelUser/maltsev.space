@@ -25,6 +25,7 @@
 		/** Nearest-neighbour upscaling. */
 		pixelated?: boolean;
 		onready?: () => void;
+		onerror?: (err: unknown) => void;
 		class?: ClassValue;
 	}
 
@@ -37,6 +38,7 @@
 		startAt = 0,
 		pixelated = false,
 		onready,
+		onerror,
 		class: className
 	}: Props = $props();
 
@@ -62,6 +64,7 @@
 			scene.render(t);
 		} catch (err) {
 			console.error('SceneCanvas: could not start the scene', err);
+			onerror?.(err);
 			return;
 		}
 		created = true;

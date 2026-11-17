@@ -6,6 +6,8 @@ export interface LiveCoverProps {
 	isRunning: boolean;
 	/** Call after the first frame is drawn. */
 	onready?: () => void;
+	/** Call if the scene can't start; the still image stays. */
+	onerror?: (err: unknown) => void;
 }
 
 export type LiveCoverComponent = Component<LiveCoverProps>;

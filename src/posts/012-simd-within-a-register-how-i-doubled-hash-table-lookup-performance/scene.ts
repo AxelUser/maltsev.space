@@ -196,7 +196,29 @@ const GLYPH: Record<string, string> = {
 	C: '011100100100011',
 	D: '110101101101110',
 	E: '111100111100111',
-	F: '111100111100100'
+	F: '111100111100100',
+	G: '011100101101011',
+	H: '101101111101101',
+	I: '111010010010111',
+	J: '001001001101010',
+	K: '101101110101101',
+	L: '100100100100111',
+	M: '101111111101101',
+	N: '110101101101101',
+	O: '010101101101010',
+	P: '110101110100100',
+	Q: '010101101111011',
+	R: '110101110101101',
+	S: '011100010001110',
+	T: '111010010010010',
+	U: '101101101101111',
+	V: '101101101101010',
+	W: '101101111111101',
+	X: '101101010101101',
+	Y: '101101010010010',
+	Z: '111001010100111',
+	':': '000010000010000',
+	'.': '000000000000010'
 };
 const LANE_BYTES = [
 	[0x3a, 0x80, 0x7f, 0x3a],
@@ -351,7 +373,15 @@ void main() {
 }`;
 
 /* ---------- scene ---------- */
-export function createHarborScene(canvas: HTMLCanvasElement): HarborScene {
+export interface HarborOptions {
+	/** Read every frame: while true, the drone locks on and reports the matching slots. */
+	detecting?: () => boolean;
+}
+
+export function createHarborScene(
+	canvas: HTMLCanvasElement,
+	{ detecting = () => false }: HarborOptions = {}
+): HarborScene {
 	const trash: { dispose(): void }[] = [];
 	const keep = <T extends { dispose(): void }>(x: T): T => (trash.push(x), x);
 
@@ -622,6 +652,7 @@ export function createHarborScene(canvas: HTMLCanvasElement): HarborScene {
 	const under = layer(4096); // stars + water reflections
 	const far = layer(256); // distant lights over the silhouettes
 	const hud = layer(1024); // sprites + byte readouts over the harbor
+	const caption = layer(4096); // 2× text prompt at the bottom
 
 	const fullscreen = (fragmentShader: string, uniforms: Record<string, THREE.IUniform>) => {
 		const scene = new THREE.Scene();
@@ -948,16 +979,38 @@ export function createHarborScene(canvas: HTMLCanvasElement): HarborScene {
 		const q = tmp.set(...d).transformDirection(camera.matrixWorldInverse);
 		return [W / 2 + (q.x * F) / -q.z, H / 2 - (q.y * F) / -q.z];
 	};
-	const text = (x: number, y: number, s: string, c: V3) => {
+	/** Pixel-font text; a fractional `scale` is nearest-neighbour, so cells are 2 or 3 px etc. */
+	const text = (x: number, y: number, s: string, c: V3, scale = 1, into = hud) => {
 		for (let k = 0; k < s.length; k++) {
 			const g = GLYPH[s[k]];
 			if (g)
-				for (let i = 0; i < 15; i++)
-					if (g[i] === '1') hud.set(x + k * 4 + (i % 3), y + ((i / 3) | 0), c);
+				for (let i = 0; i < 15; i++) {
+					if (g[i] !== '1') continue;
+					const gx = k * 4 + (i % 3),
+						gy = (i / 3) | 0;
+					const x1 = Math.round(x + (gx + 1) * scale),
+						y1 = Math.round(y + (gy + 1) * scale);
+					for (let py = Math.round(y + gy * scale); py < y1; py++)
+						for (let px = Math.round(x + gx * scale); px < x1; px++) into.set(px, py, c);
+				}
 		}
 	};
 
+	// Detection state; advanced by the time between rendered frames.
+	const LOCK_IN = 0.5,
+		LOCK_OUT = 0.7,
+		RESOLVE = 0.7; // seconds after hover until the bytes settle
+	let lastT = NaN,
+		det = 0,
+		scanPh = 0,
+		hovering = false,
+		since = 0,
+		hovers = 0,
+		bytes = LANE_BYTES[0];
+
 	function render(t: number) {
+		const dt = Number.isNaN(lastT) ? 0 : clamp(t - lastT, 0, 0.1);
+		lastT = t;
 		const T = ((t % LOOP) + LOOP) % LOOP,
 			ph = (T / LOOP) * TAU;
 		setCamera(
@@ -966,12 +1019,20 @@ export function createHarborScene(canvas: HTMLCanvasElement): HarborScene {
 			0.125 + 0.008 * sin(ph * 2)
 		);
 
-		// scan cycle: two per loop
-		const cyc = Math.floor(T / 6),
-			u = T - cyc * 6;
-		const lock = smooth(1.7, 2.2, u) * (1 - smooth(5.2, 5.9, u));
-		const scanY = u < 2.0 ? 1 - smooth(0, 2.0, u) : 0.5 + 0.45 * sin((u - 2.0) * 2.2);
-		const flash = lock * (0.5 + 0.5 * cos((u - 2.2) * 9)) * (u > 2.2 ? 1 : 0);
+		// idle: the scan line sweeps; detecting: lock on, then the bytes resolve and matches flash
+		const wanted = detecting();
+		if (wanted !== hovering) {
+			since = 0;
+			if (wanted) bytes = LANE_BYTES[hovers++ % LANE_BYTES.length];
+		}
+		hovering = wanted;
+		since += dt;
+		det = clamp(det + (wanted ? dt / LOCK_IN : -dt / LOCK_OUT), 0, 1);
+		const lock = smooth(0, 1, det);
+		const resolved = hovering && since > RESOLVE;
+		const flash = resolved ? lock * (0.5 + 0.5 * cos((since - RESOLVE) * 9)) : 0;
+		scanPh += dt * (1.3 + 1.5 * lock);
+		const scanY = 0.5 + 0.45 * sin(scanPh);
 		const blueK = 0.85 + lock * 0.25;
 
 		// drone hovers and turns toward the container face
@@ -1132,14 +1193,13 @@ export function createHarborScene(canvas: HTMLCanvasElement): HarborScene {
 				const s = proj(cpt(a, uu, -0.05));
 				if (s) hud.sprite(s[0], s[1], 3, [0.25, 0.6, 1.0]);
 			}
-		const bytes = LANE_BYTES[cyc % 2],
-			want = bytes[0] === 0x3a ? 0x3a : 0x5d;
+		const want = bytes[0] === 0x3a ? 0x3a : 0x5d;
 		for (let i = 0; i < 2; i++)
 			for (let j = 0; j < 2; j++) {
 				const lane = (1 - i) * 2 + j;
 				const Cc = cpt(j * (CW + CGAP) + CW / 2, i * (CHH + 0.05) + CHH / 2, -0.06);
 				const sz = lerp(0.95, 0.55, lock) + 0.03 * sin(ph * 8 + lane);
-				const match = lock > 0.5 && bytes[lane] === want;
+				const match = resolved && lock > 0.5 && bytes[lane] === want;
 				const col = match
 					? mix3([1.2, 0.55, 0.12], [1.6, 1.0, 0.4], flash)
 					: ([0.55, 0.95, 1.3] as V3);
@@ -1153,7 +1213,7 @@ export function createHarborScene(canvas: HTMLCanvasElement): HarborScene {
 				line(add(Cc, mul(UP, -0.13)), add(Cc, mul(UP, 0.13)), col, 0.2);
 				const lp = proj(add(Cc, add(mul(UP, -sz - 0.12), mul(CA, -0.25))));
 				if (lp) {
-					const v = u < 2.2 ? Math.floor(hash2(lane, Math.floor(T * 14)) * 256) : bytes[lane];
+					const v = resolved ? bytes[lane] : Math.floor(hash2(lane, Math.floor(t * 14)) * 256);
 					text(
 						lp[0] - 3,
 						lp[1],
@@ -1181,6 +1241,24 @@ export function createHarborScene(canvas: HTMLCanvasElement): HarborScene {
 		if (bs) hud.sprite(bs[0], bs[1], 8, [0.35, 0.15, 0.02], 0.5);
 		hud.commit();
 
+		// caption: a static, dimmed prompt while idle; on hover, the lookup the drone performs
+		caption.reset();
+		const hex = want.toString(16).toUpperCase().padStart(2, '0');
+		const slots = [0, 1, 2, 3].filter((l) => bytes[l] === want);
+		const [msg, msgC]: [string, V3] = !hovering
+			? ['HOVER TO CHECK ALL 4 SLOTS AT ONCE', [0.6, 0.63, 0.7]]
+			: !resolved
+				? [`FINGERPRINT ${hex}: COMPARING...`, [0.6, 1.0, 1.4]]
+				: [
+						`FINGERPRINT ${hex}: FOUND IN SLOT${slots.length > 1 ? 'S' : ''} ${slots.join(' ')}`,
+						[1.5, 0.8, 0.25]
+					];
+		const x = Math.round((W - (msg.length * 4 - 1) * 2) / 2),
+			y = H - 18;
+		text(x + 1, y + 1, msg, [0.01, 0.01, 0.03], 2, caption);
+		text(x, y, msg, msgC, 2, caption);
+		caption.commit();
+
 		renderer.setRenderTarget(target);
 		renderer.clear();
 		renderer.render(sky.scene, cam2d);
@@ -1190,6 +1268,7 @@ export function createHarborScene(canvas: HTMLCanvasElement): HarborScene {
 		renderer.clearDepth(); // the harbor always draws over the far silhouettes
 		renderer.render(scene, camera);
 		renderer.render(hud.scene, cam2d);
+		renderer.render(caption.scene, cam2d);
 		renderer.setRenderTarget(null);
 		renderer.render(post.scene, cam2d);
 	}
