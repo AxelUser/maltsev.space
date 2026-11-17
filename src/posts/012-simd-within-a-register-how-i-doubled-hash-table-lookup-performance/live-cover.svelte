@@ -15,7 +15,7 @@
 </script>
 
 <div
-	class="size-full cursor-crosshair"
+	class="size-full"
 	role="presentation"
 	onpointerenter={() => (hovered = true)}
 	onpointerleave={() => (hovered = false)}
