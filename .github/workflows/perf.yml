@@ -42,7 +42,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
-          version: 9
+          version: 11
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
@@ -132,7 +132,7 @@ jobs:
       - name: Comment on PR
         if: ${{ github.event_name == 'pull_request' && !cancelled() && hashFiles('perf-results/report.md') != '' }}
         continue-on-error: true
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
@@ -169,7 +169,7 @@ jobs:
 
       - name: Upload results
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: perf-results
           path: perf-results/
