@@ -47,66 +47,54 @@ Let's see this in action. Suppose we have a Bloom filter with 10 bits and we wan
 
 Notice that both elements share position 5 — this is where the trouble begins.
 
-First, we insert both elements. Element A sets bits at positions 0, 5, and 8. Then Element B tries to set bits at positions 5, 7, and 9. Position 5 is already set from Element A, so it remains `1`, while positions 7 and 9 are newly set.
+First, we insert both elements. Element A sets bits at positions 0, 5, and 8. Then Element B tries to set bits at positions 5, 7, and 9. Position 5 is already set from Element A, so it remains `1`, while positions 7 and 9 are newly set:
 
-```mermaid title="Inserting A and B into a Bloom filter: both set bit 5"
-graph TD
-    A["Insert Element A<br/>Hash positions: 0, 5, 8"] --> A1["Set bits:<br/>bit[0] = 1<br/>bit[5] = 1<br/>bit[8] = 1"]
-
-    B["Insert Element B<br/>Hash positions: 5, 7, 9"] --> B1["Set bits:<br/>bit[5] = 1 (already set)<br/>bit[7] = 1<br/>bit[9] = 1"]
-
-    A1 --> C["Positions set: 0, 5, 7, 8, 9"]
-    B1 --> C
-
-    class A,B input
-    class C result
-```
-
-Our final bit array looks like:
+<Scrollbox>
 
 ```svgbob
-      shared bit
-           |
- A         |   B A B
- |         |   | | |
- v         v   v v v
-┌─┬─┬─┬─┬─┬─┬─┬─┬─┬─┐
-│1│0│0│0│0│1│0│1│1│1│
-└─┴─┴─┴─┴─┴─┴─┴─┴─┴─┘
- 0 1 2 3 4 5 6 7 8 9
+ set by                A                            A,B          B     A     B
+                       ↓                             ↓           ↓     ↓     ↓
+                    ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
+ after A and B      │  1  │  0  │  0  │  0  │  0  │  1  │  0  │  1  │  1  │  1  │
+                    └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
+                       0     1     2     3     4     5     6     7     8     9
 ```
 
-Now, let's attempt to delete Element A. The naive approach would be to reset its bits at positions 0, 5, and 8 back to `0`. This seems straightforward, but here's the problem: when we reset position 5, we're also removing Element B's contribution to that position. After this "deletion," our bit array becomes: `[0,0,0,0,0,0,0,1,0,1]`.
+</Scrollbox>
 
-```mermaid title="Naive deletion of A clears bit 5, which B still needs, corrupting the bit array"
-graph TD
-    A["Current state:<br/>[1,0,0,0,0,1,0,1,1,1]<br/>Both A and B inserted"] --> B["Attempt to delete Element A<br/>Reset positions: 0, 5, 8"]
+Now, let's attempt to delete Element A. The naive approach would be to reset its bits at positions 0, 5, and 8 back to `0`. This seems straightforward, but here's the problem: when we reset position 5, we're also removing Element B's contribution to that position. After this "deletion," only bits 7 and 9 remain set:
 
-    B --> C["Naive deletion:<br/>bit[0] = 0<br/>bit[5] = 0 (shared with B!)<br/>bit[8] = 0"]
+<Scrollbox>
 
-    C --> D["Corrupted bit array:<br/>[0,0,0,0,0,0,0,1,0,1]<br/>Only positions 7, 9 remain set"]
-
-    class A step
-    class C warn
-    class B,D danger
+```svgbob
+ reset to 0            0                             0                 0
+                       ↓                             ↓                 ↓
+                    ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
+ after deleting A   │  0  │  0  │  0  │  0  │  0  │  0  │  0  │  1  │  0  │  1  │
+                    └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
+                       0     1     2     3     4     5     6     7     8     9
+                                                     ↑
+                                          B still needed this bit
 ```
+
+</Scrollbox>
 
 The corruption becomes evident when we later check for Element B. We hash it to positions 5, 7, and 9, but now position 5 is `0`. Since not all of Element B's positions are set, the Bloom filter incorrectly reports that Element B is not present — a **false negative**. This is catastrophic because Element B was never deleted; it's still supposed to be in the set.
 
-```mermaid title="After the corrupted deletion, B is reported absent: a false negative"
-graph TD
-    A["Corrupted state:<br/>[0,0,0,0,0,0,0,1,0,1]<br/>Element A 'deleted'"] --> B["Check Element B<br/>Hash positions: 5, 7, 9"]
+<Scrollbox>
 
-    B --> C["Check each position:<br/>bit[5] = 0 ✗<br/>bit[7] = 1 ✓<br/>bit[9] = 1 ✓"]
+```svgbob
+ query B                                             ✗           ✓           ✓
+                                                     ↓           ↓           ↓
+                    ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
+ after deleting A   │  0  │  0  │  0  │  0  │  0  │  0  │  0  │  1  │  0  │  1  │
+                    └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
+                       0     1     2     3     4     5     6     7     8     9
 
-    C --> D{"All bits set?"}
-
-    D -->|"No, bit[5] = 0"| E["FALSE NEGATIVE!<br/>Element B appears absent<br/>but was never deleted"]
-
-    class B warn
-    class D decision
-    class A,E danger
+ B → 5, 7, 9: bit 5 is 0, so B is reported absent → FALSE NEGATIVE
 ```
+
+</Scrollbox>
 
 > [!tip]
 > It's similar to erasing your tag from a public graffiti wall — you might end up scrubbing off someone else's mark too, and now no one can tell they were ever there.
