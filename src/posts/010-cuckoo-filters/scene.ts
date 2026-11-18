@@ -372,8 +372,7 @@ export async function createStationScene(
 		DISC = kit.cylGeo(18);
 
 	/* textures (top-down, transparent where `fn` returns null) */
-	// Surface textures get mipmaps so distant ones don't shimmer; cut-out decals (glyphs, the
-	// fleet mark) stay single-level, since averaged alpha would eat their edges.
+	// cut-out decals (glyphs, the fleet mark) opt out of mipmaps: averaged alpha eats their edges
 	const tex = (w: number, h: number, fn: (x: number, y: number) => V3 | null, mipmaps = true) =>
 		kit.makeTex(w, h, fn, { topDown: true, mipmaps });
 	const gr = (v: number): V3 => [v, v, v];

@@ -78,12 +78,16 @@ export function createPs1Kit(canvas: HTMLCanvasElement, opts: Ps1KitOptions) {
 	/**
 	 * Float RGBA texture (texel values may exceed 1) with nearest filtering and repeat wrapping.
 	 * `fn` returns null for transparent texels. Rows go bottom-up unless `topDown` is set.
+	 *
+	 * Mipmapped by default, so distant surfaces don't shimmer. Pass `mipmaps: false` for alpha
+	 * cut-outs (averaged alpha erodes their edges under `alphaTest`) and for thin-line overlays
+	 * that should stay crisp at any distance instead of fading to their average.
 	 */
 	const makeTex = (
 		w: number,
 		h: number,
 		fn: (x: number, y: number) => V3 | null,
-		{ topDown = false, mipmaps = false } = {}
+		{ topDown = false, mipmaps = true } = {}
 	) => {
 		const d = new Float32Array(w * h * 4);
 		for (let y = 0; y < h; y++)

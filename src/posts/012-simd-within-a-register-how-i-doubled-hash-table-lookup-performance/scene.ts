@@ -249,8 +249,13 @@ export async function createHarborScene(
 			return gr(v);
 		}),
 		dash: makeTex(16, 4, (x) => (x < 9 ? [1.7, 1.25, 0.25] : gr(0.6))),
-		grid: makeTex(16, 16, (x, y) =>
-			x % 8 === 0 || y % 8 === 0 ? gr(1) : x % 4 === 0 && y % 4 === 0 ? gr(0.5) : gr(0.05)
+		// 1-texel lines: without mipmaps they stay crisp instead of fading to grey in the distance
+		grid: makeTex(
+			16,
+			16,
+			(x, y) =>
+				x % 8 === 0 || y % 8 === 0 ? gr(1) : x % 4 === 0 && y % 4 === 0 ? gr(0.5) : gr(0.05),
+			{ mipmaps: false }
 		),
 		panel: makeTex(16, 16, (x, y) =>
 			gr(
