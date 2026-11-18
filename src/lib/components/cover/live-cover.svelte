@@ -13,7 +13,7 @@
 	import type { Snippet } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { MediaQuery } from 'svelte/reactivity';
-	import { useIntersectionObserver } from 'runed';
+	import { useIntersectionObserver, watch } from 'runed';
 	import { cn, isMobileDevice } from '$lib/utils';
 	import { LoadingOverlay } from '$lib/components/ui';
 	import { liveCoverEnabled } from '$lib/stores/live-cover';
@@ -49,11 +49,24 @@
 		{ threshold: VISIBLE }
 	);
 
-	let Scene = $state<LiveCoverComponent>();
-	let ready = $state(false);
-	let failed = $state(false);
+	// SvelteKit reuses this component when navigating between posts, so only `load` changes.
+	// Deriving the scene state from it resets everything for the new post; assignments below
+	// override the derived value until `load` changes again.
+	let Scene = $derived.by<LiveCoverComponent | undefined>(() => {
+		void load;
+		return undefined;
+	});
+	let ready = $derived.by(() => {
+		void load;
+		return false;
+	});
+	let failed = $derived.by(() => {
+		void load;
+		return false;
+	});
 
-	$effect(() => {
+	// `Scene` is read untracked: it only resets when `load` changes, which re-runs this anyway.
+	watch([() => active, () => load], ([active, load]) => {
 		if (!active || Scene) return;
 		let cancelled = false;
 		load()
@@ -62,7 +75,7 @@
 			})
 			.catch((err) => {
 				console.error('Live cover: could not load the scene', err);
-				failed = true;
+				if (!cancelled) failed = true;
 			});
 		return () => {
 			cancelled = true;
@@ -87,21 +100,24 @@
 	data-live-cover={playing ? 'playing' : active && !failed ? 'loading' : 'still'}
 >
 	{@render fallback?.()}
-	{#if Scene && active}
-		<div
-			class={cn(
-				'absolute inset-0 transition-opacity duration-700',
-				playing ? 'opacity-100' : 'opacity-0'
-			)}
-			out:fade={{ duration: 300 }}
-		>
-			<Scene
-				isRunning={active && mostlyVisible}
-				onready={() => (ready = true)}
-				onerror={() => (failed = true)}
-			/>
-		</div>
-	{/if}
+	<!-- Keyed so a previous post's scene is dropped at once, without its (local) fade-out. -->
+	{#key load}
+		{#if Scene && active}
+			<div
+				class={cn(
+					'absolute inset-0 transition-opacity duration-700',
+					playing ? 'opacity-100' : 'opacity-0'
+				)}
+				out:fade={{ duration: 300 }}
+			>
+				<Scene
+					isRunning={active && mostlyVisible}
+					onready={() => (ready = true)}
+					onerror={() => (failed = true)}
+				/>
+			</div>
+		{/if}
+	{/key}
 	<LoadingOverlay visible={active && !ready && !failed} label="Scene is loading" />
 	{#if canAnimate && !failed}
 		<button
