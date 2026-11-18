@@ -343,10 +343,6 @@
 			@apply livery absolute -top-px -left-px h-[3px] w-16;
 		}
 
-		pre.mermaid::before {
-			display: none;
-		}
-
 		pre code {
 			font: inherit;
 		}

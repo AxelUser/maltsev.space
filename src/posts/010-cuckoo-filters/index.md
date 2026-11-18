@@ -88,7 +88,7 @@ When inserting a new element:
 
 This behavior is inspired by the cuckoo bird, which famously lays its eggs in other birds' nests, displacing the existing ones — hence the name.
 
-```mermaid
+```mermaid title="Cuckoo insertion of 'orange': evicting 'apple' starts a relocation chain that ends in success or a resize"
 graph TD
     A["New Element: 'orange'"] --> B["Calculate h1('orange') = Bucket 2<br/>Calculate h2('orange') = Bucket 5"]
 
@@ -108,13 +108,10 @@ graph TD
     K --> L["Success: All elements placed"]
     K --> M["Failure: Table too full<br/>Need to resize"]
 
-    style A fill:#5d5fef,color:#f8f9fa
-    style E fill:#22d3ee,color:#212529
-    style I fill:#22d3ee,color:#212529
-    style L fill:#22d3ee,color:#212529
-    style M fill:#dc2626,color:#f8f9fa
-    style C fill:#f59e0b,color:#212529
-    style H fill:#f59e0b,color:#212529
+    class A input
+    class C,H decision
+    class E,I,L result
+    class M danger
 ```
 
 Here's how the bucket choices are calculated:

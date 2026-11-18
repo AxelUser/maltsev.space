@@ -49,7 +49,7 @@ Notice that both elements share position 5 — this is where the trouble begins.
 
 First, we insert both elements. Element A sets bits at positions 0, 5, and 8. Then Element B tries to set bits at positions 5, 7, and 9. Position 5 is already set from Element A, so it remains `1`, while positions 7 and 9 are newly set.
 
-```mermaid
+```mermaid title="Inserting A and B into a Bloom filter: both set bit 5"
 graph TD
     A["Insert Element A<br/>Hash positions: 0, 5, 8"] --> A1["Set bits:<br/>bit[0] = 1<br/>bit[5] = 1<br/>bit[8] = 1"]
 
@@ -58,9 +58,8 @@ graph TD
     A1 --> C["Positions set: 0, 5, 7, 8, 9"]
     B1 --> C
 
-    style A fill:#22d3ee,color:#212529
-    style B fill:#22d3ee,color:#212529
-    style C fill:#22c55e,color:#212529
+    class A,B input
+    class C result
 ```
 
 Our final bit array looks like:
@@ -79,36 +78,34 @@ Our final bit array looks like:
 
 Now, let's attempt to delete Element A. The naive approach would be to reset its bits at positions 0, 5, and 8 back to `0`. This seems straightforward, but here's the problem: when we reset position 5, we're also removing Element B's contribution to that position. After this "deletion," our bit array becomes: `[0,0,0,0,0,0,0,1,0,1]`.
 
-```mermaid
+```mermaid title="Naive deletion of A clears bit 5, which B still needs, corrupting the bit array"
 graph TD
-    A["Current state:<br/>[1,0,0,0,0,1,0,1,1,1]<br/>Both A and B inserted"] --> B["❌ Attempt to delete Element A<br/>Reset positions: 0, 5, 8"]
+    A["Current state:<br/>[1,0,0,0,0,1,0,1,1,1]<br/>Both A and B inserted"] --> B["Attempt to delete Element A<br/>Reset positions: 0, 5, 8"]
 
-    B --> C["Naive deletion:<br/>bit[0] = 0<br/>bit[5] = 0 ⚠️ (shared with B!)<br/>bit[8] = 0"]
+    B --> C["Naive deletion:<br/>bit[0] = 0<br/>bit[5] = 0 (shared with B!)<br/>bit[8] = 0"]
 
     C --> D["Corrupted bit array:<br/>[0,0,0,0,0,0,0,1,0,1]<br/>Only positions 7, 9 remain set"]
 
-    style A fill:#495057,color:#f8f9fa
-    style B fill:#dc2626,color:#f8f9fa
-    style C fill:#f59e0b,color:#212529
-    style D fill:#dc2626,color:#f8f9fa
+    class A step
+    class C warn
+    class B,D danger
 ```
 
 The corruption becomes evident when we later check for Element B. We hash it to positions 5, 7, and 9, but now position 5 is `0`. Since not all of Element B's positions are set, the Bloom filter incorrectly reports that Element B is not present — a **false negative**. This is catastrophic because Element B was never deleted; it's still supposed to be in the set.
 
-```mermaid
+```mermaid title="After the corrupted deletion, B is reported absent: a false negative"
 graph TD
-    A["Corrupted state:<br/>[0,0,0,0,0,0,0,1,0,1]<br/>Element A 'deleted'"] --> B["💥 Check Element B<br/>Hash positions: 5, 7, 9"]
+    A["Corrupted state:<br/>[0,0,0,0,0,0,0,1,0,1]<br/>Element A 'deleted'"] --> B["Check Element B<br/>Hash positions: 5, 7, 9"]
 
-    B --> C["Check each position:<br/>bit[5] = 0 ❌<br/>bit[7] = 1 ✓<br/>bit[9] = 1 ✓"]
+    B --> C["Check each position:<br/>bit[5] = 0 ✗<br/>bit[7] = 1 ✓<br/>bit[9] = 1 ✓"]
 
     C --> D{"All bits set?"}
 
     D -->|"No, bit[5] = 0"| E["FALSE NEGATIVE!<br/>Element B appears absent<br/>but was never deleted"]
 
-    style A fill:#dc2626,color:#f8f9fa
-    style B fill:#f59e0b,color:#212529
-    style D fill:#f59e0b,color:#212529
-    style E fill:#dc2626,color:#f8f9fa
+    class B warn
+    class D decision
+    class A,E danger
 ```
 
 > [!tip]
@@ -183,7 +180,7 @@ When inserting an element into a CBF:
 
 The key insight is that **multiple elements may share the same positions** — but now we track exactly how many elements contributed to each position through the counter values.
 
-```mermaid
+```mermaid title="Counting Bloom filter: inserting A and B increments counters, position 4 reaches 2"
 graph TD
     A["Insert Element A<br/>Hash positions: 1, 4, 7"] --> A1["Increment counters:<br/>counter[1] = 0+1 = 1<br/>counter[4] = 0+1 = 1<br/>counter[7] = 0+1 = 1"]
 
@@ -194,9 +191,8 @@ graph TD
     A2 --> C["Final counter array:<br/>[0,1,0,0,2,0,1,1,0,1]<br/>Position 4 shared by both elements"]
     B1 --> C
 
-    style A fill:#3b82f6,color:#f8f9fa
-    style B fill:#3b82f6,color:#f8f9fa
-    style C fill:#22c55e,color:#212529
+    class A,B input
+    class C result
 ```
 
 #### Membership Query Operation
@@ -220,17 +216,17 @@ The deletion operation is just the opposite of the insertion operation:
 
 The result is that other elements sharing those positions remain unaffected because their contributions are still counted.
 
-```mermaid
+```mermaid title="Deleting A decrements its counters; position 4 stays at 1, so B is preserved"
 graph TD
     A["Current state:<br/>[0,1,0,0,2,0,1,1,0,1]<br/>Both A and B inserted"] --> B["Delete Element A<br/>Hash positions: 1, 4, 7"]
 
     B --> C["Decrement counters:<br/>counter[1] = 1-1 = 0<br/>counter[4] = 2-1 = 1 (B still contributes!)<br/>counter[7] = 1-1 = 0"]
 
-    C --> D["✅ Updated counter array:<br/>[0,0,0,0,1,0,1,0,0,1]<br/>Element B's data preserved"]
+    C --> D["Updated counter array:<br/>[0,0,0,0,1,0,1,0,0,1]<br/>Element B's data preserved"]
 
-    style A fill:#495057,color:#f8f9fa
-    style B fill:#3b82f6,color:#f8f9fa
-    style D fill:#495057,color:#f8f9fa
+    class A step
+    class B input
+    class D result
 ```
 
 This counter-based approach enables **insert**, **query**, and **delete** operations while preserving the probabilistic guarantees of the original Bloom filter structure. However, it's not without its own challenges.
@@ -358,13 +354,13 @@ This structure is more complex than a flat CBF, but it packs data more tightly a
 
 Here's how dlCBF insertion works:
 
-```mermaid
+```mermaid title="Insertion into a subtable-based filter: pick the least loaded candidate bucket, then increment or insert"
 graph TD
     A["Element: 'apple'<br/>Generate fingerprint: 0x4A2C"] --> B["Subtable 1<br/>Permute: 0x4A2C → 0x7B1D<br/>Bucket: hash(0x7B1D) % B = 3<br/>Load: 2 cells"]
 
     A --> C["Subtable 2<br/>Permute: 0x4A2C → 0x9E8F<br/>Bucket: hash(0x9E8F) % B = 7<br/>Load: 1 cell"]
 
-    B --> D["Candidate buckets:<br/>Subtable 1 bucket 3: 2 cells<br/>Subtable 2 bucket 7: 1 cell ⭐"]
+    B --> D["Candidate buckets:<br/>Subtable 1 bucket 3: 2 cells<br/>Subtable 2 bucket 7: 1 cell"]
     C --> D
 
     D --> E["Choose least loaded<br/>Subtable 2, bucket 7"]
@@ -376,12 +372,12 @@ graph TD
     G -->|Yes| H["Increment existing<br/>counter"]
     G -->|No| I["Insert new cell with<br/>fingerprint: 0x9E8F<br/> and counter: 1"]
 
-    H --> J["✅ Insertion complete"]
+    H --> J["Insertion complete"]
     I --> J
 
-    style A fill:#5d5fef,color:#f8f9fa
-    style J fill:#22c55e,color:#212529
-    style G fill:#f59e0b,color:#212529
+    class A input
+    class G decision
+    class J result
 ```
 
 ### Deletion

@@ -11,6 +11,7 @@ import remarkSVGBob from 'remark-svgbob';
 import rehypeCallouts from 'rehype-callouts';
 import readingTime from 'mdsvex-reading-time';
 import { remarkLinksToReferences } from './src/lib/plugins/remark-links-to-references.js';
+import { remarkZombieMermaid } from './src/lib/plugins/remark-zombie-mermaid.js';
 
 const lightTheme = 'github-light';
 const darkTheme = 'github-dark';
@@ -41,6 +42,8 @@ const mdsvexOptions = {
 		[remarkToc, { tight: true, maxDepth: 3 }],
 		remarkMath,
 		remarkSVGBob,
+		// ```mermaid fences → inline SVG at build time; must run before `highlight`.
+		remarkZombieMermaid,
 		remarkLinksToReferences,
 		readingTime
 	],
@@ -52,10 +55,6 @@ const mdsvexOptions = {
 	],
 	highlight: {
 		highlighter: async (code, lang = 'text') => {
-			if (lang === 'mermaid') {
-				return `{@html \`<pre class="mermaid">${code}</pre>\`}`;
-			}
-
 			const html = escapeSvelte(
 				highlighter.codeToHtml(code, {
 					lang,

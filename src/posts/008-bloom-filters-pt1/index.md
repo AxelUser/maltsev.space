@@ -55,7 +55,7 @@ The algorithm behind Bloom filters is elegantly built on three main components: 
 >
 > Examples of commonly used hash functions include MurmurHash, xxHash, CityHash, or cryptographic ones like SHA-256 (though cryptographic hashes are usually overkill for Bloom filters).
 
-```mermaid
+```mermaid title="Inserting 'apple': three hash functions each set one bit in the bit array"
 graph TD
     A["Element: 'apple'"] --> B["Hash Function 1<br/>h1('apple') = 3"]
     A --> C["Hash Function 2<br/>h2('apple') = 8"]
@@ -73,15 +73,15 @@ graph TD
     I --> K
     J --> K
 
-    style A fill:#5d5fef,color:#f8f9fa
-    style K fill:#22d3ee,color:#212529
+    class A input
+    class K result
 ```
 
 Inserting an element is fast and deterministic: the element is fed into each of the `k` hash functions, producing `k` unique array positions. The bits at all these positions are then set to 1. No matter how many elements have already been inserted, this operation always requires exactly `k` hash calculations and `k` bit updates. The beauty of this approach is its simplicity—there's no need for collision resolution or complex data structures.
 
 Lookup works similarly. To check whether an element might be in the set, the algorithm runs the element through the same `k` hash functions to obtain `k` positions. If any of these bits is 0, the element is definitely not in the set — this is guaranteed, since insertion would have set all these bits to 1.
 
-```mermaid
+```mermaid title="Looking up 'banana': bit 7 is 0, so 'banana' is definitely not in the set"
 graph TD
     A["Query: 'banana'"] --> B["Hash Function 1<br/>h1('banana') = 3"]
     A --> C["Hash Function 2<br/>h2('banana') = 7"]
@@ -98,14 +98,14 @@ graph TD
     H --> I{"All bits = 1?"}
     I -->|"No, bit[7] = 0"| J["DEFINITELY NOT in set<br/>(No false negative)"]
 
-    style A fill:#5d5fef,color:#f8f9fa
-    style J fill:#dc2626,color:#f8f9fa
-    style I fill:#f59e0b,color:#212529
+    class A input
+    class I decision
+    class J danger
 ```
 
 However, if all the bits are 1, the element _might_ be in the set, but there's also a chance that these bits were set by previous insertions of other elements. This creates the possibility of a false positive.
 
-```mermaid
+```mermaid title="Looking up 'cherry': all three bits are 1, so it is possibly in the set, a false positive"
 graph TD
     A["Query: 'cherry'"] --> B["Hash Function 1<br/>h1('cherry') = 3"]
     A --> C["Hash Function 2<br/>h2('cherry') = 8"]
@@ -125,10 +125,10 @@ graph TD
     K["Note: 'cherry' was never inserted!<br/>But its hash positions match<br/>bits set by previous elements"]
     K -.-> J
 
-    style A fill:#5d5fef,color:#f8f9fa
-    style J fill:#fde047,color:#212529
-    style I fill:#f59e0b,color:#212529
-    style K fill:#d97706,color:#f8f9fa
+    class A input
+    class I decision
+    class J warn
+    class K note
 ```
 
 The math behind this comes from the probabilistic nature of hash collisions. As more elements are added, more bits get flipped to 1, which increases the chance that any random combination of `k` positions is already occupied, even for elements that were never inserted. That's why the false positive rate grows with the number of elements, while the false negative rate stays at zero — if an element was inserted, it will always test as present.
@@ -172,7 +172,7 @@ Notice: both Alice and Bob share room `7`.
 Now, if Alice moves out and we naively "delete" her by switching off the lights (setting bits to `0`) in rooms `3`, `7`, and `12`, we inadvertently turn off room `7`, which Bob still needs.  
 The next time someone asks, "Is Bob still living here?" the system might falsely answer "No" — even though Bob never left. That's a **false negative**, and Bloom filters are designed specifically to prevent that.
 
-```mermaid
+```mermaid title="Why naive deletion breaks a Bloom filter: clearing Alice's bits makes Bob disappear"
 graph TD
     A["Alice moves in"] --> A1["Gets keys to rooms:<br/>3, 7, 12"]
     B["Bob moves in"] --> B1["Gets keys to rooms:<br/>7, 15, 23"]
@@ -189,11 +189,9 @@ graph TD
 
     Q --> F["FALSE NEGATIVE<br/>Bob never left!"]
 
-    style A fill:#22d3ee,color:#212529
-    style B fill:#22d3ee,color:#212529
-    style D fill:#dc2626,color:#f8f9fa
-    style F fill:#dc2626,color:#f8f9fa
-    style P fill:#f59e0b,color:#212529
+    class A,B input
+    class P warn
+    class D,F danger
 ```
 
 Of course, for a quick and dirty workaround, an engineer might introduce a second "blacklist" Bloom filter to track deletions. When checking membership, an element would only be considered present if it's in the main filter **and** not in the deletion filter. But sometimes this comes with its own trade-offs — and I'll cover better solutions later, like [Counting Bloom Filters](https://maltsev.space/blog/009-counting-bloom-filters) and [Cuckoo Filters](https://maltsev.space/blog/010-cuckoo-filters).
@@ -270,7 +268,7 @@ This approach has several nice properties:
 - You get a whole sequence of hash values that are nicely spread across your bit array.
 - The results are nearly as good as having fully independent hashes, at least for practical Bloom filter usage.
 
-```mermaid
+```mermaid title="Double hashing: two hashes h1 and h2 generate all k bit positions"
 graph LR
     A["Element: 'data'"] --> B["h1('data') = 5"]
     A --> C["h2('data') = 3"]
@@ -290,10 +288,9 @@ graph LR
     F --> H
     G --> H
 
-    style A fill:#5d5fef,color:#f8f9fa
-    style B fill:#495057,color:#f8f9fa
-    style C fill:#495057,color:#f8f9fa
-    style H fill:#22d3ee,color:#212529
+    class A input
+    class B,C step
+    class H result
 ```
 
 #### Why does Double-Hashing Work?
