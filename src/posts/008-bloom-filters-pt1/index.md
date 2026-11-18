@@ -17,6 +17,7 @@ coverCaption: "Have you seen this before? Probably."
 ---
 
 <script>
+  import { Scrollbox } from '$lib/components';
   import { SimpleBloomFilter, ParameterCalculator } from '$lib/components/visualization/bloom-filters';
 </script>
 
@@ -55,81 +56,60 @@ The algorithm behind Bloom filters is elegantly built on three main components: 
 >
 > Examples of commonly used hash functions include MurmurHash, xxHash, CityHash, or cryptographic ones like SHA-256 (though cryptographic hashes are usually overkill for Bloom filters).
 
-```mermaid title="Inserting 'apple': three hash functions each set one bit in the bit array"
-graph TD
-    A["Element: 'apple'"] --> B["Hash Function 1<br/>h1('apple') = 3"]
-    A --> C["Hash Function 2<br/>h2('apple') = 8"]
-    A --> D["Hash Function 3<br/>h3('apple') = 14"]
+For example, take a 16-bit array and `k = 3` hash functions, and insert two elements, `"apple"` and `"grape"`:
 
-    B --> E["Bit Array Position 3"]
-    C --> F["Bit Array Position 8"]
-    D --> G["Bit Array Position 14"]
+<Scrollbox>
 
-    E --> H["Set bit[3] = 1"]
-    F --> I["Set bit[8] = 1"]
-    G --> J["Set bit[14] = 1"]
+```svgbob
+ insert apple                     h1                  h2                      h3
+                                  ↓                   ↓                       ↓
+                    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+ after apple        │ 0 │ 0 │ 0 │ 1 │ 0 │ 0 │ 0 │ 0 │ 1 │ 0 │ 0 │ 0 │ 0 │ 0 │ 1 │ 0 │
+                    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+                      0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
 
-    H --> K["Bit Array:<br/>[0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0]"]
-    I --> K
-    J --> K
-
-    class A input
-    class K result
+ insert grape             h1                      h2              h3
+                          ↓                       ↓               ↓
+                    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+ after apple, grape │ 0 │ 1 │ 0 │ 1 │ 0 │ 0 │ 0 │ 1 │ 1 │ 0 │ 0 │ 1 │ 0 │ 0 │ 1 │ 0 │
+                    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+                      0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
 ```
+
+</Scrollbox>
 
 Inserting an element is fast and deterministic: the element is fed into each of the `k` hash functions, producing `k` unique array positions. The bits at all these positions are then set to 1. No matter how many elements have already been inserted, this operation always requires exactly `k` hash calculations and `k` bit updates. The beauty of this approach is its simplicity—there's no need for collision resolution or complex data structures.
 
-Lookup works similarly. To check whether an element might be in the set, the algorithm runs the element through the same `k` hash functions to obtain `k` positions. If any of these bits is 0, the element is definitely not in the set — this is guaranteed, since insertion would have set all these bits to 1.
+Lookup works similarly. To check whether an element might be in the set, the algorithm runs the element through the same `k` hash functions to obtain `k` positions. If any of these bits is 0, the element is definitely not in the set — this is guaranteed, since insertion would have set all these bits to 1. For example, `"banana"` hashes to positions 3, 5 and 14. Bit 5 is 0, so `"banana"` was never inserted:
 
-```mermaid title="Looking up 'banana': bit 7 is 0, so 'banana' is definitely not in the set"
-graph TD
-    A["Query: 'banana'"] --> B["Hash Function 1<br/>h1('banana') = 3"]
-    A --> C["Hash Function 2<br/>h2('banana') = 7"]
-    A --> D["Hash Function 3<br/>h3('banana') = 14"]
+<Scrollbox>
 
-    B --> E["Check bit[3]<br/>Result: 1 ✓"]
-    C --> F["Check bit[7]<br/>Result: 0 ✗"]
-    D --> G["Check bit[14]<br/>Result: 1 ✓"]
-
-    E --> H["Current Bit Array:<br/>[0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0]"]
-    F --> H
-    G --> H
-
-    H --> I{"All bits = 1?"}
-    I -->|"No, bit[7] = 0"| J["DEFINITELY NOT in set<br/>(No false negative)"]
-
-    class A input
-    class I decision
-    class J danger
+```svgbob
+ query banana                     ✓       ✗                                   ✓
+                                  ↓       ↓                                   ↓
+                    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+ after apple, grape │ 0 │ 1 │ 0 │ 1 │ 0 │ 0 │ 0 │ 1 │ 1 │ 0 │ 0 │ 1 │ 0 │ 0 │ 1 │ 0 │
+                    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+                      0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
 ```
 
-However, if all the bits are 1, the element _might_ be in the set, but there's also a chance that these bits were set by previous insertions of other elements. This creates the possibility of a false positive.
+</Scrollbox>
 
-```mermaid title="Looking up 'cherry': all three bits are 1, so it is possibly in the set, a false positive"
-graph TD
-    A["Query: 'cherry'"] --> B["Hash Function 1<br/>h1('cherry') = 3"]
-    A --> C["Hash Function 2<br/>h2('cherry') = 8"]
-    A --> D["Hash Function 3<br/>h3('cherry') = 14"]
+However, if all the bits are 1, the element _might_ be in the set, but there's also a chance that these bits were set by previous insertions of other elements. This creates the possibility of a false positive. For example, `"cherry"` was never inserted, but it hashes to positions 3, 7 and 11: bit 3 was set by `"apple"`, bits 7 and 11 by `"grape"`, so the filter answers "maybe":
 
-    B --> E["Check bit[3]<br/>Result: 1 ✓"]
-    C --> F["Check bit[8]<br/>Result: 1 ✓"]
-    D --> G["Check bit[14]<br/>Result: 1 ✓"]
+<Scrollbox>
 
-    E --> H["Current Bit Array:<br/>[0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0]"]
-    F --> H
-    G --> H
-
-    H --> I{"All bits = 1?"}
-    I -->|"Yes, all = 1"| J["POSSIBLY in set<br/>(Could be false positive)"]
-
-    K["Note: 'cherry' was never inserted!<br/>But its hash positions match<br/>bits set by previous elements"]
-    K -.-> J
-
-    class A input
-    class I decision
-    class J warn
-    class K note
+```svgbob
+ query cherry                     ✓               ✓               ✓
+                                  ↓               ↓               ↓
+                    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+ after apple, grape │ 0 │ 1 │ 0 │ 1 │ 0 │ 0 │ 0 │ 1 │ 1 │ 0 │ 0 │ 1 │ 0 │ 0 │ 1 │ 0 │
+                    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+                      0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
+ set by                         apple           grape           grape
 ```
+
+</Scrollbox>
 
 The math behind this comes from the probabilistic nature of hash collisions. As more elements are added, more bits get flipped to 1, which increases the chance that any random combination of `k` positions is already occupied, even for elements that were never inserted. That's why the false positive rate grows with the number of elements, while the false negative rate stays at zero — if an element was inserted, it will always test as present.
 
@@ -268,30 +248,23 @@ This approach has several nice properties:
 - You get a whole sequence of hash values that are nicely spread across your bit array.
 - The results are nearly as good as having fully independent hashes, at least for practical Bloom filter usage.
 
-```mermaid title="Double hashing: two hashes h1 and h2 generate all k bit positions"
-graph LR
-    A["Element: 'data'"] --> B["h1('data') = 5"]
-    A --> C["h2('data') = 3"]
+For example, with `h1 = 5`, `h2 = 3`, `m = 16` and `k = 4`:
 
-    B --> D["position_0 = (5 + 0×3) % 16 = 5"]
-    B --> E["position_1 = (5 + 1×3) % 16 = 8"]
-    B --> F["position_2 = (5 + 2×3) % 16 = 11"]
-    B --> G["position_3 = (5 + 3×3) % 16 = 14"]
+<Scrollbox>
 
-    C --> D
-    C --> E
-    C --> F
-    C --> G
-
-    D --> H["Set bits: 5, 8, 11, 14"]
-    E --> H
-    F --> H
-    G --> H
-
-    class A input
-    class B,C step
-    class H result
+```svgbob
+ i, jump by h2                            0   +3 →    1   +3 →    2   +3 →    3
+                                          ↓           ↓           ↓           ↓
+                    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+ bit array          │ 0 │ 0 │ 0 │ 0 │ 0 │ 1 │ 0 │ 0 │ 1 │ 0 │ 0 │ 1 │ 0 │ 0 │ 1 │ 0 │
+                    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+                      0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
 ```
+
+</Scrollbox>
+
+> [!info]
+> In other words, double hashing starts at bit `h1` and jumps forward by `h2` another `k − 1` times, wrapping around the end of the array (that's the `mod m`).
 
 #### Why does Double-Hashing Work?
 
