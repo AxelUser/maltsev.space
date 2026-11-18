@@ -329,40 +329,21 @@ Each subtable contains `B` buckets. Every bucket holds a small, fixed number of 
 - a **fingerprint** (a short hash of the original element)
 - a **counter** (how many times it's been added)
 
-So instead of one giant table, we split it into `d` isolated parts.
+So instead of one giant table, we split it into `d` isolated parts. For example, here is a tiny dlCBF with `d = 2` subtables of `B = 4` buckets. Each cell holds a fingerprint and its counter (`A2C, 1` means fingerprint `0xA2C`, added once):
 
 <Scrollbox>
 
 ```svgbob
-            d-left Counting Bloom Filter Memory Layout
-                (d=2 subtables, B=4 buckets each)
-
-  Subtable 0:                          Subtable 1:
-  +-----------------------------+    +-----------------------------+
-  | Bucket 0                    |    | Bucket 0                    |
-  | +---------+---------+-----+ |    | +---------+---------+-----+ |
-  | |fp:0xA2C |fp:0x7F1 | ... | |    | |fp:0x3E9 |  empty  | ... | |
-  | |cnt: 1   |cnt: 2   |     | |    | |cnt: 1   |         |     | |
-  | +---------+---------+-----+ |    | +---------+---------+-----+ |
-  +-----------------------------+    +-----------------------------+
-  | Bucket 1                    |    | Bucket 1                    |
-  | +---------+---------+-----+ |    | +---------+---------+-----+ |
-  | |fp:0x5B8 |  empty  | ... | |    | |fp:0x9D4 |fp:0x1C7 | ... | |
-  | |cnt: 1   |         |     | |    | |cnt: 3   |cnt: 1   |     | |
-  | +---------+---------+-----+ |    | +---------+---------+-----+ |
-  +-----------------------------+    +-----------------------------+
-  | Bucket 2                    |    | Bucket 2                    |
-  | +---------+---------+-----+ |    | +---------+---------+-----+ |
-  | |  empty  |  empty  | ... | |    | |fp:0x6A1 |  empty  | ... | |
-  | |         |         |     | |    | |cnt: 1   |         |     | |
-  | +---------+---------+-----+ |    | +---------+---------+-----+ |
-  +-----------------------------+    +-----------------------------+
-  | Bucket 3                    |    | Bucket 3                    |
-  | +---------+---------+-----+ |    | +---------+---------+-----+ |
-  | |fp:0x8E6 |  empty  | ... | |    | |  empty  |  empty  | ... | |
-  | |cnt: 2   |         |     | |    | |         |         |     | |
-  | +---------+---------+-----+ |    | +---------+---------+-----+ |
-  +-----------------------------+    +-----------------------------+
+                    subtable 0                                subtable 1
+            +---------+---------+-----+               +---------+---------+-----+
+  bucket 0  | A2C, 1  | 7F1, 2  | ... |     bucket 0  | 3E9, 1  |         | ... |
+            +---------+---------+-----+               +---------+---------+-----+
+  bucket 1  | 5B8, 1  |         | ... |     bucket 1  | 9D4, 3  | 1C7, 1  | ... |
+            +---------+---------+-----+               +---------+---------+-----+
+  bucket 2  |         |         | ... |     bucket 2  | 6A1, 1  |         | ... |
+            +---------+---------+-----+               +---------+---------+-----+
+  bucket 3  | 8E6, 2  |         | ... |     bucket 3  |         |         | ... |
+            +---------+---------+-----+               +---------+---------+-----+
 ```
 
 </Scrollbox>
@@ -383,33 +364,23 @@ This structure is more complex than a flat CBF, but it packs data more tightly a
 5. If a cell with the modified fingerprint already exists there, increment its counter.
 6. Otherwise, insert a new cell with the fingerprint and counter set to 1.
 
-Here's how dlCBF insertion works:
+For example, let's insert `"apple"` into the filter above. Its fingerprint is `0x4A2`. Subtable 0 permutes it to `0x7B1`, which maps to bucket 3, and subtable 1 permutes it to `0x9E8`, which maps to bucket 1. Bucket 3 of subtable 0 uses one cell and bucket 1 of subtable 1 uses two, so apple goes to subtable 0 as a new cell `7B1, 1`:
 
-```mermaid title="Insertion into a subtable-based filter: pick the least loaded candidate bucket, then increment or insert"
-graph TD
-    A["Element: 'apple'<br/>Generate fingerprint: 0x4A2C"] --> B["Subtable 1<br/>Permute: 0x4A2C → 0x7B1D<br/>Bucket: hash(0x7B1D) % B = 3<br/>Load: 2 cells"]
+<Scrollbox>
 
-    A --> C["Subtable 2<br/>Permute: 0x4A2C → 0x9E8F<br/>Bucket: hash(0x9E8F) % B = 7<br/>Load: 1 cell"]
-
-    B --> D["Candidate buckets:<br/>Subtable 1 bucket 3: 2 cells<br/>Subtable 2 bucket 7: 1 cell"]
-    C --> D
-
-    D --> E["Choose least loaded<br/>Subtable 2, bucket 7"]
-
-    E --> F["Check if fingerprint 0x9E8F<br/>already exists in bucket 7"]
-
-    F --> G{"Fingerprint<br/>exists?"}
-
-    G -->|Yes| H["Increment existing<br/>counter"]
-    G -->|No| I["Insert new cell with<br/>fingerprint: 0x9E8F<br/> and counter: 1"]
-
-    H --> J["Insertion complete"]
-    I --> J
-
-    class A input
-    class G decision
-    class J result
+```svgbob
+                                  7B1, 1
+                                     ↓
+                       +---------+---------+-----+
+ subtable 0, bucket 3  | 8E6, 2  |         | ... |   load 1  ✓
+                       +---------+---------+-----+
+ subtable 1, bucket 1  | 9D4, 3  | 1C7, 1  | ... |   load 2
+                       +---------+---------+-----+
 ```
+
+</Scrollbox>
+
+If `7B1` had already been in that bucket, we would increment its counter instead of taking a new cell.
 
 ### Deletion
 
