@@ -1,6 +1,7 @@
 /**
- * PS1-style orbital station deck, rendered with three.js. A landing deck stretches into the
- * distance along the station wall, with 4 hangar bays (B1–B4) of 4 landing pads each: a cuckoo
+ * PS1-style orbital station, rendered with three.js. A long cylindrical hull carries a hangar
+ * module, a strut-braced landing deck cantilevered off it, and a solar truss at the far end. The
+ * deck has 4 hangar bays (B1–B4) of 4 landing pads each: a cuckoo
  * filter with 4 buckets × 4 slots. Every ship is known only by its hull code (the fingerprint)
  * and is cleared for exactly two bays.
  *
@@ -30,6 +31,7 @@ import {
 	hash2,
 	hex,
 	I3,
+	lerp3,
 	mmul,
 	mul,
 	mv,
@@ -115,6 +117,19 @@ const DECK_X0 = -26;
 const DECK_X1 = BAY_DX * BUCKETS + 20;
 const DL = DECK_X1 - DECK_X0;
 const DC = (DECK_X0 + DECK_X1) / 2;
+// pressurised hull: a cylinder along x behind the hangar module
+const HULL_Y = 6;
+const HULL_Z = -46;
+const HULL_R = 24;
+const HULL_X0 = DECK_X0 - 18;
+const HULL_X1 = DECK_X1 + 14;
+const HULL_L = HULL_X1 - HULL_X0;
+const HULL_C = (HULL_X0 + HULL_X1) / 2;
+// hangar module: a block from the wall face back into the hull
+const BLOCK_Y0 = -5;
+const BLOCK_Y1 = 19.5;
+const BLOCK_Z0 = -30;
+const ALONG_X = Rz(-PI / 2); // turns a cylinder's axis from y to x
 const PAD = 9; // pad size
 const SHIP_S = 1.45; // ship model scale
 const PAD_YAW = 0; // parked ships point down the deck
@@ -411,6 +426,11 @@ export async function createStationScene(
 					? [0.3, 1.0, 1.4]
 					: gr(0.18)
 		),
+		solar: tex(16, 16, (x, y) => {
+			if (x % 8 === 0 || y % 4 === 0) return gr(0.55); // cell frames
+			return [0.08, 0.12 + 0.04 * hash2(x >> 3, y >> 2), 0.35];
+		}),
+		radiator: tex(16, 16, (x, y) => gr(y % 4 === 0 ? 0.6 : 0.95 - 0.08 * hash2(x >> 2, y >> 2))),
 		mark: tex(24, 16, cuckooMark),
 		bays: Array.from({ length: BUCKETS }, (_, b) => glyphTex(bayName(b), [1.6, 1.45, 1.2]))
 	};
@@ -466,7 +486,28 @@ export async function createStationScene(
 	const dark = lam([0.06, 0.06, 0.07]);
 	const orangeM = basic([1.6, 0.7, 0.18]);
 	const cyanM = basic([0.3, 1.1, 1.5]);
+	const winM = lam([1, 1, 1], {
+		map: TEX.windows,
+		emissive: C([0.18, 0.1, 0.04]),
+		emissiveMap: TEX.windows
+	});
 	const DW = EDGE_Z - WALL_Z;
+	/** A beam of thickness `r` from `a` to `b`. */
+	const strut = (a: V3, b: V3, r: number, mat: THREE.Material) => {
+		const d = sub(b, a),
+			len = Math.hypot(...d),
+			y = mul(d, 1 / len);
+		const x = nrm(cross(y, Math.abs(y[1]) < 0.9 ? [0, 1, 0] : [1, 0, 0])),
+			z = cross(x, y);
+		box(mul(add(a, b), 0.5), [r, len, r], mat, [x[0], y[0], z[0], x[1], y[1], z[1], x[2], y[2], z[2]]);
+	};
+	/** Unit cylinder whose UVs repeat `us` times around and along it. */
+	const cylUV = (segs: number, us: [number, number]) => {
+		const g = kit.keep(kit.cylGeo(segs).clone()),
+			a = g.getAttribute('uv');
+		for (let i = 0; i < a.count; i++) a.setXY(i, a.getX(i) * us[0], a.getY(i) * us[1]);
+		return g;
+	};
 
 	// the deck: a long slab with an edge rail, light strips and a truss underneath
 	const deckM = lam([0.3, 0.3, 0.32], { map: TEX.deck });
@@ -478,15 +519,96 @@ export async function createStationScene(
 	}
 	box([DC, 2.0, EDGE_Z - 0.3], [DL, 0.15, 0.15], steel);
 	box([DC, 1.0, EDGE_Z - 0.3], [DL, 0.1, 0.1], steel);
-	for (let x = DECK_X0 + 10; x < DECK_X1; x += 24) {
-		box([x, -14, -8], [3, 22, 3], steel);
-		box([x, -10, -2], [1.2, 14, 1.2], steel, Rx(0.5));
-		box([x + 1.5, -6.5, EDGE_Z - 2], [2, 0.3, 0.2], orangeM);
+	// the deck hangs off the hangar module; diagonal struts brace its front edge against the hull
+	const strutXs: number[] = [];
+	for (let x = DECK_X0 + 10; x < DECK_X1; x += 24) strutXs.push(x);
+	const strutTop = (x: number): V3 => [x, -5.5, 5],
+		strutFoot = (x: number): V3 => [x, -14, -34]; // just inside the hull skin
+	for (const [i, x] of strutXs.entries()) {
+		strut(strutTop(x), strutFoot(x), 0.9, steel);
+		box([x, -6.3, -6], [0.8, 0.6, 24], steel); // cross beam under the deck
+		box([x + 1.5, -6.2, 6.05], [2, 0.3, 0.2], orangeM);
+		const nx = strutXs[i + 1];
+		if (nx !== undefined) strut(strutTop(x), lerp3(strutTop(nx), strutFoot(nx), 0.5), 0.5, steel);
+	}
+	{
+		// lower chord through the strut midpoints
+		const x0 = strutXs[0],
+			x1 = strutXs[strutXs.length - 1];
+		const m = lerp3(strutTop(0), strutFoot(0), 0.5);
+		box([(x0 + x1) / 2, m[1], m[2]], [x1 - x0, 0.7, 0.7], steel);
 	}
 
-	// the station wall: hangar doors between angular pillars, bay plates, light strips
-	const wallTop = 20;
-	box([DC, wallTop / 2, WALL_Z - 5], [DL, wallTop, 10], plating, I3, boxUV([DL / 8, wallTop / 8]));
+	// the pressurised hull: one long cylinder with ring frames and stepped end caps
+	const HULL_CYL = kit.cylGeo(24);
+	const hullGeo = cylUV(24, [18, HULL_L / 8]);
+	cyl([HULL_C, HULL_Y, HULL_Z], HULL_R, HULL_L, plating, ALONG_X, hullGeo);
+	const frames = [HULL_X0 + 2, HULL_X1 - 2];
+	for (let b = 0; b <= BUCKETS; b++) frames.push(bayX(b) - BAY_DX / 2); // in line with the pillars
+	for (const x of frames) cyl([x, HULL_Y, HULL_Z], HULL_R + 0.7, 1.6, steel, ALONG_X, HULL_CYL);
+	for (const [x, dir] of [
+		[HULL_X0, -1],
+		[HULL_X1, 1]
+	]) {
+		cyl([x + dir * 1.5, HULL_Y, HULL_Z], HULL_R - 4, 3, plating, ALONG_X, HULL_CYL);
+		cyl([x + dir * 4.5, HULL_Y, HULL_Z], HULL_R - 11, 3, plating, ALONG_X, HULL_CYL);
+		cyl([x + dir * 6.3, HULL_Y, HULL_Z], 5, 0.6, orangeM, ALONG_X); // docking collar
+	}
+	// window bands along the upper hull, above the hangar module
+	for (const th of [0.73, 1.0]) {
+		const r = HULL_R + 0.1;
+		box(
+			[DC, HULL_Y + r * sin(th), HULL_Z + r * cos(th)],
+			[DL, 0.2, 1.4],
+			winM,
+			Rx(PI / 2 - th),
+			boxUV([DL / 16, 1])
+		);
+	}
+	// topside: a dish, a radiator stack and a smaller service module riding on the hull
+	const top = HULL_Y + HULL_R;
+	cyl([40, top + 1, HULL_Z + 2], 1.5, 3, steel);
+	cyl([40, top + 3, HULL_Z + 2], 4, 0.5, lam([0.5, 0.5, 0.52]), Rx(-0.8), DISC);
+	const radM = lam([0.5, 0.52, 0.56], { map: TEX.radiator });
+	for (const [i, th] of [1.75, 1.95, 2.15].entries()) {
+		const c = HULL_R + 5;
+		box(
+			[-2 + i * 2, HULL_Y + c * sin(th), HULL_Z + c * cos(th)],
+			[14, 10, 0.25],
+			radM,
+			Rx(PI / 2 - th),
+			boxUV([2, 1])
+		);
+	}
+	cyl([100, top + 3, HULL_Z - 6], 5, 40, plating, ALONG_X, cylUV(24, [4, 5]));
+	for (const x of [80, 120]) cyl([x, top + 3, HULL_Z - 6], 3.5, 2, steel, ALONG_X, HULL_CYL);
+	for (const x of [90, 110]) box([x, top + 0.5, HULL_Z - 6], [2, 3, 2], steel);
+
+	// power: a spine runs out of the far end cap to a truss carrying four pairs of solar wings
+	const SOLAR_X = 172;
+	{
+		const x0 = HULL_X1 + 6;
+		cyl([(x0 + SOLAR_X) / 2, HULL_Y, HULL_Z], 2.5, SOLAR_X - x0, steel, ALONG_X);
+		box([SOLAR_X, HULL_Y, -52], [1.6, 1.6, 96], steel);
+		for (let z = -98; z <= -6; z += 12) box([SOLAR_X, HULL_Y, z], [2.4, 2.4, 0.8], dark);
+		const solarM = lam([0.4, 0.45, 0.7], { map: TEX.solar });
+		for (const z of [-88, -66, -36, -14]) {
+			box([SOLAR_X, HULL_Y, z], [0.3, 58, 0.3], steel);
+			for (const dy of [-1, 1])
+				box([SOLAR_X, HULL_Y + dy * 16, z], [0.15, 26, 10], solarM, Ry(0.4), boxUV([2, 5]));
+		}
+	}
+
+	// the hangar module: a flat-faced block set into the hull, doors between angular pillars
+	box(
+		[DC, (BLOCK_Y0 + BLOCK_Y1) / 2, (WALL_Z + BLOCK_Z0) / 2],
+		[DL, BLOCK_Y1 - BLOCK_Y0, WALL_Z - BLOCK_Z0],
+		plating,
+		I3,
+		boxUV([DL / 8, (BLOCK_Y1 - BLOCK_Y0) / 8])
+	);
+	box([DC, BLOCK_Y1 - 0.3, WALL_Z - 0.6], [DL + 0.4, 1.6, 2.4], steel, Rx(0.5)); // top lip
+	for (const x of [DECK_X0, DECK_X1]) box([x, 7, -24], [1.2, 25, 13], steel); // end plates
 	const doorM = basic([1, 1, 1], { map: TEX.door });
 	// each bay's status strip has its own material, recoloured every frame
 	const bayMats = Array.from({ length: BUCKETS }, () => basic([0.3, 1.1, 1.5]));
@@ -507,27 +629,6 @@ export async function createStationScene(
 		box([x, 3.5, WALL_Z + 2.45], [0.25, 3, 0.1], orangeM);
 		box([x, 15.2, WALL_Z + 2.2], [1.6, 0.3, 0.1], cyanM);
 	}
-	// superstructure: stepped upper decks with window strips, towers, antennas, a dish, a saucer
-	const winM = lam([1, 1, 1], {
-		map: TEX.windows,
-		emissive: C([0.18, 0.1, 0.04]),
-		emissiveMap: TEX.windows
-	});
-	box([DC, 24, WALL_Z - 9], [DL, 8, 10], winM, I3, boxUV([DL / 16, 1]));
-	box([DC - 20, 31, WALL_Z - 14], [DL - 60, 6, 8], winM, I3, boxUV([(DL - 60) / 16, 1]));
-	for (const [x, h] of [
-		[-22, 46],
-		[10, 38],
-		[54, 34]
-	]) {
-		box([x, h / 2, WALL_Z - 14], [9, h, 9], plating, I3, boxUV([1, h / 8]));
-		box([x, h + 4, WALL_Z - 14], [0.3, 8, 0.3], steel);
-	}
-	cyl([40, 40, WALL_Z - 16], 2, 1.5, steel);
-	cyl([40, 42.5, WALL_Z - 16], 4, 0.5, lam([0.5, 0.5, 0.52]), Rx(-0.8), DISC);
-	cyl([118, 30, WALL_Z - 30], 26, 2.2, plating, I3, DISC);
-	cyl([118, 32.5, WALL_Z - 30], 16, 3, winM, I3, DISC);
-	cyl([118, 15, WALL_Z - 30], 3, 30, steel);
 	// cargo on the deck
 	const crate = lam([0.45, 0.43, 0.4], { map: TEX.hull });
 	for (let b = 0; b <= BUCKETS; b++) {
