@@ -83,7 +83,7 @@ export function createPs1Kit(canvas: HTMLCanvasElement, opts: Ps1KitOptions) {
 		w: number,
 		h: number,
 		fn: (x: number, y: number) => V3 | null,
-		{ topDown = false } = {}
+		{ topDown = false, mipmaps = false } = {}
 	) => {
 		const d = new Float32Array(w * h * 4);
 		for (let y = 0; y < h; y++)
@@ -97,6 +97,35 @@ export function createPs1Kit(canvas: HTMLCanvasElement, opts: Ps1KitOptions) {
 		t.minFilter = THREE.NearestFilter;
 		t.wrapS = t.wrapT = THREE.RepeatWrapping;
 		t.generateMipmaps = false;
+		if (mipmaps) {
+			// Box-filtered chain built on the CPU (float textures can't generate mipmaps on the GPU).
+			// Nearest-mipmap-nearest keeps hard texels up close and stops distant surfaces shimmering.
+			const levels = [{ data: d, width: w, height: h }];
+			for (let l = levels[0]; l.width > 1 || l.height > 1; ) {
+				const nw = Math.max(1, l.width >> 1),
+					nh = Math.max(1, l.height >> 1),
+					nd = new Float32Array(nw * nh * 4);
+				for (let y = 0; y < nh; y++)
+					for (let x = 0; x < nw; x++)
+						for (let c = 0; c < 4; c++) {
+							let s = 0;
+							for (const [dx, dy] of [
+								[0, 0],
+								[1, 0],
+								[0, 1],
+								[1, 1]
+							]) {
+								const sx = Math.min(l.width - 1, x * 2 + dx),
+									sy = Math.min(l.height - 1, y * 2 + dy);
+								s += l.data[(sy * l.width + sx) * 4 + c];
+							}
+							nd[(y * nw + x) * 4 + c] = s / 4;
+						}
+				levels.push((l = { data: nd, width: nw, height: nh }));
+			}
+			t.mipmaps = levels as unknown as THREE.DataTexture['mipmaps'];
+			t.minFilter = THREE.NearestMipmapNearestFilter;
+		}
 		t.needsUpdate = true;
 		return t;
 	};

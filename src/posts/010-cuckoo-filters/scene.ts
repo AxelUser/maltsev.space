@@ -372,8 +372,10 @@ export async function createStationScene(
 		DISC = kit.cylGeo(18);
 
 	/* textures (top-down, transparent where `fn` returns null) */
-	const tex = (w: number, h: number, fn: (x: number, y: number) => V3 | null) =>
-		kit.makeTex(w, h, fn, { topDown: true });
+	// Surface textures get mipmaps so distant ones don't shimmer; cut-out decals (glyphs, the
+	// fleet mark) stay single-level, since averaged alpha would eat their edges.
+	const tex = (w: number, h: number, fn: (x: number, y: number) => V3 | null, mipmaps = true) =>
+		kit.makeTex(w, h, fn, { topDown: true, mipmaps });
 	const gr = (v: number): V3 => [v, v, v];
 	const glyphTex = (s: string, c: V3) =>
 		tex(s.length * 4 + 1, 7, (x, y) => {
@@ -382,7 +384,7 @@ export async function createStationScene(
 				gy = y - 1;
 			const g = GLYPH[s[k]];
 			return g && gx < 3 && gy >= 0 && gy < 5 && g[gy * 3 + gx] === '1' ? c : null;
-		});
+		}, false);
 	const TEX = {
 		hull: tex(32, 32, (x, y) => {
 			let v = 0.85 + 0.2 * fbm(x * 0.25, y * 0.25);
@@ -431,7 +433,7 @@ export async function createStationScene(
 			return [0.08, 0.12 + 0.04 * hash2(x >> 3, y >> 2), 0.35];
 		}),
 		radiator: tex(16, 16, (x, y) => gr(y % 4 === 0 ? 0.6 : 0.95 - 0.08 * hash2(x >> 2, y >> 2))),
-		mark: tex(24, 16, cuckooMark),
+		mark: tex(24, 16, cuckooMark, false),
 		bays: Array.from({ length: BUCKETS }, (_, b) => glyphTex(bayName(b), [1.6, 1.45, 1.2]))
 	};
 	for (const t of [TEX.mark, ...TEX.bays]) t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
@@ -484,8 +486,11 @@ export async function createStationScene(
 	const plating = lam([0.24, 0.24, 0.26], { map: TEX.plating });
 	const steel = lam([0.16, 0.16, 0.18]);
 	const dark = lam([0.06, 0.06, 0.07]);
-	const orangeM = basic([1.6, 0.7, 0.18]);
-	const cyanM = basic([0.3, 1.1, 1.5]);
+	// decals and strips sit a hair off other surfaces; a depth offset keeps them from z-fighting
+	// once vertex snapping jiggles the two surfaces independently
+	const DECAL = { polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2 };
+	const orangeM = basic([1.6, 0.7, 0.18], DECAL);
+	const cyanM = basic([0.3, 1.1, 1.5], DECAL);
 	const winM = lam([1, 1, 1], {
 		map: TEX.windows,
 		emissive: C([0.18, 0.1, 0.04]),
@@ -609,15 +614,15 @@ export async function createStationScene(
 	);
 	box([DC, BLOCK_Y1 - 0.3, WALL_Z - 0.6], [DL + 0.4, 1.6, 2.4], steel, Rx(0.5)); // top lip
 	for (const x of [DECK_X0, DECK_X1]) box([x, 7, -24], [1.2, 25, 13], steel); // end plates
-	const doorM = basic([1, 1, 1], { map: TEX.door });
+	const doorM = basic([1, 1, 1], { map: TEX.door, ...DECAL });
 	// each bay's status strip has its own material, recoloured every frame
-	const bayMats = Array.from({ length: BUCKETS }, () => basic([0.3, 1.1, 1.5]));
+	const bayMats = Array.from({ length: BUCKETS }, () => basic([0.3, 1.1, 1.5], DECAL));
 	for (let b = 0; b < BUCKETS; b++) {
 		const x = bayX(b);
 		box([x, DOOR_H / 2, WALL_Z + 0.02], [DOOR_W, DOOR_H, 1], doorM, I3, PLANE);
 		box([x, DOOR_H + 0.4, WALL_Z + 0.6], [DOOR_W + 1, 0.8, 1.2], steel); // lintel
 		box([x, DOOR_H + 0.95, WALL_Z + 1.25], [DOOR_W - 1, 0.15, 0.1], orangeM);
-		const plate = basic([1, 1, 1], { map: TEX.bays[b], alphaTest: 0.5 });
+		const plate = basic([1, 1, 1], { map: TEX.bays[b], alphaTest: 0.5, ...DECAL });
 		box([x - 3.5, 13.6, WALL_Z + 0.05], [8.4, 6.5, 1], plate, I3, PLANE);
 		box([x + 4.5, 12.4, WALL_Z + 0.1], [4.5, 0.4, 0.1], bayMats[b]); // bay status strip
 		box([x + 4.5, 13.8, WALL_Z + 0.1], [2.5, 0.2, 0.1], orangeM);
@@ -644,7 +649,7 @@ export async function createStationScene(
 		box(p, [0.9, 0.3, 0.5], dark);
 	}
 	// landing pads
-	const padM = basic([1, 1, 1], { map: TEX.pad });
+	const padM = basic([1, 1, 1], { map: TEX.pad, ...DECAL });
 	for (let b = 0; b < BUCKETS; b++)
 		for (let s = 0; s < SLOTS; s++)
 			box(add(pad(b, s), [0, 0.03, 0]), [PAD, PAD, 1], padM, Rx(-PI / 2), PLANE);
