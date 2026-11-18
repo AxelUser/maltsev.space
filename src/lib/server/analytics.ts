@@ -59,6 +59,9 @@ async function fetchRawAnalyticsData(): Promise<Array<[string, number]>> {
 }
 
 export async function getAllArticlesAnalytics(): Promise<ArticleAnalytics[]> {
+	// Analytics is optional
+	if (!POSTHOG_ANALYTICS_PROJECT_ID || !POSTHOG_ANALYTICS_API_KEY) return [];
+
 	if (analyticsCache && Date.now() - analyticsCache.timestamp < CACHE_TTL_MS) {
 		console.log('[Analytics] Using cached PostHog data');
 		return analyticsCache.data;

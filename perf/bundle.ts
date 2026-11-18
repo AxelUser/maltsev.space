@@ -9,7 +9,7 @@ export interface Size {
 	br: number;
 }
 
-export type Category = 'framework' | 'layout' | 'page' | 'posts' | 'three';
+export type Category = 'framework' | 'layout' | 'page' | 'posts' | 'mermaid' | 'three';
 
 export interface JsBytes extends Size {
 	files: number;
@@ -67,6 +67,8 @@ export function upfrontJs(root: string, htmlFile: string): Set<string> {
 export function categorize(root: string, file: string): Category {
 	const rel = path.relative(root, file).split(path.sep).join('/');
 	const src = fs.readFileSync(file, 'utf8');
+	// The site no longer ships mermaid; kept so builds from before the move label its chunk.
+	if (src.includes('mermaidAPI')) return 'mermaid';
 	if (src.includes('WebGLRenderer')) return 'three';
 	if ((src.match(/<h2 id="/g) ?? []).length > 20) return 'posts';
 	if (/nodes\/0\./.test(rel)) return 'layout';
