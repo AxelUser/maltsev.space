@@ -91,7 +91,6 @@ The corruption becomes evident when we later check for Element B. We hash it to 
                     └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
                        0     1     2     3     4     5     6     7     8     9
 
- B → 5, 7, 9: bit 5 is 0, so B is reported absent → FALSE NEGATIVE
 ```
 
 </Scrollbox>
@@ -166,22 +165,29 @@ When inserting an element into a CBF:
 1. **Hash the element** to determine `k` positions in the counter array
 2. **Increment each counter** at those `k` positions by 1
 
-The key insight is that **multiple elements may share the same positions** — but now we track exactly how many elements contributed to each position through the counter values.
+The key insight is that **multiple elements may share the same positions** — but now we track exactly how many elements contributed to each position through the counter values. Suppose **A** hashes to positions 1, 4, 7 and **B** to positions 4, 6, 9:
 
-```mermaid title="Counting Bloom filter: inserting A and B increments counters, position 4 reaches 2"
-graph TD
-    A["Insert Element A<br/>Hash positions: 1, 4, 7"] --> A1["Increment counters:<br/>counter[1] = 0+1 = 1<br/>counter[4] = 0+1 = 1<br/>counter[7] = 0+1 = 1"]
+<Scrollbox>
 
-    A1 --> A2["Counter array after A:<br/>[0,1,0,0,1,0,0,1,0,0]"]
+```svgbob
+ insert A                    +1                +1                +1
+                             ↓                 ↓                 ↓
+                    ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
+ after A            │  0  │  1  │  0  │  0  │  1  │  0  │  0  │  1  │  0  │  0  │
+                    └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
+                       0     1     2     3     4     5     6     7     8     9
 
-    B["Insert Element B<br/>Hash positions: 4, 6, 9"] --> B1["Increment counters:<br/>counter[4] = 1+1 = 2 (shared!)<br/>counter[6] = 0+1 = 1<br/>counter[9] = 0+1 = 1"]
-
-    A2 --> C["Final counter array:<br/>[0,1,0,0,2,0,1,1,0,1]<br/>Position 4 shared by both elements"]
-    B1 --> C
-
-    class A,B input
-    class C result
+ insert B                                      +1          +1                +1
+                                               ↓           ↓                 ↓
+                    ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
+ after A and B      │  0  │  1  │  0  │  0  │  2  │  0  │  1  │  1  │  0  │  1  │
+                    └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
+                       0     1     2     3     4     5     6     7     8     9
+                                               ↑
+                                       shared by A and B
 ```
+
+</Scrollbox>
 
 #### Membership Query Operation
 
@@ -204,18 +210,20 @@ The deletion operation is just the opposite of the insertion operation:
 
 The result is that other elements sharing those positions remain unaffected because their contributions are still counted.
 
-```mermaid title="Deleting A decrements its counters; position 4 stays at 1, so B is preserved"
-graph TD
-    A["Current state:<br/>[0,1,0,0,2,0,1,1,0,1]<br/>Both A and B inserted"] --> B["Delete Element A<br/>Hash positions: 1, 4, 7"]
+<Scrollbox>
 
-    B --> C["Decrement counters:<br/>counter[1] = 1-1 = 0<br/>counter[4] = 2-1 = 1 (B still contributes!)<br/>counter[7] = 1-1 = 0"]
-
-    C --> D["Updated counter array:<br/>[0,0,0,0,1,0,1,0,0,1]<br/>Element B's data preserved"]
-
-    class A step
-    class B input
-    class D result
+```svgbob
+ delete A                    −1                −1                −1
+                             ↓                 ↓                 ↓
+                    ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
+ after deleting A   │  0  │  0  │  0  │  0  │  1  │  0  │  1  │  0  │  0  │  1  │
+                    └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
+                       0     1     2     3     4     5     6     7     8     9
+                                               ↑
+                                       still 1: B survives
 ```
+
+</Scrollbox>
 
 This counter-based approach enables **insert**, **query**, and **delete** operations while preserving the probabilistic guarantees of the original Bloom filter structure. However, it's not without its own challenges.
 
@@ -251,11 +259,46 @@ Now suppose you insert **A** — this increments the counters at positions `1, 5
 
 Then, without inserting **B**, you try to delete it. This decrements counters at `1, 3, 7, 8`.
 
+<Scrollbox>
+
+```svgbob
+ insert A                    +1                      +1          +1          +1
+                             ↓                       ↓           ↓           ↓
+                    ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
+ after A            │  0  │  1  │  0  │  0  │  0  │  1  │  0  │  1  │  0  │  1  │
+                    └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
+                       0     1     2     3     4     5     6     7     8     9
+
+ delete B                    −1         skip                     −1   skip
+                             ↓           ↓                       ↓     ↓
+                    ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
+ after deleting B   │  0  │  0  │  0  │  0  │  0  │  1  │  0  │  0  │  0  │  1  │
+                    └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
+                       0     1     2     3     4     5     6     7     8     9
+
+```
+
+</Scrollbox>
+
 Here's what goes wrong:
 
-- Counters at positions `1` and `7` (shared with A) are decremented — possibly to zero.
+- Counters at positions `1` and `7` (shared with A) are decremented (capped at 0).
 - When you later check for **A**, it may appear absent, even though it was never deleted.
-- Counters at positions `5` and `9` remain set — creating an inconsistent state.
+- Counters at positions `5` and `9` remain set, creating an inconsistent state.
+
+<Scrollbox>
+
+```svgbob
+ query A                     ✗                       ✓           ✗           ✓
+                             ↓                       ↓           ↓           ↓
+                    ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
+ after deleting B   │  0  │  0  │  0  │  0  │  0  │  1  │  0  │  0  │  0  │  1  │
+                    └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
+                       0     1     2     3     4     5     6     7     8     9
+
+```
+
+</Scrollbox>
 
 This creates a **false negative**, something Bloom filters are explicitly designed to avoid. And the worst part? There's no way to detect this corruption after the fact.
 
