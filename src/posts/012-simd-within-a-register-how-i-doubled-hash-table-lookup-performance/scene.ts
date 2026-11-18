@@ -36,6 +36,7 @@ import {
 	vnoise,
 	yawTo,
 	type M3,
+	type Part,
 	type V3
 } from '$lib/components/visualization/ps1';
 
@@ -80,12 +81,13 @@ US.push(72, 90, 120, 170);
 const VS = [0, 2, 4, 6.5, 9, 12, 16, 22, 30, 45, 70];
 
 // 2×2 container stack; cpt(along, up, depth) in stack space
-const PHI = 0.32;
+// the stack lies along the quay (doors facing back down it), so it stands wholly on the dock
+const PHI = Math.atan2(DE[0], -DE[2]);
 const CA: V3 = [cos(PHI), 0, sin(PHI)];
 const CN: V3 = [-sin(PHI), 0, cos(PHI)];
 const CK = mul(CN, -1);
 const UP: V3 = [0, 1, 0];
-const CO = dockP(26.2, 1.0);
+const CO = dockP(25.2, 0.5);
 const CW = 2.44,
 	CGAP = 0.08,
 	CHH = 2.6,
@@ -531,6 +533,56 @@ export async function createHarborScene(
 		[contTop, TEX.top]
 	] as const)
 		mesh(scene, q.geo, basic([1, 1, 1], { map, vertexColors: true }), [0, 0, 0], I3, [1, 1, 1]);
+
+	// Relief over the flat stack faces, so the four containers read as separate boxes: frames,
+	// corner castings, locking bars, and dark gaps between them. One merged mesh, lit by the sun
+	// and the scan glow; cpt(along, up, -out) places parts in stack space.
+	{
+		const SM: M3 = [CA[0], 0, CN[0], CA[1], 1, CN[1], CA[2], 0, CN[2]]; // box x/y/z → along/up/out
+		const parts: Part[] = [];
+		const part = (a: number, u: number, k: number, s: V3, c: V3) =>
+			parts.push({ geo: BOX, p: cpt(a, u, k), m: SM, s, c });
+		const FRAME: V3 = [0.07, 0.07, 0.09],
+			STEEL: V3 = [0.22, 0.22, 0.25],
+			GAP: V3 = [0.01, 0.01, 0.02];
+		for (let i = 0; i < 2; i++)
+			for (let j = 0; j < 2; j++) {
+				const a0 = j * (CW + CGAP),
+					u0 = i * (CHH + 0.05),
+					uc = u0 + CHH / 2;
+				// door frame: corner posts, header and sill, standing proud of the doors
+				for (const a of [a0 + 0.08, a0 + CW - 0.08]) part(a, uc, -0.12, [0.16, CHH, 0.24], FRAME);
+				part(a0 + CW / 2, u0 + CHH - 0.11, -0.12, [CW, 0.22, 0.24], FRAME);
+				part(a0 + CW / 2, u0 + 0.09, -0.12, [CW, 0.18, 0.24], FRAME);
+				// corner castings, front and back, on the visible long side too
+				for (const a of [a0 + 0.1, a0 + CW - 0.1])
+					for (const u of [u0 + 0.09, u0 + CHH - 0.09]) {
+						part(a, u, -0.1, [0.24, 0.2, 0.14], STEEL);
+						if (j === 1) part(SW + 0.04, u, CL - 0.1, [0.14, 0.2, 0.24], STEEL);
+					}
+				// four locking bars with cam keepers and handles
+				for (const f of [0.15, 0.38, 0.62, 0.85]) {
+					const a = a0 + CW * f;
+					part(a, uc, -0.1, [0.05, CHH - 0.5, 0.05], STEEL);
+					for (const u of [u0 + 0.3, u0 + CHH - 0.3]) part(a, u, -0.12, [0.12, 0.08, 0.08], STEEL);
+					part(a + (f < 0.5 ? 0.12 : -0.12), u0 + CHH * 0.42, -0.15, [0.26, 0.05, 0.05], STEEL);
+				}
+				// long side: top and bottom rails along the visible side (right column only)
+				if (j === 1)
+					for (const u of [u0 + 0.09, u0 + CHH - 0.09])
+						part(SW + 0.03, u, CL / 2, [0.08, 0.16, CL], FRAME);
+			}
+		// gaps between the containers, front and side
+		part(CW + CGAP / 2, SH / 2, -0.01, [CGAP, SH, 0.02], GAP);
+		part(SW / 2, CHH + 0.025, -0.01, [SW, 0.06, 0.02], GAP);
+		part(SW + 0.01, CHH + 0.025, CL / 2, [0.02, 0.06, CL], GAP);
+		mesh(
+			scene,
+			kit.mergeGeometry(parts, { colors: true }),
+			lam([1, 1, 1], { vertexColors: true }),
+			[0, 0, 0]
+		);
+	}
 
 	// drone (local +x is the lens direction); fill light from the camera is baked into emissive
 	const drone = new THREE.Group();
