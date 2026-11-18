@@ -1,0 +1,1 @@
+import{t as i,a as s}from"./BlrFRGw6.js";import{c as e,r as m}from"./Ct0Y-bdH.js";import{s as p}from"./ei_buApm.js";var d=i('<div class="mb-5 max-w-fit overflow-x-auto"><!></div>');function f(r,a){var o=d(),t=e(o);p(t,()=>a.children),m(o),s(r,o)}export{f as S};
