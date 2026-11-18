@@ -320,23 +320,21 @@ private struct Bucket
 
 `StructLayout` attribute with `LayoutKind.Explicit` mode and `Size = 4` ensures that the struct is laid out in memory as a 4-byte block and we have full control what parts of memory are mapped to each field.
 
-The `FieldOffset` attribute is used to set the offset in bytes where each individual field starts in the memory layout. So `Fp0` is at offset `0`, i.e. at the beginning of the struct, and accessing it will access the first byte of the integer, because this field is of type `byte`. `Fp1` will access the second byte, and so on.
+The `FieldOffset` attribute is used to set the offset in bytes where each individual field starts in the memory layout. So `Fp0` is at offset `0`, i.e. at the beginning of the struct, and accessing it will access the lowest byte of the integer (bits 7..0), because this field is of type `byte`. `Fp1` will access the next byte (bits 15..8), and so on.
 
-What's cool is that `All` field is accessing whole bucket as a single 32-bit integer, so we can use it to perform the lookup with a single instruction!
+What's cool is that `All` field is accessing whole bucket as a single 32-bit integer, so we can use it to perform the lookup with a single instruction! For example, here is how `0x12345678` is mapped to the fields:
 
 <Scrollbox>
 
 ```svgbob
-0          7 8         15 16        23 24        31 <---- Bit indices
-+----------+ +----------+ +----------+ +----------+
-|   0xAA   | |   0xBB   | |   0xCC   | |   0xDD   |
-+----------+ +----------+ +----------+ +----------+
-^          ^ ^          ^ ^          ^ ^          ^
-|          | |          | |          | |          |
-+--- Fp0 --+ +--- Fp1 --+ +--- Fp2 --+ +--- Fp3 --+
-^                                                 ^
-|                                                 |
-+---------------------- All ----------------------+
+          31            24 23            16 15             8 7              0
+         ┌────────────────┬────────────────┬────────────────┬────────────────┐
+         │    00010010    │    00110100    │    01010110    │    01111000    │
+         │      0x12      │      0x34      │      0x56      │      0x78      │
+         └────────────────┴────────────────┴────────────────┴────────────────┘
+          └──── Fp3 ─────┘ └──── Fp2 ─────┘ └──── Fp1 ─────┘ └──── Fp0 ─────┘
+              offset 3         offset 2         offset 1         offset 0
+          └────────────────────────────── All ──────────────────────────────┘
 ```
 
 </Scrollbox>
