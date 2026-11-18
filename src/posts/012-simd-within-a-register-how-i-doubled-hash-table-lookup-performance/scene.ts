@@ -10,89 +10,48 @@
  * sky/water → stars + light reflections → far silhouettes → far lights → harbor → HUD → dither.
  */
 import * as THREE from 'three';
+import {
+	add,
+	clamp,
+	createPs1Kit,
+	cross,
+	dot,
+	fbm,
+	hash2,
+	I3,
+	lerp,
+	lerp3 as mix3,
+	mmul,
+	mul,
+	mv,
+	NOISE_GLSL,
+	nrm,
+	Rx,
+	Ry,
+	Rz,
+	smooth,
+	snapClip,
+	sub,
+	TAU,
+	vnoise,
+	yawTo,
+	type M3,
+	type Part,
+	type V3
+} from '$lib/components/visualization/ps1';
 
 /** Render resolution (PS1-ish 3:2). */
 export const W = 384;
 export const H = 256;
 export const LOOP = 12;
 
-type V3 = [number, number, number];
-type M3 = number[];
-
 export interface HarborScene {
 	render(t: number): void;
 	dispose(): void;
 }
 
-/* ---------- math ---------- */
 const { sin, cos } = Math;
-const TAU = Math.PI * 2;
-const add = (a: V3, b: V3): V3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
-const sub = (a: V3, b: V3): V3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
-const mul = (a: V3, s: number): V3 => [a[0] * s, a[1] * s, a[2] * s];
-const dot = (a: V3, b: V3) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-const cross = (a: V3, b: V3): V3 => [
-	a[1] * b[2] - a[2] * b[1],
-	a[2] * b[0] - a[0] * b[2],
-	a[0] * b[1] - a[1] * b[0]
-];
-const nrm = (a: V3): V3 => {
-	const l = Math.hypot(a[0], a[1], a[2]) || 1;
-	return [a[0] / l, a[1] / l, a[2] / l];
-};
-const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-const mix3 = (a: V3, b: V3, t: number): V3 => [
-	lerp(a[0], b[0], t),
-	lerp(a[1], b[1], t),
-	lerp(a[2], b[2], t)
-];
-const clamp = (x: number, a: number, b: number) => (x < a ? a : x > b ? b : x);
-const smooth = (e0: number, e1: number, x: number) => {
-	const t = clamp((x - e0) / (e1 - e0), 0, 1);
-	return t * t * (3 - 2 * t);
-};
-const mmul = (a: M3, b: M3): M3 => {
-	const r = new Array<number>(9);
-	for (let i = 0; i < 3; i++)
-		for (let j = 0; j < 3; j++)
-			r[i * 3 + j] = a[i * 3] * b[j] + a[i * 3 + 1] * b[3 + j] + a[i * 3 + 2] * b[6 + j];
-	return r;
-};
-const Ry = (a: number): M3 => [cos(a), 0, sin(a), 0, 1, 0, -sin(a), 0, cos(a)];
-const Rx = (a: number): M3 => [1, 0, 0, 0, cos(a), -sin(a), 0, sin(a), cos(a)];
-const Rz = (a: number): M3 => [cos(a), -sin(a), 0, sin(a), cos(a), 0, 0, 0, 1];
-const I3: M3 = [1, 0, 0, 0, 1, 0, 0, 0, 1];
-const mv = (m: M3, v: V3): V3 => [
-	m[0] * v[0] + m[1] * v[1] + m[2] * v[2],
-	m[3] * v[0] + m[4] * v[1] + m[5] * v[2],
-	m[6] * v[0] + m[7] * v[1] + m[8] * v[2]
-];
 const polar = (a: number, d: number, y: number): V3 => [d * sin(a), y, -d * cos(a)];
-const yawTo = (d: V3) => Math.atan2(-d[2], d[0]);
-const C = (c: V3) => new THREE.Color(c[0], c[1], c[2]);
-
-/* ---------- noise (mirrored in the sky shader) ---------- */
-function hash2(x: number, y: number) {
-	let h = (Math.imul(x | 0, 374761393) + Math.imul(y | 0, 668265263)) | 0;
-	h = Math.imul(h ^ (h >>> 13), 1274126177);
-	h ^= h >>> 16;
-	return (h >>> 0) / 4294967296;
-}
-function vnoise(x: number, y: number) {
-	const xi = Math.floor(x),
-		yi = Math.floor(y),
-		xf = x - xi,
-		yf = y - yi;
-	const u = xf * xf * (3 - 2 * xf),
-		v = yf * yf * (3 - 2 * yf);
-	return lerp(
-		lerp(hash2(xi, yi), hash2(xi + 1, yi), u),
-		lerp(hash2(xi, yi + 1), hash2(xi + 1, yi + 1), u),
-		v
-	);
-}
-const fbm = (x: number, y: number) =>
-	vnoise(x, y) * 0.55 + vnoise(x * 2.1 + 7, y * 2.1) * 0.3 + vnoise(x * 4.3, y * 4.3 + 3) * 0.15;
 
 /* ---------- lighting & camera constants ---------- */
 const SUN_VIS = nrm([sin(-0.5), 0.012, -cos(-0.5)]);
@@ -105,8 +64,6 @@ const FOG: V3 = [0.17, 0.09, 0.11];
 const FOG0 = 25;
 const FOG1 = 480;
 const FOV = 0.9;
-const NEAR = 0.15;
-const F = H / 2 / Math.tan(FOV / 2);
 
 /* ---------- static layout ---------- */
 // dock edge line: DA + u*DE, inland along DN
@@ -124,12 +81,13 @@ US.push(72, 90, 120, 170);
 const VS = [0, 2, 4, 6.5, 9, 12, 16, 22, 30, 45, 70];
 
 // 2×2 container stack; cpt(along, up, depth) in stack space
-const PHI = 0.32;
+// the stack lies along the quay (doors facing back down it), so it stands wholly on the dock
+const PHI = Math.atan2(DE[0], -DE[2]);
 const CA: V3 = [cos(PHI), 0, sin(PHI)];
 const CN: V3 = [-sin(PHI), 0, cos(PHI)];
 const CK = mul(CN, -1);
 const UP: V3 = [0, 1, 0];
-const CO = dockP(26.2, 1.0);
+const CO = dockP(25.2, 0.5);
 const CW = 2.44,
 	CGAP = 0.08,
 	CHH = 2.6,
@@ -180,102 +138,18 @@ const STARS: V3[] = [];
 for (let i = 0; i < 90; i++)
 	STARS.push([hash2(i, 11) * 700 - 250, 0.45 + hash2(i, 12) * 0.55, hash2(i, 13)]);
 
-const GLYPH: Record<string, string> = {
-	'0': '111101101101111',
-	'1': '010110010010111',
-	'2': '111001111100111',
-	'3': '111001111001111',
-	'4': '101101111001001',
-	'5': '111100111001111',
-	'6': '111100111101111',
-	'7': '111001001001001',
-	'8': '111101111101111',
-	'9': '111101111001111',
-	A: '010101111101101',
-	B: '110101110101110',
-	C: '011100100100011',
-	D: '110101101101110',
-	E: '111100111100111',
-	F: '111100111100100',
-	G: '011100101101011',
-	H: '101101111101101',
-	I: '111010010010111',
-	J: '001001001101010',
-	K: '101101110101101',
-	L: '100100100100111',
-	M: '101111111101101',
-	N: '110101101101101',
-	O: '010101101101010',
-	P: '110101110100100',
-	Q: '010101101111011',
-	R: '110101110101101',
-	S: '011100010001110',
-	T: '111010010010010',
-	U: '101101101101111',
-	V: '101101101101010',
-	W: '101101111111101',
-	X: '101101010101101',
-	Y: '101101010010010',
-	Z: '111001010100111',
-	':': '000010000010000',
-	'.': '000000000000010'
-};
 const LANE_BYTES = [
 	[0x3a, 0x80, 0x7f, 0x3a],
 	[0x80, 0x1c, 0x9e, 0x5d]
 ];
 
 /* ---------- shaders ---------- */
-/** Snap a clip-space position to the 384×256 pixel grid (PS1 integer vertices). */
-const snap = (v: string) =>
-	`if (${v}.w > 0.0) ${v}.xy = floor(${v}.xy / ${v}.w * vec2(${W / 2}.0, ${H / 2}.0) + 0.5) / vec2(${W / 2}.0, ${H / 2}.0) * ${v}.w;`;
-
-/** Patch a built-in material: vertex snapping, affine (non-perspective) UVs, fog capped at 62 %. */
-function ps1Patch(sh: { vertexShader: string; fragmentShader: string }) {
-	const decl = '#include <common>\n#ifdef USE_MAP\nvarying vec3 vAffine;\n#endif';
-	sh.vertexShader = sh.vertexShader.replace('#include <common>', decl).replace(
-		'#include <project_vertex>',
-		`#include <project_vertex>
-			${snap('gl_Position')}
-			#ifdef USE_MAP
-			vAffine = vec3(vMapUv * gl_Position.w, gl_Position.w);
-			#endif`
-	);
-	sh.fragmentShader = sh.fragmentShader
-		.replace('#include <common>', decl)
-		.replace(
-			'#include <map_fragment>',
-			'#ifdef USE_MAP\ndiffuseColor *= texture2D(map, vAffine.xy / vAffine.z);\n#endif'
-		)
-		.replace(
-			'#include <fog_fragment>',
-			`#ifdef USE_FOG
-			gl_FragColor.rgb = mix(gl_FragColor.rgb, fogColor, clamp((vFogDepth - fogNear) / (fogFar - fogNear), 0.0, 1.0) * 0.62);
-			#endif`
-		);
-}
-
-const FULLSCREEN_VS = /* glsl */ `void main() { gl_Position = vec4(position.xy, 0.0, 1.0); }`;
-
 const SKY_FS = /* glsl */ `
 uniform float hy;
 uniform vec2 sun;
 uniform float ph;
 
-float hash2(float x, float y) {
-	uint h = uint(int(x)) * 374761393u + uint(int(y)) * 668265263u;
-	h = (h ^ (h >> 13u)) * 1274126177u;
-	h ^= h >> 16u;
-	return float(h) / 4294967296.0;
-}
-float vnoise(float x, float y) {
-	float xi = floor(x), yi = floor(y), xf = x - xi, yf = y - yi;
-	float u = xf * xf * (3.0 - 2.0 * xf), v = yf * yf * (3.0 - 2.0 * yf);
-	return mix(mix(hash2(xi, yi), hash2(xi + 1.0, yi), u), mix(hash2(xi, yi + 1.0), hash2(xi + 1.0, yi + 1.0), u), v);
-}
-float fbm(float x, float y) {
-	return vnoise(x, y) * 0.55 + vnoise(x * 2.1 + 7.0, y * 2.1) * 0.3 + vnoise(x * 4.3, y * 4.3 + 3.0) * 0.15;
-}
+${NOISE_GLSL}
 vec3 skyCol(float h) {
 	if (h <= 0.05) return mix(vec3(1.0, 0.55, 0.2), vec3(0.9, 0.32, 0.13), h / 0.05);
 	if (h <= 0.18) return mix(vec3(0.9, 0.32, 0.13), vec3(0.45, 0.15, 0.15), (h - 0.05) / 0.13);
@@ -320,19 +194,6 @@ void main() {
 	gl_FragColor = vec4(col, 1.0);
 }`;
 
-const POST_FS = /* glsl */ `
-uniform sampler2D tDiffuse;
-const int BAYER[16] = int[16](0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5);
-void main() {
-	ivec2 ip = ivec2(gl_FragCoord.xy);
-	int iy = ${H - 1} - ip.y;
-	vec3 c = texelFetch(tDiffuse, ip, 0).rgb;
-	float dx = (float(ip.x) - ${W / 2}.0) / ${W / 2}.0, dy = (float(iy) - ${H / 2}.0) / ${H / 2}.0;
-	float v = 1.0 - 0.28 * (dx * dx * 0.6 + dy * dy);
-	float d = (float(BAYER[(iy & 3) * 4 + (ip.x & 3)]) + 0.5) / 16.0;
-	gl_FragColor = vec4(min(vec3(31.0), floor(clamp(c * v, 0.0, 1.0) * 31.0 + d)) / 31.0, 1.0);
-}`;
-
 /** 1px lines; drawn 5× with pixel offsets to fake the glow halo. */
 const LINE_VS = /* glsl */ `
 attribute vec3 lcol;
@@ -343,34 +204,11 @@ varying vec3 vC;
 void main() {
 	vC = halo > 0.5 ? lcol * glow : lcol;
 	vec4 p = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-	${snap('p')}
+	${snapClip('p', W, H)}
 	p.xy += (off + vec2(0.5, -0.5)) * vec2(${2 / W}, ${2 / H}) * p.w;
 	gl_Position = p;
 }`;
 const COLOR_FS = /* glsl */ `varying vec3 vC; void main() { gl_FragColor = vec4(vC, 1.0); }`;
-
-/** Soft round sprite in screen pixels: (1 - d)² falloff, optional vertical squash. */
-const GLOW_VS = /* glsl */ `
-attribute vec3 gcol;
-attribute float rad;
-attribute float squash;
-varying vec3 vC;
-varying float vR, vS, vSize;
-void main() {
-	vC = gcol; vR = rad; vS = squash;
-	vSize = 2.0 * ceil(rad) + 1.0;
-	gl_PointSize = vSize;
-	gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-}`;
-const GLOW_FS = /* glsl */ `
-varying vec3 vC;
-varying float vR, vS, vSize;
-void main() {
-	vec2 p = (gl_PointCoord - 0.5) * vSize;
-	float d = length(vec2(p.x, p.y / vS)) / vR;
-	if (d >= 1.0) discard;
-	gl_FragColor = vec4(vC * (1.0 - d) * (1.0 - d), 1.0);
-}`;
 
 /* ---------- scene ---------- */
 export interface HarborOptions {
@@ -383,45 +221,11 @@ export async function createHarborScene(
 	canvas: HTMLCanvasElement,
 	{ detecting = () => false }: HarborOptions = {}
 ): Promise<HarborScene> {
-	const trash: { dispose(): void }[] = [];
-	const keep = <T extends { dispose(): void }>(x: T): T => (trash.push(x), x);
-
-	const renderer = new THREE.WebGLRenderer({
-		canvas,
-		antialias: false,
-		powerPreference: 'low-power'
-	});
-	renderer.setPixelRatio(1);
-	renderer.setSize(W, H, false);
-	renderer.autoClear = false;
-	renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
-	const target = keep(
-		new THREE.WebGLRenderTarget(W, H, {
-			type: THREE.HalfFloatType,
-			minFilter: THREE.NearestFilter,
-			magFilter: THREE.NearestFilter
-		})
-	);
-
-	const camera = new THREE.PerspectiveCamera((FOV * 180) / Math.PI, W / H, NEAR, 2000);
-	const cam2d = new THREE.OrthographicCamera(0, W, 0, H, -1, 1); // pixel space, y down
+	const kit = createPs1Kit(canvas, { width: W, height: H, fov: FOV, fogCap: 0.62, vignette: 0.28 });
+	const { renderer, camera, cam2d, keep, color: C, makeTex, lam, basic, BOX, boxUV } = kit;
+	const { cylGeo, place, mesh, dynBuffer, noCull, proj, screenDir } = kit;
 
 	/* textures: float data so texel values can exceed 1 (bright paint, bolts) */
-	const makeTex = (w: number, h: number, fn: (x: number, y: number) => V3) => {
-		const d = new Float32Array(w * h * 4);
-		for (let y = 0; y < h; y++)
-			for (let x = 0; x < w; x++) {
-				const c = fn(x, y);
-				d.set([c[0], c[1], c[2], 1], (y * w + x) * 4);
-			}
-		const t = keep(new THREE.DataTexture(d, w, h, THREE.RGBAFormat, THREE.FloatType));
-		t.magFilter = THREE.NearestFilter;
-		t.minFilter = THREE.NearestFilter;
-		t.wrapS = t.wrapT = THREE.RepeatWrapping;
-		t.generateMipmaps = false;
-		t.needsUpdate = true;
-		return t;
-	};
 	const gr = (v: number): V3 => [v, v, v];
 	const TEX = {
 		end: makeTex(32, 32, (x, y) => {
@@ -447,8 +251,13 @@ export async function createHarborScene(
 			return gr(v);
 		}),
 		dash: makeTex(16, 4, (x) => (x < 9 ? [1.7, 1.25, 0.25] : gr(0.6))),
-		grid: makeTex(16, 16, (x, y) =>
-			x % 8 === 0 || y % 8 === 0 ? gr(1) : x % 4 === 0 && y % 4 === 0 ? gr(0.5) : gr(0.05)
+		// 1-texel lines: without mipmaps they stay crisp instead of fading to grey in the distance
+		grid: makeTex(
+			16,
+			16,
+			(x, y) =>
+				x % 8 === 0 || y % 8 === 0 ? gr(1) : x % 4 === 0 && y % 4 === 0 ? gr(0.5) : gr(0.05),
+			{ mipmaps: false }
 		),
 		panel: makeTex(16, 16, (x, y) =>
 			gr(
@@ -460,15 +269,6 @@ export async function createHarborScene(
 		)
 	};
 
-	/* materials */
-	const ps1 = <T extends THREE.Material>(m: T): T => {
-		m.onBeforeCompile = ps1Patch;
-		return keep(m);
-	};
-	const lam = (col: V3, o: THREE.MeshLambertMaterialParameters = {}) =>
-		ps1(new THREE.MeshLambertMaterial({ color: C(col), flatShading: true, ...o }));
-	const basic = (col: V3, o: THREE.MeshBasicMaterialParameters = {}) =>
-		ps1(new THREE.MeshBasicMaterial({ color: C(col), ...o }));
 	// Additive, unsorted overlays (beam, grid, rotor blur): blending without the transparent queue,
 	// so renderOrder alone decides when they draw.
 	const ADD = {
@@ -480,48 +280,7 @@ export async function createHarborScene(
 	} as const;
 
 	/* geometry helpers */
-	const BOX = keep(new THREE.BoxGeometry(1, 1, 1)); // face groups +x −x +y −y +z −z
-	const boxUV = (us: [number, number]) => {
-		const g = keep(BOX.clone()),
-			a = g.getAttribute('uv');
-		for (let i = 0; i < a.count; i++) a.setXY(i, a.getX(i) * us[0], a.getY(i) * us[1]);
-		return g;
-	};
-	const cylCache = new Map<string, THREE.CylinderGeometry>();
-	const cylGeo = (segs: number, open = false) => {
-		const key = `${segs}:${open}`;
-		if (!cylCache.has(key))
-			cylCache.set(key, keep(new THREE.CylinderGeometry(1, 1, 1, segs, 1, open)));
-		return cylCache.get(key)!;
-	};
-	/** Set an object's local transform to translate(pos) · rotate(m) · scale(s). */
-	const place = <T extends THREE.Object3D>(o: T, p: V3, m: M3 = I3, s: V3 = [1, 1, 1]): T => {
-		o.matrixAutoUpdate = false;
-		// prettier-ignore
-		o.matrix.set(
-			m[0] * s[0], m[1] * s[1], m[2] * s[2], p[0],
-			m[3] * s[0], m[4] * s[1], m[5] * s[2], p[1],
-			m[6] * s[0], m[7] * s[1], m[8] * s[2], p[2],
-			0, 0, 0, 1
-		);
-		o.matrixWorldNeedsUpdate = true;
-		return o;
-	};
 	type Mat = THREE.Material | THREE.Material[];
-	const mesh = (
-		parent: THREE.Object3D,
-		geo: THREE.BufferGeometry,
-		mat: Mat,
-		p: V3,
-		m: M3,
-		s: V3,
-		ro = 3
-	) => {
-		const o = place(new THREE.Mesh(geo, mat), p, m, s);
-		o.renderOrder = ro;
-		parent.add(o);
-		return o;
-	};
 	const box = (parent: THREE.Object3D, c: V3, s: V3, m: M3, mat: Mat, ro = 3, geo = BOX) =>
 		mesh(parent, geo, mat, c, m, s, ro);
 	const cyl = (
@@ -565,116 +324,18 @@ export async function createHarborScene(
 		};
 	};
 
-	/** Growable-per-frame vertex buffer (rebuilt from scratch every frame). */
-	const dynBuffer = (max: number, attrs: Record<string, number>) => {
-		const geo = keep(new THREE.BufferGeometry());
-		const arrays: Record<string, Float32Array> = {};
-		for (const [name, size] of Object.entries(attrs)) {
-			arrays[name] = new Float32Array(max * size);
-			geo.setAttribute(
-				name,
-				new THREE.BufferAttribute(arrays[name], size).setUsage(THREE.DynamicDrawUsage)
-			);
-		}
-		let n = 0;
-		return {
-			geo,
-			reset: () => (n = 0),
-			push(v: Record<string, number[]>) {
-				if (n >= max) return;
-				for (const name in v) arrays[name].set(v[name], n * attrs[name]);
-				n++;
-			},
-			commit() {
-				for (const name in attrs) geo.getAttribute(name).needsUpdate = true;
-				geo.setDrawRange(0, n);
-			}
-		};
-	};
-	const noCull = <T extends THREE.Object3D>(o: T, ro: number) => {
-		o.frustumCulled = false;
-		o.renderOrder = ro;
-		return o;
-	};
-
-	/** A 2D pixel layer: additive pixels, opaque pixels (text) and soft glow sprites. */
-	const layer = (max: number) => {
-		const scene = new THREE.Scene();
-		const pixels = (blending: THREE.Blending, ro: number) => {
-			const buf = dynBuffer(max, { position: 3, color: 3 });
-			const mat = keep(
-				new THREE.PointsMaterial({
-					size: 1,
-					sizeAttenuation: false,
-					vertexColors: true,
-					blending,
-					depthTest: false,
-					depthWrite: false,
-					fog: false
-				})
-			);
-			scene.add(noCull(new THREE.Points(buf.geo, mat), ro));
-			return buf;
-		};
-		const addPx = pixels(THREE.AdditiveBlending, 0),
-			setPx = pixels(THREE.NormalBlending, 1);
-		const glows = dynBuffer(max, { position: 3, gcol: 3, rad: 1, squash: 1 });
-		const glowMat = keep(
-			new THREE.ShaderMaterial({
-				vertexShader: GLOW_VS,
-				fragmentShader: GLOW_FS,
-				blending: THREE.AdditiveBlending,
-				depthTest: false,
-				depthWrite: false
-			})
-		);
-		scene.add(noCull(new THREE.Points(glows.geo, glowMat), 2));
-		const inside = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < H;
-		return {
-			scene,
-			plot: (x: number, y: number, c: V3) =>
-				inside(x, y) && addPx.push({ position: [x + 0.5, y + 0.5, 0], color: c }),
-			set: (x: number, y: number, c: V3) =>
-				inside(x, y) && setPx.push({ position: [x + 0.5, y + 0.5, 0], color: c }),
-			sprite: (x: number, y: number, rad: number, c: V3, sq = 1) =>
-				glows.push({ position: [x + 0.5, y + 0.5, 0], gcol: c, rad: [rad], squash: [sq] }),
-			reset() {
-				addPx.reset();
-				setPx.reset();
-				glows.reset();
-			},
-			commit() {
-				addPx.commit();
-				setPx.commit();
-				glows.commit();
-			}
-		};
-	};
+	// glow sprites draw over pixels and text in these layers
+	const layer = (max: number) => kit.layer(max, { glowsOnTop: true });
 	const under = layer(4096); // stars + water reflections
 	const far = layer(256); // distant lights over the silhouettes
 	const hud = layer(1024); // sprites + byte readouts over the harbor
 	const caption = layer(4096); // 2× text prompt at the bottom
 
-	const fullscreen = (fragmentShader: string, uniforms: Record<string, THREE.IUniform>) => {
-		const scene = new THREE.Scene();
-		const mat = keep(
-			new THREE.ShaderMaterial({
-				vertexShader: FULLSCREEN_VS,
-				fragmentShader,
-				uniforms,
-				depthTest: false,
-				depthWrite: false
-			})
-		);
-		scene.add(noCull(new THREE.Mesh(keep(new THREE.PlaneGeometry(2, 2)), mat), 0));
-		return { scene, uniforms };
-	};
-	const sky = fullscreen(SKY_FS, {
+	const sky = kit.fullscreen(SKY_FS, {
 		hy: { value: 0 },
 		sun: { value: new THREE.Vector2() },
 		ph: { value: 0 }
 	});
-	const post = fullscreen(POST_FS, { tDiffuse: { value: target.texture } });
 
 	const withLights = (scene: THREE.Scene) => {
 		scene.fog = new THREE.Fog(C(FOG), FOG0, FOG1);
@@ -873,6 +534,56 @@ export async function createHarborScene(
 	] as const)
 		mesh(scene, q.geo, basic([1, 1, 1], { map, vertexColors: true }), [0, 0, 0], I3, [1, 1, 1]);
 
+	// Relief over the flat stack faces, so the four containers read as separate boxes: frames,
+	// corner castings, locking bars, and dark gaps between them. One merged mesh, lit by the sun
+	// and the scan glow; cpt(along, up, -out) places parts in stack space.
+	{
+		const SM: M3 = [CA[0], 0, CN[0], CA[1], 1, CN[1], CA[2], 0, CN[2]]; // box x/y/z → along/up/out
+		const parts: Part[] = [];
+		const part = (a: number, u: number, k: number, s: V3, c: V3) =>
+			parts.push({ geo: BOX, p: cpt(a, u, k), m: SM, s, c });
+		const FRAME: V3 = [0.07, 0.07, 0.09],
+			STEEL: V3 = [0.22, 0.22, 0.25],
+			GAP: V3 = [0.01, 0.01, 0.02];
+		for (let i = 0; i < 2; i++)
+			for (let j = 0; j < 2; j++) {
+				const a0 = j * (CW + CGAP),
+					u0 = i * (CHH + 0.05),
+					uc = u0 + CHH / 2;
+				// door frame: corner posts, header and sill, standing proud of the doors
+				for (const a of [a0 + 0.08, a0 + CW - 0.08]) part(a, uc, -0.12, [0.16, CHH, 0.24], FRAME);
+				part(a0 + CW / 2, u0 + CHH - 0.11, -0.12, [CW, 0.22, 0.24], FRAME);
+				part(a0 + CW / 2, u0 + 0.09, -0.12, [CW, 0.18, 0.24], FRAME);
+				// corner castings, front and back, on the visible long side too
+				for (const a of [a0 + 0.1, a0 + CW - 0.1])
+					for (const u of [u0 + 0.09, u0 + CHH - 0.09]) {
+						part(a, u, -0.1, [0.24, 0.2, 0.14], STEEL);
+						if (j === 1) part(SW + 0.04, u, CL - 0.1, [0.14, 0.2, 0.24], STEEL);
+					}
+				// four locking bars with cam keepers and handles
+				for (const f of [0.15, 0.38, 0.62, 0.85]) {
+					const a = a0 + CW * f;
+					part(a, uc, -0.1, [0.05, CHH - 0.5, 0.05], STEEL);
+					for (const u of [u0 + 0.3, u0 + CHH - 0.3]) part(a, u, -0.12, [0.12, 0.08, 0.08], STEEL);
+					part(a + (f < 0.5 ? 0.12 : -0.12), u0 + CHH * 0.42, -0.15, [0.26, 0.05, 0.05], STEEL);
+				}
+				// long side: top and bottom rails along the visible side (right column only)
+				if (j === 1)
+					for (const u of [u0 + 0.09, u0 + CHH - 0.09])
+						part(SW + 0.03, u, CL / 2, [0.08, 0.16, CL], FRAME);
+			}
+		// gaps between the containers, front and side
+		part(CW + CGAP / 2, SH / 2, -0.01, [CGAP, SH, 0.02], GAP);
+		part(SW / 2, CHH + 0.025, -0.01, [SW, 0.06, 0.02], GAP);
+		part(SW + 0.01, CHH + 0.025, CL / 2, [0.02, 0.06, CL], GAP);
+		mesh(
+			scene,
+			kit.mergeGeometry(parts, { colors: true }),
+			lam([1, 1, 1], { vertexColors: true }),
+			[0, 0, 0]
+		);
+	}
+
 	// drone (local +x is the lens direction); fill light from the camera is baked into emissive
 	const drone = new THREE.Group();
 	scene.add(drone);
@@ -962,7 +673,6 @@ export async function createHarborScene(
 	/* ---------- per-frame ---------- */
 	let CP: V3 = [0, 0, 0],
 		CF: V3 = [0, 0, -1];
-	const tmp = new THREE.Vector3();
 	const setCamera = (pos: V3, yaw: number, pitch: number) => {
 		CP = pos;
 		CF = [sin(yaw) * cos(pitch), sin(pitch), -cos(yaw) * cos(pitch)];
@@ -970,32 +680,8 @@ export async function createHarborScene(
 		camera.lookAt(pos[0] + CF[0], pos[1] + CF[1], pos[2] + CF[2]);
 		camera.updateMatrixWorld();
 	};
-	const proj = (p: V3): V3 | null => {
-		const q = tmp.set(...p).applyMatrix4(camera.matrixWorldInverse),
-			z = -q.z;
-		if (z < NEAR) return null;
-		return [Math.round(W / 2 + (q.x * F) / z), Math.round(H / 2 - (q.y * F) / z), z];
-	};
-	const screenDir = (d: V3) => {
-		const q = tmp.set(...d).transformDirection(camera.matrixWorldInverse);
-		return [W / 2 + (q.x * F) / -q.z, H / 2 - (q.y * F) / -q.z];
-	};
-	/** Pixel-font text; a fractional `scale` is nearest-neighbour, so cells are 2 or 3 px etc. */
-	const text = (x: number, y: number, s: string, c: V3, scale = 1, into = hud) => {
-		for (let k = 0; k < s.length; k++) {
-			const g = GLYPH[s[k]];
-			if (g)
-				for (let i = 0; i < 15; i++) {
-					if (g[i] !== '1') continue;
-					const gx = k * 4 + (i % 3),
-						gy = (i / 3) | 0;
-					const x1 = Math.round(x + (gx + 1) * scale),
-						y1 = Math.round(y + (gy + 1) * scale);
-					for (let py = Math.round(y + gy * scale); py < y1; py++)
-						for (let px = Math.round(x + gx * scale); px < x1; px++) into.set(px, py, c);
-				}
-		}
-	};
+	const text = (x: number, y: number, s: string, c: V3, scale = 1, into = hud) =>
+		kit.text(into, x, y, s, c, scale);
 
 	// Detection state; advanced by the time between rendered frames.
 	const LOCK_IN = 0.5,
@@ -1260,44 +946,33 @@ export async function createHarborScene(
 		text(x, y, msg, msgC, 2, caption);
 		caption.commit();
 
-		renderer.setRenderTarget(target);
-		renderer.clear();
-		renderer.render(sky.scene, cam2d);
-		renderer.render(under.scene, cam2d);
-		renderer.render(bgScene, camera);
-		renderer.render(far.scene, cam2d);
-		renderer.clearDepth(); // the harbor always draws over the far silhouettes
-		renderer.render(scene, camera);
-		renderer.render(hud.scene, cam2d);
-		renderer.render(caption.scene, cam2d);
-		renderer.setRenderTarget(null);
-		renderer.render(post.scene, cam2d);
+		kit.frame(() => {
+			renderer.render(sky.scene, cam2d);
+			renderer.render(under.scene, cam2d);
+			renderer.render(bgScene, camera);
+			renderer.render(far.scene, cam2d);
+			renderer.clearDepth(); // the harbor always draws over the far silhouettes
+			renderer.render(scene, camera);
+			renderer.render(hud.scene, cam2d);
+			renderer.render(caption.scene, cam2d);
+		});
 	}
-
-	const dispose = () => {
-		for (const x of trash) x.dispose();
-		renderer.dispose();
-	};
 
 	// Compile shaders without blocking; otherwise the first render() waits for every program to link.
 	try {
-		// Programs depend on the active render target, so match what render() uses for each pass.
-		renderer.setRenderTarget(target);
-		const offscreen = [
-			renderer.compileAsync(sky.scene, cam2d),
-			renderer.compileAsync(under.scene, cam2d),
-			renderer.compileAsync(bgScene, camera),
-			renderer.compileAsync(far.scene, cam2d),
-			renderer.compileAsync(scene, camera),
-			renderer.compileAsync(hud.scene, cam2d),
-			renderer.compileAsync(caption.scene, cam2d)
-		];
-		renderer.setRenderTarget(null);
-		await Promise.all([...offscreen, renderer.compileAsync(post.scene, cam2d)]);
+		await kit.compile([
+			[sky.scene, cam2d],
+			[under.scene, cam2d],
+			[bgScene, camera],
+			[far.scene, cam2d],
+			[scene, camera],
+			[hud.scene, cam2d],
+			[caption.scene, cam2d]
+		]);
 	} catch (err) {
-		dispose();
+		kit.dispose();
 		throw err;
 	}
 
-	return { render, dispose };
+	return { render, dispose: kit.dispose };
 }
