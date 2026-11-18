@@ -36,27 +36,23 @@ What sets them apart is the internal structure. While Bloom Filters use a flat b
 > [!NOTE]
 > If you’re unfamiliar with hash tables, here’s the short version: a hash table is a data structure that lets you store values and look them up efficiently using a key. Under the hood, it works like an array of **buckets**. A bucket can contain one or more key-value pairs in its **slots**. When you insert a key-value pair, the key is hashed — turned into a number — to figure out which bucket to use. A good hash function ensures that even similar keys produce very different hash values, which helps spread data evenly across buckets.
 
-To help visualize the difference, let’s compare their memory layouts:
+To help visualize the difference, let’s give both filters the same 64 bits of memory. The Bloom filter uses them as 64 independent bits. The Cuckoo filter splits them into 4 buckets of 2 slots, and each slot holds one 8-bit fingerprint (a blank slot is empty):
 
 <Scrollbox>
 
 ```svgbob
-                      Classic Bloom Filter
+ Bloom filter
+ 
+ |10110100|01101100|10010111|01001100|00101101|11000110|01110010|10011010|
+ +--------+--------+--------+--------+--------+--------+--------+--------+
+ 0        8        16       24       32       40       48       56      63
 
-                      (each cell = 1 bit)
-+-------+-------+-------+-------+-------+-------+-------+-------+
-|   1   |   0   |   1   |   0   |   1   |   0   |   1   |   1   |
-+-------+-------+-------+-------+-------+-------+-------+-------+
-    0       1       2       3       4       5       6       7
-
-                        Cuckoo Filter
-
-      (4 buckets × 2 slots, each slot = 8-bit fingerprint)
-+---------------+---------------+---------------+---------------+
-| [slot 0] 0xA7 | [slot 0] 0x1C | [slot 0] 0xFF | [slot 0] null |
-| [slot 1] 0x2B | [slot 1] null | [slot 1] 0x3D | [slot 1] 0xA7 |
-+---------------+---------------+---------------+---------------+
-    Bucket 0        Bucket 1        Bucket 2        Bucket 3
+ Cuckoo filter
+ +--------+--------+--------+--------+--------+--------+--------+--------+
+ |  0xA7  |  0x2B  |  0x1C  |        |  0xFF  |  0x3D  |        |  0x64  |
+ +--------+--------+--------+--------+--------+--------+--------+--------+
+  |               | |               | |               | |               |
+  +-- bucket 0 ---+ +-- bucket 1 ---+ +-- bucket 2 ---+ +-- bucket 3 ---+
 ```
 
 </Scrollbox>

@@ -27,10 +27,11 @@ The layout looked straightforward—just a byte array where the start of each bu
 <Scrollbox>
 
 ```svgbob
-              Bucket 0              Bucket 1                      Bucket n
-       +----+----+----+----+ +----+----+----+----+         +----+----+----+----+
-Table: | 3A | 00 | B7 | F2 | | 4C | 91 | 00 | DE |   ...   | AA | 00 | 5F | C8 |
-       +----+----+----+----+ +----+----+----+----+         +----+----+----+----+
+               Bucket 0              Bucket 1                      Bucket n
+        +----+----+----+----+ +----+----+----+----+         +----+----+----+----+
+Table:  | 3A | 00 | B7 | F2 | | 4C | 91 | 00 | DE |   ...   | AA | 00 | 5F | C8 |
+        +----+----+----+----+ +----+----+----+----+         +----+----+----+----+
+offset  0    1    2    3      4    5    6    7              4n
 ```
 
 </Scrollbox>

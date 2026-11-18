@@ -133,23 +133,23 @@ The core strength of Bloom filters lies in their simplicity: a bit array and som
 
 That's where **Counting Bloom Filters (CBFs)** come in.
 
-Originally proposed by [Fan et al.](https://www.cs.princeton.edu/courses/archive/spr05/cos598E/bib/p254-fan.pdf) as a solution for scalable web cache, CBFs replace the bit array with an array of **small integer counters** — typically 4-bit values. These allow us to track how many elements have set each position.
+Originally proposed by [Fan et al.](https://www.cs.princeton.edu/courses/archive/spr05/cos598E/bib/p254-fan.pdf) as a solution for scalable web cache, CBFs replace the bit array with an array of **small integer counters** — typically 4-bit values. These allow us to track how many elements have set each position. For example, here are the same positions set in both filters:
 
 <Scrollbox>
 
 ```svgbob
-Classic Bloom Filter (1-bit array):
-+-+-+-+-+-+-+-+-+-+-+
-|0|0|1|0|0|1|0|1|1|0|  ← each cell = 1 bit
-+-+-+-+-+-+-+-+-+-+-+
- 0 1 2 3 4 5 6 7 8 9
+ Classic Bloom filter, 1 bit per cell
+ +-+-+-+-+-+-+-+-+-+-+
+ |0|1|0|0|1|0|1|1|0|1|
+ +-+-+-+-+-+-+-+-+-+-+
+  0 1 2 3 4 5 6 7 8 9
 
-Counting Bloom Filter (4-bit counters):
-+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
-|  0  |  1  |  0  |  0  |  2  |  0  |  1  |  1  |  0  |  1  |
-|0000 |0001 |0000 |0000 |0010 |0000 |0001 |0001 |0000 |0001 |  ← each cell = 4 bits
-+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
-   0     1     2     3     4     5     6     7     8     9
+ Counting Bloom filter, 4 bits per cell
+ +-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+ |   0   |   1   |   0   |   0   |   2   |   0   |   1   |   1   |   0   |   1   |
+ |0 0 0 0|0 0 0 1|0 0 0 0|0 0 0 0|0 0 1 0|0 0 0 0|0 0 0 1|0 0 0 1|0 0 0 0|0 0 0 1|
+ +-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+     0       1       2       3       4       5       6       7       8       9
 ```
 
 </Scrollbox>
