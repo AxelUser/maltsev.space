@@ -17,7 +17,7 @@ coverCaption: "Have you seen this before? Probably."
 ---
 
 <script>
-  import { Scrollbox } from '$lib/components';
+  import { PostImage, Scrollbox } from '$lib/components';
   import { SimpleBloomFilter, ParameterCalculator } from '$lib/components/visualization/bloom-filters';
 </script>
 
@@ -142,37 +142,72 @@ As one researcher [puts it nicely:](https://www.math.umd.edu/~immortal/CMSC420/n
 > [!quote]
 > "There is no deletion basically because the only reasonable way to delete would be to hash the key and then set those corresponding bits to 0, but this could cause false negatives for other keys."
 
-Let's visualize this. Imagine a Bloom filter as a shared apartment building where multiple tenants (elements) occupy overlapping rooms (bit positions).
+Let's visualize this a little bit. For example we have a party. Carol is at the store, and Alice and Bob are at home texting her what to buy. Carol keeps one plain shopping list of items and doesn't write down who asked for what.
+Think of the list as the bit array, each person's order as an element, and each item in it as one of the element's bit positions.
 
-- When Alice moves in, she gets keys to rooms `3`, `7`, and `12`.
-- When Bob moves in, he gets keys to rooms `7`, `15`, and `23`.
+Alice is baking a cake and texts _eggs, milk, flour_. Bob is making milkshakes and texts _milk, ice cream, bananas_. Milk is already on the list, so Carol only adds the other two:
 
-Notice: both Alice and Bob share room `7`.
+<PostImage
+  src="/images/posts/008-bloom-filters-pt1/shop_comic_panel_1.jpg"
+  alt="Comic panel: at home, Alice texts eggs, milk, flour and Bob texts milk, ice cream, bananas. In the store, Carol has one list: eggs, milk, flour, ice cream, bananas, with milk written only once."
+  ai
+/>
 
-Now, if Alice moves out and we naively "delete" her by switching off the lights (setting bits to `0`) in rooms `3`, `7`, and `12`, we inadvertently turn off room `7`, which Bob still needs.  
-The next time someone asks, "Is Bob still living here?" the system might falsely answer "No" — even though Bob never left. That's a **false negative**, and Bloom filters are designed specifically to prevent that.
+<Scrollbox>
 
-```mermaid title="Why naive deletion breaks a Bloom filter: clearing Alice's bits makes Bob disappear"
-graph TD
-    A["Alice moves in"] --> A1["Gets keys to rooms:<br/>3, 7, 12"]
-    B["Bob moves in"] --> B1["Gets keys to rooms:<br/>7, 15, 23"]
-
-    A1 --> R["Room occupancy:<br/>Room 3: Alice<br/>Room 7: Alice + Bob<br/>Room 12: Alice<br/>Room 15: Bob<br/>Room 23: Bob"]
-    B1 --> R
-
-    R --> D["Alice moves out<br/>(Naive deletion)"]
-    D --> D1["Turn off lights in<br/>rooms 3, 7, 12"]
-
-    D1 --> P["Problem: Room 7 light<br/>is turned off but<br/>Bob still needs it!"]
-
-    P --> Q["Next query: 'Is Bob here?'<br/>Checks rooms 7, 15, 23<br/>Room 7 is dark (0)<br/>Answer: NO"]
-
-    Q --> F["FALSE NEGATIVE<br/>Bob never left!"]
-
-    class A,B input
-    class P warn
-    class D,F danger
+```svgbob
+ asked by              Alice     Alice,Bob     Alice        Bob         Bob
+                         ↓           ↓           ↓           ↓           ↓
+                   +-----------+-----------+-----------+-----------+-----------+
+ shopping list     |   eggs    |   milk    |   flour   | ice cream |  bananas  |
+                   +-----------+-----------+-----------+-----------+-----------+
 ```
+
+</Scrollbox>
+
+Then it turns out one of the guests is bringing a cake, so Alice texts "drop my stuff: eggs, milk, flour". Carol naively "deletes" Alice's order by crossing out all three items, including the milk that Bob still needs:
+
+<PostImage
+  src="/images/posts/008-bloom-filters-pt1/shop_comic_panel_2.jpg"
+  alt="Comic panel: a guest arrives with a cake, and Alice texts drop my stuff. In the store, Carol crosses out eggs, milk and flour, leaving ice cream and bananas."
+  ai
+/>
+
+<Scrollbox>
+
+```svgbob
+ cross out           eggs        milk       flour
+                      ↓           ↓           ↓
+                +-----------+-----------+-----------+-----------+-----------+
+ shopping list  |           |           |           | ice cream |  bananas  |
+                +-----------+-----------+-----------+-----------+-----------+
+                                  ↑
+                        Bob still needs this
+```
+
+</Scrollbox>
+
+Later Bob texts "do you have my stuff?" which are milk, ice cream and bananas. Carol checks her list, finds no milk and replies "your order isn't on my list", even though Bob never cancelled its order. 
+
+That's a **false negative**, and Bloom filters are designed specifically to prevent that.
+
+<PostImage
+  src="/images/posts/008-bloom-filters-pt1/shop_comic_panels_3_4.jpg"
+  alt="Two comic panels. Bob texts milk, ice cream, bananas? Carol looks at her list with milk crossed out and replies: your order is not on my list. At the party, Bob sits deadpan with a blender, ice cream and bananas, but no milk."
+  ai
+/>
+
+<Scrollbox>
+
+```svgbob
+ query Bob                        ✗                       ✓           ✓
+                                  ↓                       ↓           ↓
+                +-----------+-----------+-----------+-----------+-----------+
+ shopping list  |           |           |           | ice cream |  bananas  |
+                +-----------+-----------+-----------+-----------+-----------+
+```
+
+</Scrollbox>
 
 Of course, for a quick and dirty workaround, an engineer might introduce a second "blacklist" Bloom filter to track deletions. When checking membership, an element would only be considered present if it's in the main filter **and** not in the deletion filter. But sometimes this comes with its own trade-offs — and I'll cover better solutions later, like [Counting Bloom Filters](https://maltsev.space/blog/009-counting-bloom-filters) and [Cuckoo Filters](https://maltsev.space/blog/010-cuckoo-filters).
 

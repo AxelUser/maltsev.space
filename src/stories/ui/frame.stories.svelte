@@ -4,6 +4,7 @@
 	import Picture from '$lib/components/ui/picture.svelte';
 	import AiFlag from '$lib/components/ui/ai-flag.svelte';
 	import * as HoverZoom from '$lib/components/ui/hover-zoom';
+	import * as Figure from '$lib/components/ui/figure';
 	import '../../app.css';
 	import heroImage from './hero.jpg?enhanced';
 
@@ -11,7 +12,8 @@
 		title: 'UI/Frame',
 		component: Frame,
 		argTypes: {
-			size: { control: 'radio', options: ['sm', 'md'] }
+			size: { control: 'radio', options: ['sm', 'md'] },
+			ratio: { control: 'radio', options: ['3/2', 'natural'] }
 		}
 	});
 </script>
@@ -32,6 +34,14 @@
 	{/snippet}
 </Story>
 
+<Story name="Natural ratio" args={{ ratio: 'natural' }}>
+	{#snippet template(args)}
+		<div class="max-w-[480px]">
+			<Frame {...args}><Picture src={heroImage} sizes="480px" /></Frame>
+		</div>
+	{/snippet}
+</Story>
+
 <Story name="Hover zoom">
 	{#snippet template(args)}
 		<HoverZoom.Area class="max-w-[480px]">
@@ -39,7 +49,7 @@
 				<HoverZoom.Target>
 					{#snippet child({ props })}<Picture {...props} src={heroImage} sizes="480px" />{/snippet}
 				</HoverZoom.Target>
-				<AiFlag label="AI Generated Image" />
+				<Figure.Corner at="top-left"><AiFlag /></Figure.Corner>
 			</Frame>
 		</HoverZoom.Area>
 	{/snippet}
