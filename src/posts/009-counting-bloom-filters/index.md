@@ -95,7 +95,7 @@ Originally proposed by [Fan et al.](https://www.cs.princeton.edu/courses/archive
 
 <Scrollbox>
 
-```svgbob
+```svgbob alt="The same positions 1, 4, 6, 7 and 9 set in a classic Bloom filter, as single bits, and in a counting Bloom filter, as 4-bit counters, where position 4 holds 2."
  Classic Bloom filter, 1 bit per cell
  +-+-+-+-+-+-+-+-+-+-+
  |0|1|0|0|1|0|1|1|0|1|
@@ -108,6 +108,9 @@ Originally proposed by [Fan et al.](https://www.cs.princeton.edu/courses/archive
  |0 0 0 0|0 0 0 1|0 0 0 0|0 0 0 0|0 0 1 0|0 0 0 0|0 0 0 1|0 0 0 1|0 0 0 0|0 0 0 1|
  +-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
      0       1       2       3       4       5       6       7       8       9
+
+# Tones:
+set  "1"
 ```
 
 </Scrollbox>
@@ -223,7 +226,7 @@ So instead of one giant table, we split it into `d` isolated parts. For example,
 
 <Scrollbox>
 
-```svgbob
+```svgbob alt="A dlCBF with two subtables of four buckets each. Each bucket row shows two cells of fingerprint and counter, for example A2C, 1, and some cells are empty."
                     subtable 0                                subtable 1
             +---------+---------+-----+               +---------+---------+-----+
   bucket 0  | A2C, 1  | 7F1, 2  | ... |     bucket 0  | 3E9, 1  |         | ... |
@@ -258,7 +261,7 @@ For example, let's insert `"apple"` into the filter above. Its fingerprint is `0
 
 <Scrollbox>
 
-```svgbob
+```svgbob alt="Candidate buckets for apple: subtable 0 bucket 3 holds one cell, subtable 1 bucket 1 holds two. The new cell 7B1, 1 goes into the free cell of subtable 0 bucket 3."
                                   7B1, 1
                                      ↓
                        +---------+---------+-----+
@@ -266,6 +269,10 @@ For example, let's insert `"apple"` into the filter above. Its fingerprint is `0
                        +---------+---------+-----+
  subtable 1, bucket 1  | 9D4, 3  | 1C7, 1  | ... |   load 2
                        +---------+---------+-----+
+
+# Tones:
+changed  subtable 0, bucket 3: 1
+changed  "7B1, 1"
 ```
 
 </Scrollbox>

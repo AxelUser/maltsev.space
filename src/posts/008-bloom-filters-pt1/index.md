@@ -112,12 +112,16 @@ Alice is baking a cake and texts _eggs, milk, flour_. Bob is making milkshakes a
 
 <Scrollbox>
 
-```svgbob
+```svgbob alt="Shopping list: eggs, milk, flour, ice cream, bananas. Eggs and flour were asked by Alice, ice cream and bananas by Bob, and milk by both."
  asked by              Alice     Alice,Bob     Alice        Bob         Bob
                          ↓           ↓           ↓           ↓           ↓
                    +-----------+-----------+-----------+-----------+-----------+
  shopping list     |   eggs    |   milk    |   flour   | ice cream |  bananas  |
                    +-----------+-----------+-----------+-----------+-----------+
+
+# Tones:
+accent  "milk"
+accent  "Alice,Bob"
 ```
 
 </Scrollbox>
@@ -132,14 +136,17 @@ Then it turns out one of the guests is bringing a cake, so Alice texts "drop my 
 
 <Scrollbox>
 
-```svgbob
- cross out           eggs        milk       flour
-                      ↓           ↓           ↓
+```svgbob alt="Carol crosses out eggs, milk and flour. Only ice cream and bananas are left, although Bob still needs the milk."
                 +-----------+-----------+-----------+-----------+-----------+
- shopping list  |           |           |           | ice cream |  bananas  |
+ shopping list  |   eggs    |   milk    |   flour   | ice cream |  bananas  |
                 +-----------+-----------+-----------+-----------+-----------+
                                   ↑
                         Bob still needs this
+
+# Tones:
+strike  shopping list: 0 1 2
+accent  "↑"
+accent  "Bob still needs this"
 ```
 
 </Scrollbox>
@@ -156,12 +163,16 @@ That's a **false negative**, and Bloom filters are designed specifically to prev
 
 <Scrollbox>
 
-```svgbob
+```svgbob alt="Bob's query: milk is crossed out, ice cream and bananas are on the list, so Carol answers that his order is not there."
  query Bob                        ✗                       ✓           ✓
                                   ↓                       ↓           ↓
                 +-----------+-----------+-----------+-----------+-----------+
- shopping list  |           |           |           | ice cream |  bananas  |
+ shopping list  |   eggs    |   milk    |   flour   | ice cream |  bananas  |
                 +-----------+-----------+-----------+-----------+-----------+
+
+# Tones:
+strike  shopping list: 0 1 2
+bad     shopping list: 1
 ```
 
 </Scrollbox>
@@ -244,13 +255,17 @@ For example, with `h1 = 5`, `h2 = 3`, `m = 16` and `k = 4`:
 
 <Scrollbox>
 
-```svgbob
+```svgbob alt="Double hashing with h1 = 5 and h2 = 3 on a 16-bit array: the positions are 5, 8, 11 and 14, each 3 apart."
  i, jump by h2                            0   +3 →    1   +3 →    2   +3 →    3
                                           ↓           ↓           ↓           ↓
                     +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
  bit array          | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 1 | 0 |
                     +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
                       0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
+
+# Tones:
+changed  bit array: 5 8 11 14
+accent   "+3 →"
 ```
 
 </Scrollbox>

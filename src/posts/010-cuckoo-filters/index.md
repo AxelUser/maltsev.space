@@ -42,9 +42,9 @@ To help visualize the difference, let’s give both filters the same 64 bits of 
 
 <Scrollbox>
 
-```svgbob
+```svgbob alt="64 bits of memory: the Bloom filter uses them as 64 single bits; the Cuckoo filter splits them into 4 buckets of 2 one-byte slots, 6 of which hold a fingerprint."
  Bloom filter
- 
+ +--------+--------+--------+--------+--------+--------+--------+--------+
  |10110100|01101100|10010111|01001100|00101101|11000110|01110010|10011010|
  +--------+--------+--------+--------+--------+--------+--------+--------+
  0        8        16       24       32       40       48       56      63
@@ -55,6 +55,9 @@ To help visualize the difference, let’s give both filters the same 64 bits of 
  +--------+--------+--------+--------+--------+--------+--------+--------+
   |               | |               | |               | |               |
   +-- bucket 0 ---+ +-- bucket 1 ---+ +-- bucket 2 ---+ +-- bucket 3 ---+
+
+# Tones:
+set  "0x"
 ```
 
 </Scrollbox>

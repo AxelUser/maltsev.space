@@ -7,7 +7,7 @@ import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import rehypeKatexSvelte from 'rehype-katex-svelte';
 import remarkMath from 'remark-math';
-import remarkSVGBob from 'remark-svgbob';
+import { remarkSvgbobTones } from './src/lib/plugins/remark-svgbob-tones.js';
 import rehypeCallouts from 'rehype-callouts';
 import readingTime from 'mdsvex-reading-time';
 import { remarkLinksToReferences } from './src/lib/plugins/remark-links-to-references.js';
@@ -58,7 +58,8 @@ const mdsvexOptions = {
 	remarkPlugins: [
 		[remarkToc, { tight: true, maxDepth: 3 }],
 		remarkMath,
-		remarkSVGBob,
+		// ```svgbob fences → inline SVG with semantic tone classes (see src/svgbob.css).
+		remarkSvgbobTones,
 		// ```mermaid fences → inline SVG at build time; must run before `highlight`.
 		remarkZombieMermaid,
 		remarkLinksToReferences,

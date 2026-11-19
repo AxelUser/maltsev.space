@@ -103,3 +103,71 @@
 .svgbob .start_marked_big_open_circle {
 	marker-start: url(#big_open_circle);
 }
+
+/*
+ * Tones from src/lib/plugins/remark-svgbob-tones.js. Same palette as ArrayView /
+ * ByteLanes: changed = livery-4 fill, ok = livery-4 edge, bad = livery-1 edge,
+ * accent = livery-2 (the amber of the 008 comic). Every rule needs !important to
+ * beat the generic `.svgbob rect/line/text` rules above.
+ */
+.svgbob rect.tone {
+	stroke: none !important;
+}
+
+.svgbob rect.tone-set,
+.svgbob rect.tone-ok {
+	fill: var(--color-line);
+}
+
+.svgbob rect.tone-changed {
+	fill: var(--color-livery-4);
+}
+
+.svgbob rect.tone-accent {
+	fill: var(--color-livery-2);
+}
+
+.svgbob rect.tone-edge {
+	fill: none;
+	stroke-width: 2;
+}
+
+.svgbob rect.tone-edge-ok {
+	stroke: var(--color-livery-4) !important;
+}
+
+.svgbob rect.tone-edge-bad {
+	stroke: var(--color-livery-1) !important;
+}
+
+.svgbob text.on-changed,
+.svgbob text.on-accent {
+	fill: var(--color-on-livery) !important;
+}
+
+.svgbob text.on-bad,
+.svgbob text.t-bad {
+	fill: var(--color-livery-1) !important;
+}
+
+.svgbob text.t-ok,
+.svgbob text.t-changed {
+	fill: var(--color-livery-4) !important;
+}
+
+/* Amber is too light for small text on the light canvas; pull it towards ink. */
+.svgbob text.t-accent {
+	fill: color-mix(in oklab, var(--color-livery-2) 75%, var(--color-ink)) !important;
+}
+
+.svgbob text.on-muted,
+.svgbob text.t-muted,
+.svgbob text.on-strike,
+.svgbob text.t-strike {
+	fill: var(--color-ink-3) !important;
+}
+
+.svgbob line.strike {
+	stroke: var(--color-ink-3) !important;
+	stroke-width: 1.5;
+}

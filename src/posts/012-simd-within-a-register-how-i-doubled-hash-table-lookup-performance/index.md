@@ -28,7 +28,7 @@ The layout looked straightforward—just a byte array where the start of each bu
 
 <Scrollbox>
 
-```svgbob
+```svgbob alt="The hash table as one byte array: bucket 0 holds bytes 0 to 3, bucket 1 bytes 4 to 7, and bucket n starts at byte 4n. Each bucket has four one-byte slots, and 00 marks an empty slot."
                Bucket 0              Bucket 1                      Bucket n
         +----+----+----+----+ +----+----+----+----+         +----+----+----+----+
 Table:  | 3A | 00 | B7 | F2 | | 4C | 91 | 00 | DE |   ...   | AA | 00 | 5F | C8 |
@@ -258,7 +258,7 @@ What's cool is that `All` field is accessing whole bucket as a single 32-bit int
 
 <Scrollbox>
 
-```svgbob
+```svgbob alt="The 32-bit value 0x12345678 split into four bytes: Fp3 is 0x12 at offset 3, Fp2 is 0x34 at offset 2, Fp1 is 0x56 at offset 1 and Fp0 is 0x78 at offset 0. All covers the whole value."
           31            24 23            16 15             8 7              0
          +----------------+----------------+----------------+----------------+
          |    00010010    |    00110100    |    01010110    |    01111000    |
