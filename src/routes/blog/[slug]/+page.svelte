@@ -5,7 +5,7 @@
 	import { Container } from '$lib/components/layout';
 	import { Tag } from '$lib/components/ui';
 	import { PostCover } from '$lib/components/cover';
-	import { PostPager, PostRows, SeriesParts } from '$lib/components/posts';
+	import { PostIndex, PostPager, PostRows, SeriesParts } from '$lib/components/posts';
 	import type { PageProps } from './$types';
 	import { getPostHeroImage } from '$lib/utils';
 
@@ -71,7 +71,13 @@
 		ai={data.aiCover}
 	/>
 
-	<div class="mx-auto max-w-article">
+	<div class="relative mx-auto max-w-article">
+		<aside class="absolute inset-y-0 left-full ml-14 hidden w-[260px] 2xl:block print:hidden">
+			<div class="sticky top-[calc(var(--spacing-header)+32px)]">
+				<PostIndex posts={data.index} current={data.slug} />
+			</div>
+		</aside>
+
 		{#if data.seriesName}
 			<SeriesParts name={data.seriesName} posts={data.series} current={data.slug} />
 		{/if}

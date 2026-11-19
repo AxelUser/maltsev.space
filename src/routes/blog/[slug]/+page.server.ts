@@ -4,6 +4,7 @@ import { config } from '$lib/config';
 import { getNeighbours, getPosts, getSeries } from '$lib/posts';
 import { generatePostHeroThumbhash, getOGImagePath } from '$lib/server/images';
 import { getArticleViews } from '$lib/server/analytics';
+import type { PostIndexEntry } from '$lib/types';
 
 /** Slugs of other notes this post links to (front-matter `links`, filled by remark-links-to-references). */
 function referencedSlugs(links: string[] | undefined, self: string): string[] {
@@ -38,6 +39,14 @@ export const load: PageServerLoad = async ({ params }) => {
 		ogImagePath,
 		series: getSeries(metadata.series as string),
 		neighbours: getNeighbours(params.slug),
-		referencedPosts: slugs.length > 0 ? getPosts(null, 'published', slugs) : []
+		referencedPosts: slugs.length > 0 ? getPosts(null, 'published', slugs) : [],
+		index: getPosts().map(
+			({ slug, number, title, date }): PostIndexEntry => ({
+				slug,
+				number,
+				title,
+				year: date.slice(0, 4)
+			})
+		)
 	};
 };
