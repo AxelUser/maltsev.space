@@ -17,6 +17,8 @@ liveCover: true
 
 <script>
     import { Scrollbox } from '$lib/components';
+    import { Stepper } from '$lib/components/visualization/array-steps';
+    import { cuckooKickout } from './steps';
 </script>
 
 Bloom Filters are brilliant, they use minimal memory to support approximate membership query operations, i.e., answering what elements may be represented in a set, or what absolutely not. Their simplicity is both their strength and weakness. As I’ve described in a [previous article about Counting Bloom Filter](https://maltsev.space/blog/009-counting-bloom-filters), it’s not trivial to support deletion and preserve their guarantees of absence of false-negative results, i.e., telling what elements are not in a set.
@@ -84,31 +86,9 @@ When inserting a new element:
 
 This behavior is inspired by the cuckoo bird, which famously lays its eggs in other birds' nests, displacing the existing ones — hence the name.
 
-```mermaid title="Cuckoo insertion of 'orange': evicting 'apple' starts a relocation chain that ends in success or a resize"
-graph TD
-    A["New Element: 'orange'"] --> B["Calculate h1('orange') = Bucket 2<br/>Calculate h2('orange') = Bucket 5"]
+Here is one such insert on a small table of 8 buckets with one slot each:
 
-    B --> C{"Check Bucket 2<br/>and Bucket 5"}
-    C -->|"Both full"| D["Pick random bucket: Bucket 2<br/>Evict existing element: 'apple'"]
-    C -->|"Space available"| E["Insert 'orange'<br/>✓ Success"]
-
-    D --> F["Insert 'orange' into Bucket 2<br/>Now need to relocate 'apple'"]
-    F --> G["Calculate alternate for 'apple'<br/>h2('apple') = Bucket 7"]
-
-    G --> H{"Check Bucket 7"}
-    H -->|"Space available"| I["Insert 'apple' into Bucket 7<br/>✓ Chain resolved"]
-    H -->|"Full"| J["Evict element from Bucket 7<br/>Continue eviction chain..."]
-
-    J --> K["Repeat process until:<br/>• Empty slot found<br/>• Max kicks reached<br/>• Cycle detected"]
-
-    K --> L["Success: All elements placed"]
-    K --> M["Failure: Table too full<br/>Need to resize"]
-
-    class A input
-    class C,H decision
-    class E,I,L result
-    class M danger
-```
+<Stepper title="Cuckoo insertion with a chain of evictions" steps={cuckooKickout} />
 
 Here's how the bucket choices are calculated:
 

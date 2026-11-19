@@ -5,20 +5,25 @@ A story told over several array states (insert → delete → query) in one widg
 Without JS every step renders stacked, so the figure reads like a static diagram.
 With JS one step shows at a time with Prev / Next buttons, step dots and ←/→ keys.
 -->
-<script lang="ts">
-	import { onMount } from 'svelte';
+<script lang="ts" generics="S = ArrayState">
+	import { onMount, type Snippet } from 'svelte';
 	import { cn } from '$lib/utils';
 	import ArrayView from './array-view.svelte';
-	import type { Step } from './types';
+	import type { ArrayState, Step } from './types';
 
 	interface Props {
-		steps: Step[];
+		steps: Step<S>[];
 		/** Accessible name of the widget. */
 		title: string;
+		/**
+		 * Draws one step's state. Without it the state is drawn as an `ArrayView`,
+		 * so `S` must then be `ArrayState`.
+		 */
+		view?: Snippet<[state: S, prev: S | undefined, animate: boolean]>;
 		class?: string;
 	}
 
-	const { steps, title, class: className }: Props = $props();
+	const { steps, title, view, class: className }: Props = $props();
 
 	let active = $state(0);
 	let showAll = $state(false);
@@ -56,6 +61,8 @@ With JS one step shows at a time with Prev / Next buttons, step dots and ←/→
 >
 	<div class="steps">
 		{#each steps as step, i (i)}
+			{@const prev = i > 0 ? steps[i - 1].state : undefined}
+			{@const animate = interacted && !showAll && i === active}
 			<div
 				class="step"
 				class:active={i === active}
@@ -69,16 +76,21 @@ With JS one step shows at a time with Prev / Next buttons, step dots and ←/→
 					<!-- eslint-disable-next-line svelte/no-at-html-tags -- captions are trusted author content from the post -->
 					{@html step.caption}
 				</p>
-				<ArrayView
-					state={step.state}
-					prev={i > 0 ? steps[i - 1].state : undefined}
-					animate={interacted && !showAll && i === active}
-				/>
+				{#if view}
+					{@render view(step.state, prev, animate)}
+				{:else}
+					<ArrayView
+						state={step.state as ArrayState}
+						prev={prev as ArrayState | undefined}
+						{animate}
+					/>
+				{/if}
 			</div>
 		{/each}
 	</div>
 
-	<div class="controls mt-3 flex-wrap items-center gap-2 border-t border-line pt-3">
+	<!-- select-none: quick repeated clicks on Prev / Next shouldn't select the button labels -->
+	<div class="controls mt-3 flex-wrap items-center gap-2 border-t border-line pt-3 select-none">
 		{#if !showAll}
 			<button
 				type="button"

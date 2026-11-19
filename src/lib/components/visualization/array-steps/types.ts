@@ -19,10 +19,13 @@ export interface ArrayState {
 	notes?: Record<number, string>;
 	/** Explicit tone per cell; overrides the derived one. */
 	tone?: Record<number, Tone>;
+	/** Curved arrows above the array for a value moving between cells; pair with a mark on `to`. */
+	arcs?: { from: number; to: number }[];
 }
 
-export interface Step {
+/** One step of a Stepper story. */
+export interface Step<S = ArrayState> {
 	/** One or two sentences explaining the step. Trusted author HTML (`<code>`, `<strong>`). */
 	caption: string;
-	state: ArrayState;
+	state: S;
 }

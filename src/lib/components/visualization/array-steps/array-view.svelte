@@ -25,6 +25,7 @@ Static and SSR-safe; every row shares one column template, so marks always line 
 	const marks = $derived(state.marks ?? {});
 	const owners = $derived(state.owners ?? {});
 	const notes = $derived(state.notes ?? {});
+	const arcs = $derived(state.arcs ?? []);
 	const hasMarks = $derived(Object.keys(marks).length > 0);
 	const hasOwners = $derived(Object.keys(owners).length > 0);
 	const noteEntries = $derived(
@@ -32,6 +33,11 @@ Static and SSR-safe; every row shares one column template, so marks always line 
 	);
 
 	const isFilled = (v: number | string) => v !== '' && v !== 0 && v !== '0';
+
+	/** Cells holding words get wider columns and a fixed small font. */
+	const longest = $derived(Math.max(...state.cells.map((c) => String(c).length)));
+	const wordy = $derived(longest > 2);
+	const cellRem = $derived(wordy ? Math.max(2.75, longest * 0.7 + 1.2) : 2.75);
 
 	function toneOf(i: number): Tone | undefined {
 		const explicit = state.tone?.[i];
@@ -71,21 +77,62 @@ Static and SSR-safe; every row shares one column template, so marks always line 
 		const ownerList = Object.entries(owners).map(([i, o]) => `${i} by ${o}`);
 		if (ownerList.length) parts.push(`set ${ownerList.join(', ')}`);
 		for (const [i, text] of noteEntries) parts.push(`note at ${i}: ${text}`);
+		for (const { from, to } of arcs) parts.push(`moved from ${from} to ${to}`);
 		return `${state.label}, ${n} cells; ${parts.join('; ')}`;
 	});
 </script>
 
 <div class={cn('min-w-0', className)} role="img" aria-label={ariaLabel}>
-	<div class="mb-1 font-mono text-xs text-ink-2" aria-hidden="true">{state.label}</div>
+	<div class="mb-1 font-mono text-xs text-ink-2 md:text-sm" aria-hidden="true">{state.label}</div>
 	<div class="overflow-x-auto pb-1" aria-hidden="true">
 		<div
-			class="grid font-mono"
+			class="cells grid font-mono"
 			style:grid-template-columns="repeat({n}, minmax(1.25rem, 1fr))"
-			style:max-width="{n * 2.75}rem"
+			style:--cells-max="{n * cellRem}rem"
 		>
+			{#if state.arcs}
+				<!-- `arcs: []` still reserves the row, so the array doesn't jump between steps.
+				     100 user units per cell; non-scaling stroke keeps the line even when the row stretches. -->
+				<div class="relative col-span-full h-7 text-livery-2 md:h-[2.125rem]">
+					<svg
+						class="block size-full overflow-visible"
+						viewBox="0 0 {n * 100} 40"
+						preserveAspectRatio="none"
+					>
+						{#each arcs as { from, to }, k (k)}
+							{@const x1 = (from + 0.5) * 100}
+							{@const x2 = (to + 0.5) * 100}
+							<!-- Starts at the source cell (through its empty mark slot) and ends at the row's bottom.
+							     Control points sit straight above both ends, so the ends stay vertical however
+							     the row stretches, and the arrowhead below can always point straight down. -->
+							<path
+								d="M {x1} 88 C {x1} -10 {x2} -10 {x2} 40"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.5"
+								stroke-dasharray="5 3"
+								vector-effect="non-scaling-stroke"
+							/>
+						{/each}
+					</svg>
+					<!-- Arrowheads live outside the stretched SVG so they keep their shape. -->
+					{#each arcs as { to }, k (k)}
+						<svg
+							class="absolute top-full size-2.5 -translate-x-1/2 -translate-y-px"
+							style:left="{((to + 0.5) / n) * 100}%"
+							viewBox="0 0 10 10"
+						>
+							<path d="M0 0 L10 0 L5 9 Z" fill="currentColor" />
+						</svg>
+					{/each}
+				</div>
+			{/if}
+
 			{#if hasMarks}
 				{#each indices as i (i)}
-					<div class="flex h-9 flex-col items-center justify-end text-xs leading-tight">
+					<div
+						class="flex h-9 flex-col items-center justify-end text-xs leading-tight md:h-11 md:text-sm"
+					>
 						{#if marks[i]}
 							<span class={cn('whitespace-nowrap', markClass(marks[i]))}>{marks[i]}</span>
 							<span class="text-ink-3">↓</span>
@@ -98,7 +145,8 @@ Static and SSR-safe; every row shares one column template, so marks always line 
 				{@const tone = tones[i]}
 				<div
 					class={cn(
-						'flex h-8 items-center justify-center border border-line-2 bg-canvas text-sm font-medium text-ink-2 sm:h-9 sm:text-base',
+						'flex h-8 items-center justify-center border border-line-2 bg-canvas text-sm font-medium text-ink-2 sm:h-9 md:h-11',
+						wordy ? 'md:text-base' : 'sm:text-base md:text-lg',
 						i > 0 && '-ml-px',
 						tone && ['relative z-1', toneClass[tone]],
 						animate && tone === 'changed' && 'cell-flash'
@@ -110,13 +158,15 @@ Static and SSR-safe; every row shares one column template, so marks always line 
 
 			{#if showIndex}
 				{#each indices as i (i)}
-					<div class="pt-0.5 text-center text-[11px] text-ink-3">{i}</div>
+					<div class="pt-0.5 text-center text-[11px] text-ink-3 sm:text-xs md:text-sm">{i}</div>
 				{/each}
 			{/if}
 
 			{#if hasOwners}
 				{#each indices as i (i)}
-					<div class="text-center text-[11px] whitespace-nowrap text-ink-2 italic">
+					<div
+						class="text-center text-[11px] whitespace-nowrap text-ink-2 italic sm:text-xs md:text-sm"
+					>
 						{owners[i] ?? ''}
 					</div>
 				{/each}
@@ -124,7 +174,7 @@ Static and SSR-safe; every row shares one column template, so marks always line 
 
 			{#each noteEntries as [i, text] (i)}
 				<div
-					class="row-span-1 mt-0.5 flex flex-col items-center text-xs leading-tight text-ink-2"
+					class="row-span-1 mt-0.5 flex flex-col items-center text-xs leading-tight text-ink-2 md:text-sm"
 					style:grid-column={noteColumn(i)}
 				>
 					<span class="text-ink-3">↑</span>
@@ -136,6 +186,16 @@ Static and SSR-safe; every row shares one column template, so marks always line 
 </div>
 
 <style>
+	/* Cells grow with the font on wider screens; the container still caps the width. */
+	.cells {
+		max-width: var(--cells-max);
+	}
+	@media (min-width: 48rem) {
+		.cells {
+			max-width: calc(var(--cells-max) * 1.25);
+		}
+	}
+
 	.cell-flash {
 		animation: cell-flash 900ms ease-out;
 	}
