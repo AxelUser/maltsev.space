@@ -14,3 +14,11 @@ export interface ArticleAnalytics {
 	slug: string;
 	views: number;
 }
+
+/** A row of the all-notes index beside a post. */
+export interface PostIndexEntry {
+	slug: string;
+	number: string;
+	title: string;
+	year: string;
+}
