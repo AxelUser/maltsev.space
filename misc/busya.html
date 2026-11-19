@@ -18,34 +18,35 @@
 		<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#070a0f" />
 		<!-- Apply the saved Day / Night choice before first paint; Auto leaves it to the OS -->
 		<script>
+			// Lets components (e.g. the post Stepper) style their JS-enabled layout before hydration
+			document.documentElement.classList.add('js');
 			try {
 				var t = localStorage.getItem('theme');
 				if (t === 'light' || t === 'dark') document.documentElement.setAttribute('color-scheme', t);
 			} catch (e) {}
 		</script>
 		
-		<link href="../_app/immutable/assets/0.CkC9FEoa.css" rel="stylesheet">
-		<link rel="modulepreload" href="../_app/immutable/entry/start.CnZE9W96.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/Bt7oHGDA.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/Ct0Y-bdH.js">
-		<link rel="modulepreload" href="../_app/immutable/entry/app.Dmnx6T2x.js">
+		<link href="../_app/immutable/assets/0.CGM36AFw.css" rel="stylesheet">
+		<link rel="modulepreload" href="../_app/immutable/entry/start.DG8KTC2w.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/BCkqiZ1M.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/D4uqibNY.js">
+		<link rel="modulepreload" href="../_app/immutable/entry/app.DP6ueL49.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/Dp1pzeXC.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/BlrFRGw6.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/BkODIKsA.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/BSyS8C-E.js">
-		<link rel="modulepreload" href="../_app/immutable/nodes/0.DeUn-Si2.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/CJpRE9dc.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/BHnd5ghP.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Cxo-WKql.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/D6v7inxq.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/0.Bp5e_Xey.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/V0PCWkG8.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/CnmAt-jp.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/CAxwUfti.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/DzJU8wOV.js">
-		<link rel="modulepreload" href="../_app/immutable/nodes/7.CMYvkURk.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/NKcQviGT.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Db3cyGMQ.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/7.Cs9f-_o5.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/DjjWRowV.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/B9OfpRuN.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/4niCJI9B.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/poXA-uN_.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/BKhCdRQv.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/DioaAWWM.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/DBfYQfvT.js"><!--[--><link rel="alternate" type="application/rss+xml" title="Aleksey Maltsev's Blog" href="/rss.xml"> <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"><!--]--><!--[--><meta name="description" content="Images capturing the adorable essence of my beloved Japanese Chin pup named Busya, crafted with affection using Stable Diffusion neural network when it was cool."> <link rel="canonical" href="https://maltsev.space/misc/busya"> <!--[!--><meta name="robots" content="index, follow"><!--]--> <meta property="og:type" content="website"> <meta property="og:title" content="Busya"> <meta property="og:description" content="Images capturing the adorable essence of my beloved Japanese Chin pup named Busya, crafted with affection using Stable Diffusion neural network when it was cool."> <meta property="og:image" content="https://maltsev.space/images/art/busya/peter-the-great.png"> <meta property="og:image:alt" content="Aleksey Maltsev - Software Engineer"> <meta property="og:url" content="https://maltsev.space/misc/busya"> <meta property="og:site_name" content="MALTSEV.SPACE"> <meta property="og:locale" content="en_US"> <!--[!--><!--]--> <meta name="twitter:card" content="summary_large_image"> <meta name="twitter:title" content="Busya"> <meta name="twitter:description" content="Images capturing the adorable essence of my beloved Japanese Chin pup named Busya, crafted with affection using Stable Diffusion neural network when it was cool."> <meta name="twitter:image" content="https://maltsev.space/images/art/busya/peter-the-great.png"> <meta name="twitter:image:alt" content="Aleksey Maltsev - Software Engineer"> <meta name="twitter:site" content="@axel_user"> <meta name="twitter:creator" content="@axel_user"> <!----><script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Aleksey Maltsev","jobTitle":"Software Developer","description":"Software Developer at JetBrains, focused on distributed systems and highload applications","url":"https://maltsev.space/","image":"https://maltsev.space/images/ava.jpg","sameAs":["https://github.com/AxelUser","https://www.linkedin.com/in/dev-alexey-maltsev/"]}</script><!----> <!--[--><!----><script type="application/ld+json">{"@context":"https://schema.org","@type":"Website","name":"MALTSEV.SPACE","description":"Images capturing the adorable essence of my beloved Japanese Chin pup named Busya, crafted with affection using Stable Diffusion neural network when it was cool.","url":"https://maltsev.space/","author":{"@context":"https://schema.org","@type":"Person","name":"Aleksey Maltsev","jobTitle":"Software Developer","description":"Software Developer at JetBrains, focused on distributed systems and highload applications","url":"https://maltsev.space/","image":"https://maltsev.space/images/ava.jpg","sameAs":["https://github.com/AxelUser","https://www.linkedin.com/in/dev-alexey-maltsev/"]},"publisher":{"@context":"https://schema.org","@type":"Person","name":"Aleksey Maltsev","jobTitle":"Software Developer","description":"Software Developer at JetBrains, focused on distributed systems and highload applications","url":"https://maltsev.space/","image":"https://maltsev.space/images/ava.jpg","sameAs":["https://github.com/AxelUser","https://www.linkedin.com/in/dev-alexey-maltsev/"]}}</script><!----> <!--[!--><!--]--><!--]--> <!--[!--><!--]--><!--]--><title>Busya</title>
+		<link rel="modulepreload" href="../_app/immutable/chunks/CJK28qjk.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Bh3237-F.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/BemBX1C7.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/mDARhFfQ.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Bnuv-dbK.js"><!--[--><link rel="alternate" type="application/rss+xml" title="Aleksey Maltsev's Blog" href="/rss.xml"> <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"><!--]--><!--[--><meta name="description" content="Images capturing the adorable essence of my beloved Japanese Chin pup named Busya, crafted with affection using Stable Diffusion neural network when it was cool."> <link rel="canonical" href="https://maltsev.space/misc/busya"> <!--[!--><meta name="robots" content="index, follow"><!--]--> <meta property="og:type" content="website"> <meta property="og:title" content="Busya"> <meta property="og:description" content="Images capturing the adorable essence of my beloved Japanese Chin pup named Busya, crafted with affection using Stable Diffusion neural network when it was cool."> <meta property="og:image" content="https://maltsev.space/images/art/busya/peter-the-great.png"> <meta property="og:image:alt" content="Aleksey Maltsev - Software Engineer"> <meta property="og:url" content="https://maltsev.space/misc/busya"> <meta property="og:site_name" content="MALTSEV.SPACE"> <meta property="og:locale" content="en_US"> <!--[!--><!--]--> <meta name="twitter:card" content="summary_large_image"> <meta name="twitter:title" content="Busya"> <meta name="twitter:description" content="Images capturing the adorable essence of my beloved Japanese Chin pup named Busya, crafted with affection using Stable Diffusion neural network when it was cool."> <meta name="twitter:image" content="https://maltsev.space/images/art/busya/peter-the-great.png"> <meta name="twitter:image:alt" content="Aleksey Maltsev - Software Engineer"> <meta name="twitter:site" content="@axel_user"> <meta name="twitter:creator" content="@axel_user"> <!----><script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Aleksey Maltsev","jobTitle":"Software Developer","description":"Software Developer at JetBrains, focused on distributed systems and highload applications","url":"https://maltsev.space/","image":"https://maltsev.space/images/ava.jpg","sameAs":["https://github.com/AxelUser","https://www.linkedin.com/in/dev-alexey-maltsev/"]}</script><!----> <!--[--><!----><script type="application/ld+json">{"@context":"https://schema.org","@type":"Website","name":"MALTSEV.SPACE","description":"Images capturing the adorable essence of my beloved Japanese Chin pup named Busya, crafted with affection using Stable Diffusion neural network when it was cool.","url":"https://maltsev.space/","author":{"@context":"https://schema.org","@type":"Person","name":"Aleksey Maltsev","jobTitle":"Software Developer","description":"Software Developer at JetBrains, focused on distributed systems and highload applications","url":"https://maltsev.space/","image":"https://maltsev.space/images/ava.jpg","sameAs":["https://github.com/AxelUser","https://www.linkedin.com/in/dev-alexey-maltsev/"]},"publisher":{"@context":"https://schema.org","@type":"Person","name":"Aleksey Maltsev","jobTitle":"Software Developer","description":"Software Developer at JetBrains, focused on distributed systems and highload applications","url":"https://maltsev.space/","image":"https://maltsev.space/images/ava.jpg","sameAs":["https://github.com/AxelUser","https://www.linkedin.com/in/dev-alexey-maltsev/"]}}</script><!----> <!--[!--><!--]--><!--]--> <!--[!--><!--]--><!--]--><title>Busya</title>
 	</head>
 
 	<body data-sveltekit-preload-data="hover">
@@ -53,15 +54,15 @@
 			
 			<script>
 				{
-					__sveltekit_18w9a42 = {
+					__sveltekit_blhrem = {
 						base: new URL("..", location).pathname.slice(0, -1)
 					};
 
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("../_app/immutable/entry/start.CnZE9W96.js"),
-						import("../_app/immutable/entry/app.Dmnx6T2x.js")
+						import("../_app/immutable/entry/start.DG8KTC2w.js"),
+						import("../_app/immutable/entry/app.DP6ueL49.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element, {
 							node_ids: [0, 7],
