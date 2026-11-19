@@ -20,7 +20,7 @@ import {
 const ROOT = process.env.PERF_BUILD_DIR!;
 const OUT = process.env.PERF_OUT!;
 const RUNS = Number(process.env.PERF_RUNS ?? 3);
-// Lazy chunks (three.js, mermaid) start after hydration; give them time to arrive.
+// Lazy chunks (three.js) start after hydration; give them time to arrive.
 const SETTLE_MS = 4000;
 const READY_TIMEOUT_MS = 20_000;
 

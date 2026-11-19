@@ -1,42 +1,57 @@
 <!--
 	@component
-	Shows an animated cover over a still `fallback`. The scene is loaded only on non-mobile devices
-	with a hovering pointer and no reduced-motion preference, and runs only while at least half of it
-	is in the viewport, so it doesn't move beside the text the reader has scrolled on to.
-	Everyone else, and the server render, gets the fallback. While the scene loads, the fallback is
-	dimmed under a loading indicator. `playing` is true while the scene shows.
-	A toggle in the top-right corner lets the reader turn the scene off until the page is reloaded.
+	Animated scene layer for a post cover. 
+	The scene runs only while at least half of it is in the viewport.
 
-	<LiveCover load={getPostLiveCover(slug)} fallback={still} bind:playing />
+	<LiveCover load={getPostLiveCover(slug)} onready={…} onerror={…} />
 -->
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-	import { fade } from 'svelte/transition';
-	import { MediaQuery } from 'svelte/reactivity';
-	import { useIntersectionObserver, watch } from 'runed';
-	import { cn, isMobileDevice } from '$lib/utils';
+	import { onMount } from 'svelte';
+	import { useIntersectionObserver } from 'runed';
+	import { cn } from '$lib/utils';
 	import { LoadingOverlay } from '$lib/components/ui';
-	import { liveCoverEnabled } from '$lib/stores/live-cover';
 	import type { LiveCoverComponent, LiveCoverLoader } from './types';
 
 	interface Props {
+		/** Read once on mount. */
 		load: LiveCoverLoader;
-		fallback?: Snippet;
-		playing?: boolean;
+		/** Called after the first frame is drawn. */
+		onready?: () => void;
+		/** Called if the scene can't load or start. */
+		onerror?: (err: unknown) => void;
 	}
 
-	let { load, fallback, playing = $bindable(false) }: Props = $props();
+	const { load, onready, onerror }: Props = $props();
 
-	const mobile = isMobileDevice();
-	const desktopMotion = new MediaQuery(
-		'(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)',
-		false
-	);
-	const canAnimate = $derived(!mobile && desktopMotion.current);
+	let Scene = $state<LiveCoverComponent>();
+	let ready = $state(false);
+	let failed = $state(false);
 
-	const active = $derived(canAnimate && $liveCoverEnabled);
+	function markReady() {
+		ready = true;
+		onready?.();
+	}
 
-	// Ratio, not `isIntersecting` (runed's IsInViewport): that stays true while any sliver shows.
+	function fail(err: unknown) {
+		failed = true;
+		onerror?.(err);
+	}
+
+	onMount(() => {
+		let cancelled = false;
+		load()
+			.then((mod) => {
+				if (!cancelled) Scene = mod.default;
+			})
+			.catch((err) => {
+				console.error('Live cover: could not load the scene', err);
+				if (!cancelled) fail(err);
+			});
+		return () => {
+			cancelled = true;
+		};
+	});
+
 	const VISIBLE = 0.5;
 	let root = $state<HTMLElement>();
 	let mostlyVisible = $state(false);
@@ -48,93 +63,19 @@
 		},
 		{ threshold: VISIBLE }
 	);
-
-	// SvelteKit reuses this component when navigating between posts, so only `load` changes.
-	// Deriving the scene state from it resets everything for the new post; assignments below
-	// override the derived value until `load` changes again.
-	let Scene = $derived.by<LiveCoverComponent | undefined>(() => {
-		void load;
-		return undefined;
-	});
-	let ready = $derived.by(() => {
-		void load;
-		return false;
-	});
-	let failed = $derived.by(() => {
-		void load;
-		return false;
-	});
-
-	// `Scene` is read untracked: it only resets when `load` changes, which re-runs this anyway.
-	watch([() => active, () => load], ([active, load]) => {
-		if (!active || Scene) return;
-		let cancelled = false;
-		load()
-			.then((mod) => {
-				if (!cancelled) Scene = mod.default;
-			})
-			.catch((err) => {
-				console.error('Live cover: could not load the scene', err);
-				if (!cancelled) failed = true;
-			});
-		return () => {
-			cancelled = true;
-		};
-	});
-
-	$effect(() => {
-		playing = ready && active;
-	});
-
-	function toggle() {
-		// The scene is unmounted when off and must report ready again when it comes back.
-		if ($liveCoverEnabled) ready = false;
-		liveCoverEnabled.update((on) => !on);
-	}
 </script>
 
 <!-- data-live-cover: read by the perf tests (perf/pages.ts) to time when the scene shows. -->
-<div
-	bind:this={root}
-	class="relative size-full"
-	data-live-cover={playing ? 'playing' : active && !failed ? 'loading' : 'still'}
->
-	{@render fallback?.()}
-	<!-- Keyed so a previous post's scene is dropped at once, without its (local) fade-out. -->
-	{#key load}
-		{#if Scene && active}
-			<div
-				class={cn(
-					'absolute inset-0 transition-opacity duration-700',
-					playing ? 'opacity-100' : 'opacity-0'
-				)}
-				out:fade={{ duration: 300 }}
-			>
-				<Scene
-					isRunning={active && mostlyVisible}
-					onready={() => (ready = true)}
-					onerror={() => (failed = true)}
-				/>
-			</div>
-		{/if}
-	{/key}
-	<LoadingOverlay visible={active && !ready && !failed} label="Scene is loading" />
-	{#if canAnimate && !failed}
-		<button
-			type="button"
-			aria-pressed={$liveCoverEnabled}
-			title={$liveCoverEnabled ? 'Turn the animation off' : 'Turn the animation on'}
-			onclick={toggle}
-			class="absolute top-3 right-3 z-2 inline-flex cursor-pointer items-center gap-1.5 border border-white/15 bg-[rgb(7_10_15/0.55)] px-2 py-0.5 font-mono text-[11px]/[1.4] font-medium text-white/80 backdrop-blur-sm transition-colors hover:border-white/35 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
+<div bind:this={root} class="absolute inset-0" data-live-cover={ready ? 'playing' : 'loading'}>
+	{#if Scene && !failed}
+		<div
+			class={cn(
+				'absolute inset-0 transition-opacity duration-700',
+				ready ? 'opacity-100' : 'opacity-0'
+			)}
 		>
-			<span
-				class={cn(
-					'size-1.5 rounded-full transition-colors',
-					$liveCoverEnabled ? 'bg-livery-3/80' : 'bg-white/35'
-				)}
-				aria-hidden="true"
-			></span>
-			Live cover: {$liveCoverEnabled ? 'on' : 'off'}
-		</button>
+			<Scene isRunning={mostlyVisible} onready={markReady} onerror={fail} />
+		</div>
 	{/if}
+	<LoadingOverlay visible={!ready && !failed} label="Scene is loading" />
 </div>

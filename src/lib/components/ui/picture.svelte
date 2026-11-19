@@ -1,7 +1,6 @@
 <!--
 	@component
 	Responsive image that fills its box, with a blurred placeholder until it loads.
-	`class` goes on the `<img>`.
 -->
 <script lang="ts">
 	import type { ClassValue } from 'clsx';
@@ -10,7 +9,7 @@
 	interface Props {
 		src?: EnhancedImageSrc;
 		alt?: string;
-		sizes?: string;
+		sizes: string;
 		/** Data URL. */
 		placeholder?: string;
 		/** Load eagerly with high priority (above the fold). */
@@ -18,18 +17,11 @@
 		class?: ClassValue;
 	}
 
-	const {
-		src,
-		alt = '',
-		sizes = '100vw',
-		placeholder,
-		priority = false,
-		class: className
-	}: Props = $props();
+	const { src, alt = '', sizes, placeholder, priority = false, class: className }: Props = $props();
 
 	// Set on the <img> itself so transforms also apply to the placeholder.
 	const style = $derived(placeholder ? `background-image:url(${placeholder})` : undefined);
-	const classes = $derived(cn('block size-full bg-cover bg-center object-cover', className));
+	const classes = $derived(cn('block h-full w-full bg-cover bg-center object-cover', className));
 </script>
 
 {#if src}
@@ -43,6 +35,6 @@
 		decoding="async"
 		class={classes}
 	/>
-{:else if placeholder}
+{:else}
 	<div class={classes} {style}></div>
 {/if}

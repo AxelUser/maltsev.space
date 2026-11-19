@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { PostPreview } from '$lib/types';
 	import { getPostHeroImage } from '$lib/utils';
-	import { Thumb } from '$lib/components/ui';
+	import { Picture } from '$lib/components/ui';
 	import PostMeta from './post-meta.svelte';
 
 	const { post }: { post: PostPreview } = $props();
@@ -11,7 +11,11 @@
 	href="/blog/{post.slug}"
 	class="group grid grid-cols-[88px_1fr] items-center gap-3.5 py-4 no-underline sm:grid-cols-[120px_1fr_auto] sm:gap-6"
 >
-	<Thumb src={getPostHeroImage(post.slug)} class="w-[88px] sm:w-[120px]" />
+	<Picture
+		src={getPostHeroImage(post.slug)}
+		sizes="(min-width: 640px) 120px, 88px"
+		class="aspect-[3/2] h-auto shrink-0 bg-surface w-[88px] sm:w-[120px]"
+	/>
 	<span>
 		<span
 			class="block font-display text-[16.5px]/[1.3] font-medium transition-colors font-stretch-[104%] group-hover:text-link sm:text-[19px]"

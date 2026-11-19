@@ -10,7 +10,8 @@
 
 	const { children } = $props();
 
-	const analyticsEnabled = browser && !dev && window.location.hostname !== 'localhost';
+	const analyticsEnabled =
+		browser && !dev && !!PUBLIC_POSTHOG_API_KEY && window.location.hostname !== 'localhost';
 
 	onMount(() => {
 		if (analyticsEnabled) {

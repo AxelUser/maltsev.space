@@ -53,10 +53,10 @@ Fonts: `font-display` (Saira, use with `font-stretch-[108%…115%]`) for heading
 
 Before writing markup, reuse what exists in `$lib/components`:
 
-- `ui/` primitives: `Button` (primary | ghost), `Tag`, `Chip`, `HudBox`, `Frame` (framed 3:2 cover), `Thumb`, `PageHeader`, `SectionHeading`, `TechList`, `PillLinks`.
+- `ui/` primitives: `Button` (primary | ghost), `Tag`, `Chip`, `HudBox`, `Frame` (framed 3:2 or natural-ratio box), `Figure` (`Root`/`Media`/`Corner`/`Caption`: framed media with corner overlays and a caption), `Picture` (enhanced image with blurred placeholder; `sizes` required), `AiFlag`, `PageHeader`, `SectionHeading`, `TechList`, `PillLinks`.
 - `layout/`: `Container` (page column), `SiteHeader`, `SiteFooter`, `ThemeSwitch`, `Starfield`, `ReadingProgress`.
-- `posts/`: `Figure` (inline post image; `ai` flags it as AI-generated), `PostCard`, `PostRow(s)`, `PostFeature`, `PostMeta`, `PostsByYear`, `SeriesCard`, `SeriesParts`, `PostPager`.
+- `posts/`: `PostImage` (inline post image by public URL; `ai` flags it as AI-generated), `PostCard`, `PostRow(s)`, `PostFeature`, `PostMeta`, `PostsByYear`, `SeriesCard`, `SeriesParts`, `PostPager`.
 - `home/`, `about/`, `art/`: page sections composed from the above.
 
 Content (bio, career, projects, art collections, tag labels) lives in `$lib/content`, not in pages.
-Images: use `<enhanced:img>` via `getPostHeroImage()` / `getArtImage()` and pass a realistic `sizes`.
+Images: use `Picture` (or `<enhanced:img>`) via `getPostHeroImage()` / `getArtImage()` / `getPostImage()` and pass a realistic `sizes`.

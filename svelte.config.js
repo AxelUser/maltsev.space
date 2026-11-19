@@ -7,10 +7,28 @@ import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import rehypeKatexSvelte from 'rehype-katex-svelte';
 import remarkMath from 'remark-math';
-import remarkSVGBob from 'remark-svgbob';
+import { remarkSvgbobTones } from './src/lib/plugins/remark-svgbob-tones.js';
 import rehypeCallouts from 'rehype-callouts';
 import readingTime from 'mdsvex-reading-time';
 import { remarkLinksToReferences } from './src/lib/plugins/remark-links-to-references.js';
+import { remarkZombieMermaid } from './src/lib/plugins/remark-zombie-mermaid.js';
+import { loadEnv } from 'vite';
+
+// Analytics is optional, but $env/static/* only exports variables that exist. Default the
+// PostHog keys to '' when neither the shell nor a .env file sets them, so imports still resolve, just not configured.
+const OPTIONAL_ENV = [
+	'PUBLIC_POSTHOG_API_KEY',
+	'PUBLIC_POSTHOG_HOST',
+	'POSTHOG_ANALYTICS_API_KEY',
+	'POSTHOG_ANALYTICS_PROJECT_ID'
+];
+const knownEnv = {
+	...loadEnv('development', process.cwd(), ''),
+	...loadEnv('production', process.cwd(), '')
+};
+for (const key of OPTIONAL_ENV) {
+	if (!(key in knownEnv)) process.env[key] = '';
+}
 
 const lightTheme = 'github-light';
 const darkTheme = 'github-dark';
@@ -40,7 +58,10 @@ const mdsvexOptions = {
 	remarkPlugins: [
 		[remarkToc, { tight: true, maxDepth: 3 }],
 		remarkMath,
-		remarkSVGBob,
+		// ```svgbob fences → inline SVG with semantic tone classes (see src/svgbob.css).
+		remarkSvgbobTones,
+		// ```mermaid fences → inline SVG at build time; must run before `highlight`.
+		remarkZombieMermaid,
 		remarkLinksToReferences,
 		readingTime
 	],
@@ -52,10 +73,6 @@ const mdsvexOptions = {
 	],
 	highlight: {
 		highlighter: async (code, lang = 'text') => {
-			if (lang === 'mermaid') {
-				return `{@html \`<pre class="mermaid">${code}</pre>\`}`;
-			}
-
 			const html = escapeSvelte(
 				highlighter.codeToHtml(code, {
 					lang,

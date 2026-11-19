@@ -1,0 +1,115 @@
+@reference './app.css';
+
+/*
+ * Theme for build-time Mermaid diagrams (src/lib/plugins/remark-zombie-mermaid.js).
+ */
+
+.zm-diagram {
+	@apply relative mx-0 my-8 block overflow-x-auto border border-line bg-surface px-4 py-6;
+}
+
+/* Same livery tick as code blocks. */
+.zm-diagram::before {
+	content: '';
+	@apply livery absolute -top-px -left-px h-[3px] w-16;
+}
+
+/*
+ * The renderer's --surface/--line share names with the site tokens, so read
+ * the site values on the figure first; inside the <svg> they are shadowed.
+ */
+.zm-diagram {
+	--zm-bg: var(--surface);
+	--zm-line: var(--ink-3);
+	--zm-node: var(--sat);
+	--zm-on-livery: #15100b;
+}
+
+.zm-diagram svg {
+	--bg: var(--zm-bg);
+	--fg: var(--ink);
+	--line: var(--zm-line);
+	--accent: var(--livery-2);
+	--muted: var(--ink-2);
+	--surface: var(--zm-node);
+	--border: var(--line-2);
+
+	@apply mx-auto block h-auto max-w-full;
+}
+
+.zm-diagram figcaption {
+	@apply mt-4 text-center;
+}
+
+/* ------------------------------------------------------------------ */
+/* Semantic node classes: `class A input` / `A:::danger` in Mermaid.   */
+/* CSS beats the SVG's fill/stroke presentation attributes.            */
+/* ------------------------------------------------------------------ */
+
+.zm-diagram .node {
+	--zm-fill: var(--_node-fill);
+	--zm-stroke: var(--_node-stroke);
+	--zm-text: var(--_text);
+}
+
+.zm-diagram .node > :is(rect, polygon, path, circle, ellipse) {
+	fill: var(--zm-fill);
+	stroke: var(--zm-stroke);
+}
+
+.zm-diagram .node text {
+	fill: var(--zm-text);
+}
+
+/* Where the data comes in: an element, a query. Inverted, like a HUD label. */
+.zm-diagram .node.input {
+	--zm-fill: var(--ink);
+	--zm-stroke: var(--ink);
+	--zm-text: var(--canvas);
+}
+
+/* Intermediate steps worth a second look (hash functions, etc). */
+.zm-diagram .node.step {
+	--zm-fill: var(--planet-a);
+	--zm-stroke: var(--planet-a);
+	--zm-text: #f8f9fa;
+}
+
+/* Final / successful outcome. */
+.zm-diagram .node.result {
+	--zm-fill: var(--livery-4);
+	--zm-stroke: var(--livery-4);
+	--zm-text: var(--zm-on-livery);
+}
+
+/* A branching point. */
+.zm-diagram .node.decision {
+	--zm-fill: var(--livery-3);
+	--zm-stroke: var(--livery-3);
+	--zm-text: var(--zm-on-livery);
+}
+
+/* Something is off, but not fatal. */
+.zm-diagram .node.warn {
+	--zm-fill: var(--livery-2);
+	--zm-stroke: var(--livery-2);
+	--zm-text: var(--zm-on-livery);
+}
+
+/* Failure, wrong answer, data loss. */
+.zm-diagram .node.danger {
+	--zm-fill: var(--livery-1);
+	--zm-stroke: var(--livery-1);
+	--zm-text: var(--zm-on-livery);
+}
+
+/* Side remark: dashed outline, quiet text. */
+.zm-diagram .node.note {
+	--zm-fill: transparent;
+	--zm-stroke: var(--ink-3);
+	--zm-text: var(--ink-2);
+}
+
+.zm-diagram .node.note > :is(rect, polygon, path) {
+	stroke-dasharray: 4 3;
+}

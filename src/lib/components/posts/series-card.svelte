@@ -6,7 +6,7 @@
 	import type { PostPreview } from '$lib/types';
 	import { seriesDescription } from '$lib/content';
 	import { getPostHeroImage } from '$lib/utils';
-	import { HudBox, Thumb } from '$lib/components/ui';
+	import { HudBox, Picture } from '$lib/components/ui';
 
 	interface Props {
 		name: string;
@@ -25,10 +25,13 @@
 	>
 		<span class="flex" aria-hidden="true">
 			{#each posts as post, i (post.slug)}
-				<Thumb
+				<Picture
 					src={getPostHeroImage(post.slug)}
 					sizes="96px"
-					class={['w-24 shadow-frame outline-[3px] outline-canvas', i > 0 && '-ml-9']}
+					class={[
+						'aspect-[3/2] h-auto w-24 shrink-0 bg-surface shadow-frame outline-[3px] outline-canvas',
+						i > 0 && '-ml-9'
+					]}
 				/>
 			{/each}
 		</span>

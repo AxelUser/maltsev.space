@@ -17,6 +17,8 @@ coverCaption: "Taking samples and keeping count."
 
 <script>
     import { Scrollbox } from '$lib/components';
+    import { Stepper } from '$lib/components/visualization/array-steps';
+    import { naiveDeletion, countingInsertDelete, deleteNonExistent } from './steps';
 </script>
 
 Bloom filters are incredibly space-efficient probabilistic data structures, perfect for answering a simple question: "Is this element in the set — no or maybe?"
@@ -47,69 +49,9 @@ Let's see this in action. Suppose we have a Bloom filter with 10 bits and we wan
 
 Notice that both elements share position 5 — this is where the trouble begins.
 
-First, we insert both elements. Element A sets bits at positions 0, 5, and 8. Then Element B tries to set bits at positions 5, 7, and 9. Position 5 is already set from Element A, so it remains `1`, while positions 7 and 9 are newly set.
+First, we insert both elements. Position 5 is set by Element A, so it simply stays `1` when Element B arrives. Then we attempt to delete Element A the naive way, by resetting its bits at positions 0, 5, and 8 back to `0`. Position 5 goes too, and with it Element B's contribution. When we later check for Element B, position 5 is `0`, so the Bloom filter reports that B is not present — a **false negative**. This is catastrophic because Element B was never deleted; it's still supposed to be in the set.
 
-```mermaid
-graph TD
-    A["Insert Element A<br/>Hash positions: 0, 5, 8"] --> A1["Set bits:<br/>bit[0] = 1<br/>bit[5] = 1<br/>bit[8] = 1"]
-
-    B["Insert Element B<br/>Hash positions: 5, 7, 9"] --> B1["Set bits:<br/>bit[5] = 1 (already set)<br/>bit[7] = 1<br/>bit[9] = 1"]
-
-    A1 --> C["Positions set: 0, 5, 7, 8, 9"]
-    B1 --> C
-
-    style A fill:#22d3ee,color:#212529
-    style B fill:#22d3ee,color:#212529
-    style C fill:#22c55e,color:#212529
-```
-
-Our final bit array looks like:
-
-```svgbob
-      shared bit
-           |
- A         |   B A B
- |         |   | | |
- v         v   v v v
-┌─┬─┬─┬─┬─┬─┬─┬─┬─┬─┐
-│1│0│0│0│0│1│0│1│1│1│
-└─┴─┴─┴─┴─┴─┴─┴─┴─┴─┘
- 0 1 2 3 4 5 6 7 8 9
-```
-
-Now, let's attempt to delete Element A. The naive approach would be to reset its bits at positions 0, 5, and 8 back to `0`. This seems straightforward, but here's the problem: when we reset position 5, we're also removing Element B's contribution to that position. After this "deletion," our bit array becomes: `[0,0,0,0,0,0,0,1,0,1]`.
-
-```mermaid
-graph TD
-    A["Current state:<br/>[1,0,0,0,0,1,0,1,1,1]<br/>Both A and B inserted"] --> B["❌ Attempt to delete Element A<br/>Reset positions: 0, 5, 8"]
-
-    B --> C["Naive deletion:<br/>bit[0] = 0<br/>bit[5] = 0 ⚠️ (shared with B!)<br/>bit[8] = 0"]
-
-    C --> D["Corrupted bit array:<br/>[0,0,0,0,0,0,0,1,0,1]<br/>Only positions 7, 9 remain set"]
-
-    style A fill:#495057,color:#f8f9fa
-    style B fill:#dc2626,color:#f8f9fa
-    style C fill:#f59e0b,color:#212529
-    style D fill:#dc2626,color:#f8f9fa
-```
-
-The corruption becomes evident when we later check for Element B. We hash it to positions 5, 7, and 9, but now position 5 is `0`. Since not all of Element B's positions are set, the Bloom filter incorrectly reports that Element B is not present — a **false negative**. This is catastrophic because Element B was never deleted; it's still supposed to be in the set.
-
-```mermaid
-graph TD
-    A["Corrupted state:<br/>[0,0,0,0,0,0,0,1,0,1]<br/>Element A 'deleted'"] --> B["💥 Check Element B<br/>Hash positions: 5, 7, 9"]
-
-    B --> C["Check each position:<br/>bit[5] = 0 ❌<br/>bit[7] = 1 ✓<br/>bit[9] = 1 ✓"]
-
-    C --> D{"All bits set?"}
-
-    D -->|"No, bit[5] = 0"| E["FALSE NEGATIVE!<br/>Element B appears absent<br/>but was never deleted"]
-
-    style A fill:#dc2626,color:#f8f9fa
-    style B fill:#f59e0b,color:#212529
-    style D fill:#f59e0b,color:#212529
-    style E fill:#dc2626,color:#f8f9fa
-```
+<Stepper title="Naive deletion in a classic Bloom filter" steps={naiveDeletion} />
 
 > [!tip]
 > It's similar to erasing your tag from a public graffiti wall — you might end up scrubbing off someone else's mark too, and now no one can tell they were ever there.
@@ -149,23 +91,26 @@ The core strength of Bloom filters lies in their simplicity: a bit array and som
 
 That's where **Counting Bloom Filters (CBFs)** come in.
 
-Originally proposed by [Fan et al.](https://www.cs.princeton.edu/courses/archive/spr05/cos598E/bib/p254-fan.pdf) as a solution for scalable web cache, CBFs replace the bit array with an array of **small integer counters** — typically 4-bit values. These allow us to track how many elements have set each position.
+Originally proposed by [Fan et al.](https://www.cs.princeton.edu/courses/archive/spr05/cos598E/bib/p254-fan.pdf) as a solution for scalable web cache, CBFs replace the bit array with an array of **small integer counters** — typically 4-bit values. These allow us to track how many elements have set each position. For example, here are the same positions set in both filters:
 
 <Scrollbox>
 
-```svgbob
-Classic Bloom Filter (1-bit array):
-┌─┬─┬─┬─┬─┬─┬─┬─┬─┬─┐
-│0│0│1│0│0│1│0│1│1│0│  ← each cell = 1 bit
-└─┴─┴─┴─┴─┴─┴─┴─┴─┴─┘
- 0 1 2 3 4 5 6 7 8 9
+```svgbob alt="The same positions 1, 4, 6, 7 and 9 set in a classic Bloom filter, as single bits, and in a counting Bloom filter, as 4-bit counters, where position 4 holds 2."
+ Classic Bloom filter, 1 bit per cell
+ +-+-+-+-+-+-+-+-+-+-+
+ |0|1|0|0|1|0|1|1|0|1|
+ +-+-+-+-+-+-+-+-+-+-+
+  0 1 2 3 4 5 6 7 8 9
 
-Counting Bloom Filter (4-bit counters):
-┌─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
-│  0  │  1  │  0  │  0  │  2  │  0  │  1  │  1  │  0  │  1  │
-│0000 │0001 │0000 │0000 │0010 │0000 │0001 │0001 │0000 │0001 │  ← each cell = 4 bits
-└─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
-   0     1     2     3     4     5     6     7     8     9
+ Counting Bloom filter, 4 bits per cell
+ +-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+ |   0   |   1   |   0   |   0   |   2   |   0   |   1   |   1   |   0   |   1   |
+ |0 0 0 0|0 0 0 1|0 0 0 0|0 0 0 0|0 0 1 0|0 0 0 0|0 0 0 1|0 0 0 1|0 0 0 0|0 0 0 1|
+ +-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+     0       1       2       3       4       5       6       7       8       9
+
+# Tones:
+set  "1"
 ```
 
 </Scrollbox>
@@ -182,22 +127,6 @@ When inserting an element into a CBF:
 2. **Increment each counter** at those `k` positions by 1
 
 The key insight is that **multiple elements may share the same positions** — but now we track exactly how many elements contributed to each position through the counter values.
-
-```mermaid
-graph TD
-    A["Insert Element A<br/>Hash positions: 1, 4, 7"] --> A1["Increment counters:<br/>counter[1] = 0+1 = 1<br/>counter[4] = 0+1 = 1<br/>counter[7] = 0+1 = 1"]
-
-    A1 --> A2["Counter array after A:<br/>[0,1,0,0,1,0,0,1,0,0]"]
-
-    B["Insert Element B<br/>Hash positions: 4, 6, 9"] --> B1["Increment counters:<br/>counter[4] = 1+1 = 2 (shared!)<br/>counter[6] = 0+1 = 1<br/>counter[9] = 0+1 = 1"]
-
-    A2 --> C["Final counter array:<br/>[0,1,0,0,2,0,1,1,0,1]<br/>Position 4 shared by both elements"]
-    B1 --> C
-
-    style A fill:#3b82f6,color:#f8f9fa
-    style B fill:#3b82f6,color:#f8f9fa
-    style C fill:#22c55e,color:#212529
-```
 
 #### Membership Query Operation
 
@@ -218,20 +147,9 @@ The deletion operation is just the opposite of the insertion operation:
 1. **Hash the element** to get the same `k` positions used during insertion
 2. **Decrement each counter** at those positions by 1
 
-The result is that other elements sharing those positions remain unaffected because their contributions are still counted.
+The result is that other elements sharing those positions remain unaffected because their contributions are still counted. For example, suppose **A** hashes to positions 1, 4, 7 and **B** to positions 4, 6, 9. Insert both, then delete A:
 
-```mermaid
-graph TD
-    A["Current state:<br/>[0,1,0,0,2,0,1,1,0,1]<br/>Both A and B inserted"] --> B["Delete Element A<br/>Hash positions: 1, 4, 7"]
-
-    B --> C["Decrement counters:<br/>counter[1] = 1-1 = 0<br/>counter[4] = 2-1 = 1 (B still contributes!)<br/>counter[7] = 1-1 = 0"]
-
-    C --> D["✅ Updated counter array:<br/>[0,0,0,0,1,0,1,0,0,1]<br/>Element B's data preserved"]
-
-    style A fill:#495057,color:#f8f9fa
-    style B fill:#3b82f6,color:#f8f9fa
-    style D fill:#495057,color:#f8f9fa
-```
+<Stepper title="Insert and delete in a counting Bloom filter" steps={countingInsertDelete} />
 
 This counter-based approach enables **insert**, **query**, and **delete** operations while preserving the probabilistic guarantees of the original Bloom filter structure. However, it's not without its own challenges.
 
@@ -269,9 +187,11 @@ Then, without inserting **B**, you try to delete it. This decrements counters at
 
 Here's what goes wrong:
 
-- Counters at positions `1` and `7` (shared with A) are decremented — possibly to zero.
+- Counters at positions `1` and `7` (shared with A) are decremented (capped at 0).
 - When you later check for **A**, it may appear absent, even though it was never deleted.
-- Counters at positions `5` and `9` remain set — creating an inconsistent state.
+- Counters at positions `5` and `9` remain set, creating an inconsistent state.
+
+<Stepper title="Deleting a never-inserted element" steps={deleteNonExistent} />
 
 This creates a **false negative**, something Bloom filters are explicitly designed to avoid. And the worst part? There's no way to detect this corruption after the fact.
 
@@ -302,40 +222,21 @@ Each subtable contains `B` buckets. Every bucket holds a small, fixed number of 
 - a **fingerprint** (a short hash of the original element)
 - a **counter** (how many times it's been added)
 
-So instead of one giant table, we split it into `d` isolated parts.
+So instead of one giant table, we split it into `d` isolated parts. For example, here is a tiny dlCBF with `d = 2` subtables of `B = 4` buckets. Each cell holds a fingerprint and its counter (`A2C, 1` means fingerprint `0xA2C`, added once):
 
 <Scrollbox>
 
-```svgbob
-            d-left Counting Bloom Filter Memory Layout
-                (d=2 subtables, B=4 buckets each)
-
-  Subtable 0:                          Subtable 1:
-  ┌─────────────────────────────┐    ┌─────────────────────────────┐
-  │ Bucket 0                    │    │ Bucket 0                    │
-  │ ┌─────────┬─────────┬─────┐ │    │ ┌─────────┬─────────┬─────┐ │
-  │ │fp:0xA2C │fp:0x7F1 │ ... │ │    │ │fp:0x3E9 │  empty  │ ... │ │
-  │ │cnt: 1   │cnt: 2   │     │ │    │ │cnt: 1   │         │     │ │
-  │ └─────────┴─────────┴─────┘ │    │ └─────────┴─────────┴─────┘ │
-  ├─────────────────────────────┤    ├─────────────────────────────┤
-  │ Bucket 1                    │    │ Bucket 1                    │
-  │ ┌─────────┬─────────┬─────┐ │    │ ┌─────────┬─────────┬─────┐ │
-  │ │fp:0x5B8 │  empty  │ ... │ │    │ │fp:0x9D4 │fp:0x1C7 │ ... │ │
-  │ │cnt: 1   │         │     │ │    │ │cnt: 3   │cnt: 1   │     │ │
-  │ └─────────┴─────────┴─────┘ │    │ └─────────┴─────────┴─────┘ │
-  ├─────────────────────────────┤    ├─────────────────────────────┤
-  │ Bucket 2                    │    │ Bucket 2                    │
-  │ ┌─────────┬─────────┬─────┐ │    │ ┌─────────┬─────────┬─────┐ │
-  │ │  empty  │  empty  │ ... │ │    │ │fp:0x6A1 │  empty  │ ... │ │
-  │ │         │         │     │ │    │ │cnt: 1   │         │     │ │
-  │ └─────────┴─────────┴─────┘ │    │ └─────────┴─────────┴─────┘ │
-  ├─────────────────────────────┤    ├─────────────────────────────┤
-  │ Bucket 3                    │    │ Bucket 3                    │
-  │ ┌─────────┬─────────┬─────┐ │    │ ┌─────────┬─────────┬─────┐ │
-  │ │fp:0x8E6 │  empty  │ ... │ │    │ │  empty  │  empty  │ ... │ │
-  │ │cnt: 2   │         │     │ │    │ │         │         │     │ │
-  │ └─────────┴─────────┴─────┘ │    │ └─────────┴─────────┴─────┘ │
-  └─────────────────────────────┘    └─────────────────────────────┘
+```svgbob alt="A dlCBF with two subtables of four buckets each. Each bucket row shows two cells of fingerprint and counter, for example A2C, 1, and some cells are empty."
+                    subtable 0                                subtable 1
+            +---------+---------+-----+               +---------+---------+-----+
+  bucket 0  | A2C, 1  | 7F1, 2  | ... |     bucket 0  | 3E9, 1  |         | ... |
+            +---------+---------+-----+               +---------+---------+-----+
+  bucket 1  | 5B8, 1  |         | ... |     bucket 1  | 9D4, 3  | 1C7, 1  | ... |
+            +---------+---------+-----+               +---------+---------+-----+
+  bucket 2  |         |         | ... |     bucket 2  | 6A1, 1  |         | ... |
+            +---------+---------+-----+               +---------+---------+-----+
+  bucket 3  | 8E6, 2  |         | ... |     bucket 3  |         |         | ... |
+            +---------+---------+-----+               +---------+---------+-----+
 ```
 
 </Scrollbox>
@@ -356,33 +257,27 @@ This structure is more complex than a flat CBF, but it packs data more tightly a
 5. If a cell with the modified fingerprint already exists there, increment its counter.
 6. Otherwise, insert a new cell with the fingerprint and counter set to 1.
 
-Here's how dlCBF insertion works:
+For example, let's insert `"apple"` into the filter above. Its fingerprint is `0x4A2`. Subtable 0 permutes it to `0x7B1`, which maps to bucket 3, and subtable 1 permutes it to `0x9E8`, which maps to bucket 1. Bucket 3 of subtable 0 uses one cell and bucket 1 of subtable 1 uses two, so apple goes to subtable 0 as a new cell `7B1, 1`:
 
-```mermaid
-graph TD
-    A["Element: 'apple'<br/>Generate fingerprint: 0x4A2C"] --> B["Subtable 1<br/>Permute: 0x4A2C → 0x7B1D<br/>Bucket: hash(0x7B1D) % B = 3<br/>Load: 2 cells"]
+<Scrollbox>
 
-    A --> C["Subtable 2<br/>Permute: 0x4A2C → 0x9E8F<br/>Bucket: hash(0x9E8F) % B = 7<br/>Load: 1 cell"]
+```svgbob alt="Candidate buckets for apple: subtable 0 bucket 3 holds one cell, subtable 1 bucket 1 holds two. The new cell 7B1, 1 goes into the free cell of subtable 0 bucket 3."
+                                  7B1, 1
+                                     ↓
+                       +---------+---------+-----+
+ subtable 0, bucket 3  | 8E6, 2  |         | ... |   load 1  ✓
+                       +---------+---------+-----+
+ subtable 1, bucket 1  | 9D4, 3  | 1C7, 1  | ... |   load 2
+                       +---------+---------+-----+
 
-    B --> D["Candidate buckets:<br/>Subtable 1 bucket 3: 2 cells<br/>Subtable 2 bucket 7: 1 cell ⭐"]
-    C --> D
-
-    D --> E["Choose least loaded<br/>Subtable 2, bucket 7"]
-
-    E --> F["Check if fingerprint 0x9E8F<br/>already exists in bucket 7"]
-
-    F --> G{"Fingerprint<br/>exists?"}
-
-    G -->|Yes| H["Increment existing<br/>counter"]
-    G -->|No| I["Insert new cell with<br/>fingerprint: 0x9E8F<br/> and counter: 1"]
-
-    H --> J["✅ Insertion complete"]
-    I --> J
-
-    style A fill:#5d5fef,color:#f8f9fa
-    style J fill:#22c55e,color:#212529
-    style G fill:#f59e0b,color:#212529
+# Tones:
+changed  subtable 0, bucket 3: 1
+changed  "7B1, 1"
 ```
+
+</Scrollbox>
+
+If `7B1` had already been in that bucket, we would increment its counter instead of taking a new cell.
 
 ### Deletion
 

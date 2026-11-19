@@ -8,11 +8,9 @@
 
 	let recommendedPosts = $state<PostPreview[]>([]);
 
-	// Not a static import: SvelteKit loads this component on every page at startup, and
-	// $lib/posts would bundle every post with it.
 	onMount(async () => {
-		const { getPosts } = await import('$lib/posts');
-		recommendedPosts = getPosts(3);
+		const res = await fetch('/recent-posts.json');
+		if (res.ok) recommendedPosts = await res.json();
 	});
 </script>
 

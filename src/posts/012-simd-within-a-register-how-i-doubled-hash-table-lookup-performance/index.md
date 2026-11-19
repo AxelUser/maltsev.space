@@ -18,6 +18,8 @@ liveCover: true
 
 <script>
     import { Scrollbox } from '$lib/components';
+    import { ByteLanes, ByteLanesStepper } from '$lib/components/visualization/byte-lanes';
+    import { hasZeroSteps, xorExample, existingZeroOther, existingZeroEmpty } from './steps';
 </script>
 
 While working on a [Cuckoo Filter](https://maltsev.space/blog/010-cuckoo-filters) implementation in C#, I created an array-like structure for the underlying hash table. I chose an 8-bit fingerprint: it aligns nicely on a byte boundary and still keeps the false-positive rate around **3 %**.
@@ -26,11 +28,12 @@ The layout looked straightforward—just a byte array where the start of each bu
 
 <Scrollbox>
 
-```svgbob
-              Bucket 0              Bucket 1                      Bucket n
-       +----+----+----+----+ +----+----+----+----+         +----+----+----+----+
-Table: | 3A | 00 | B7 | F2 | | 4C | 91 | 00 | DE |   ...   | AA | 00 | 5F | C8 |
-       +----+----+----+----+ +----+----+----+----+         +----+----+----+----+
+```svgbob alt="The hash table as one byte array: bucket 0 holds bytes 0 to 3, bucket 1 bytes 4 to 7, and bucket n starts at byte 4n. Each bucket has four one-byte slots, and 00 marks an empty slot."
+               Bucket 0              Bucket 1                      Bucket n
+        +----+----+----+----+ +----+----+----+----+         +----+----+----+----+
+Table:  | 3A | 00 | B7 | F2 | | 4C | 91 | 00 | DE |   ...   | AA | 00 | 5F | C8 |
+        +----+----+----+----+ +----+----+----+----+         +----+----+----+----+
+offset  0    1    2    3      4    5    6    7              4n
 ```
 
 </Scrollbox>
@@ -194,57 +197,9 @@ The core of the trick is `(v - 0x01010101U) & ~v`. This expression has a specia
 
 So, this operation creates a "marker" bit (it sets the most significant bit to `1`) in any byte position that was originally `0x00`.
 
-Let's apply it to our `v`, e.g., `0x4462002E`:
+Let's apply it to `v = 0x4462002E`, step by step. Each byte is shown with its bits and its hex value. The bytes are written MSB first, as in a C# literal, so the zero byte is the one at bits 15..8:
 
-First, we subtract `0x01010101U`.
-
-$$
-\begin{array}{r}
-\texttt{01000100\;01100010\;00000000\;00101110}\;(\texttt{0x4462002E}) \\[-2pt]
--\;
-\texttt{00000001\;00000001\;00000001\;00000001}\;(\texttt{0x01010101}) \\ \hline
-\texttt{01000011\;01100000\;11111111\;00101101}\;(\texttt{0x4360FF2D})
-\end{array}
-$$
-
-> [!note]
-> Note that this is a single 32-bit subtraction, so borrows can cross byte boundaries. The `0x00` byte borrows from `0x62`, resulting in `0x...60FF...`.
-
-Second, we apply a bitwise NOT to the original value:
-
-$$
-\begin{array}{r}
-\neg\;
-\texttt{01000100\;01100010\;00000000\;00101110}\;(\texttt{0x4462002E}) \\ \hline
-\texttt{10111011\;10011101\;11111111\;11010001}\;(\texttt{0xBB9DFFD1})
-\end{array}
-$$
-
-Now, `&` them together:
-
-$$
-\begin{array}{r}
-\texttt{01000011\;01100000\;11111111\;00101101}\;(\texttt{0x4360FF2D}) \\[-2pt]
-\mathbin{\&}\;
-\texttt{10111011\;10011101\;11111111\;11010001}\;(\texttt{0xBB9DFFD1}) \\ \hline
-\texttt{00000011\;00000000\;11111111\;00000001}\;(\texttt{0x0300FF01})
-\end{array}
-$$
-
-Notice that the third byte from the left is `0xFF`. Its most significant bit is `1`, indicating that this was our zero-byte position.
-
-The final `& 0x80808080U` is a mask that removes all other bits, leaving only the most significant bit of each byte.
-
-$$
-\begin{array}{r}
-\texttt{00000011\;00000000\;11111111\;00000001}\;(\texttt{0x0300FF01}) \\[-2pt]
-\mathbin{\&}\;
-\texttt{10000000\;10000000\;10000000\;10000000}\;(\texttt{0x80808080}) \\ \hline
-\texttt{00000000\;00000000\;10000000\;00000000}\;(\texttt{0x00008000})
-\end{array}
-$$
-
-The method returns the result of `0x00008000 != 0`. Since `0x8000` is not zero, the expression is `true`, and the method correctly reports that the zero byte was found.
+<ByteLanesStepper title="HasZero on 0x4462002E, step by step" steps={hasZeroSteps} />
 
 Great, now I can detect a zero byte without branches. All that remains is to _turn the byte I’m searching for into zero_.
 
@@ -255,23 +210,14 @@ Let’s assume our integer, aka bucket, is `0x12345678` and I’m looking for by
 > [!note]
 > What happens to the other bytes is irrelevant, because our `HasZero` trick only cares if _any_ byte is zero.
 
-The XOR (`^`) operator has a useful property: `A ^ B = 0` if and only if `A == B`. So, if we XOR the entire bucket with a repeating mask of our target byte, only the matching byte will become zero.
+The XOR (`^`) operator has a useful property: `A ^ B = 0` if and only if `A == B`. So, if we XOR the entire bucket with a repeating mask of our target byte, only the matching byte will become zero. The result is exactly the `v` we fed to `HasZero` above:
 
-$$
-\begin{array}{r}
-\texttt{00010010\;00110100\;01010110\;01111000}\;(\texttt{0x12345678}) \\[-2pt]
-\oplus\;
-\texttt{01010110\;01010110\;01010110\;01010110}\;(\texttt{0x56565656}) \\ \hline
-\texttt{01000100\;01100010\;00000000\;00101110}\;(\texttt{0x4462002E})
-\end{array}
-$$
+<ByteLanes state={xorExample} />
 
 So the remaining part of this puzzle is to make a repetitive mask, which is pretty arithmetic: I should multiply target byte by `0x01010101U`:
 
 $$
 \text{mask} \;=\; \text{0x56} \times \text{0x01010101} \;=\; \text{0x56565656}
-
-
 $$
 
 ## What About Existing Zeros?
@@ -280,25 +226,11 @@ A careful reader might ask: what happens if the bucket _already_ has a zero byte
 
 Let’s say our bucket is `0xAA00CCDD` and we're searching for a non-zero fingerprint like `0xBB`. The XOR operation transforms the original zero into a non-zero value, so `HasZero` correctly returns `false`.
 
-$$
-\begin{array}{r}
-\texttt{10101010\;00000000\;11001100\;11011101}\;(\texttt{0xAA00CCDD}) \\[-2pt]
-\oplus\;
-\texttt{10111011\;10111011\;10111011\;10111011}\;(\texttt{0xBBBBBBBB}) \\ \hline
-\texttt{00010001\;10111011\;01110111\;01100110}\;(\texttt{0x11BB7766})
-\end{array}
-$$
+<ByteLanes state={existingZeroOther} />
 
 Now, what if we search for `0x00` itself (an empty slot in my case)? The mask is `0x00000000`, so the XOR leaves the bucket unchanged. `HasZero` is then applied to the result, which correctly finds the pre-existing zero and returns `true`.
 
-$$
-\begin{array}{r}
-\texttt{10101010\;00000000\;11001100\;11011101}\;(\texttt{0xAA00CCDD}) \\[-2pt]
-\oplus\;
-\texttt{00000000\;00000000\;00000000\;00000000}\;(\texttt{0x00000000}) \\ \hline
-\texttt{10101010\;00000000\;11001100\;11011101}\;(\texttt{0xAA00CCDD})
-\end{array}
-$$
+<ByteLanes state={existingZeroEmpty} />
 
 So no, nothing breaks, the algorithm is still robust: `HasZero` only gives a positive result if a zero byte exists after the XOR, which only happens if our target fingerprint was in the bucket to begin with.
 
@@ -320,23 +252,23 @@ private struct Bucket
 
 `StructLayout` attribute with `LayoutKind.Explicit` mode and `Size = 4` ensures that the struct is laid out in memory as a 4-byte block and we have full control what parts of memory are mapped to each field.
 
-The `FieldOffset` attribute is used to set the offset in bytes where each individual field starts in the memory layout. So `Fp0` is at offset `0`, i.e. at the beginning of the struct, and accessing it will access the first byte of the integer, because this field is of type `byte`. `Fp1` will access the second byte, and so on.
+The `FieldOffset` attribute is used to set the offset in bytes where each individual field starts in the memory layout. So `Fp0` is at offset `0`, i.e. at the beginning of the struct, and accessing it will access the lowest byte of the integer (bits 7..0), because this field is of type `byte`. `Fp1` will access the next byte (bits 15..8), and so on.
 
-What's cool is that `All` field is accessing whole bucket as a single 32-bit integer, so we can use it to perform the lookup with a single instruction!
+What's cool is that `All` field is accessing whole bucket as a single 32-bit integer, so we can use it to perform the lookup with a single instruction! For example, here is how `0x12345678` is mapped to the fields:
 
 <Scrollbox>
 
-```svgbob
-0          7 8         15 16        23 24        31 <---- Bit indices
-+----------+ +----------+ +----------+ +----------+
-|   0xAA   | |   0xBB   | |   0xCC   | |   0xDD   |
-+----------+ +----------+ +----------+ +----------+
-^          ^ ^          ^ ^          ^ ^          ^
-|          | |          | |          | |          |
-+--- Fp0 --+ +--- Fp1 --+ +--- Fp2 --+ +--- Fp3 --+
-^                                                 ^
-|                                                 |
-+---------------------- All ----------------------+
+```svgbob alt="The 32-bit value 0x12345678 split into four bytes: Fp3 is 0x12 at offset 3, Fp2 is 0x34 at offset 2, Fp1 is 0x56 at offset 1 and Fp0 is 0x78 at offset 0. All covers the whole value."
+          31            24 23            16 15             8 7              0
+         +----------------+----------------+----------------+----------------+
+         |    00010010    |    00110100    |    01010110    |    01111000    |
+         |      0x12      |      0x34      |      0x56      |      0x78      |
+         +----------------+----------------+----------------+----------------+
+          |              | |              | |              | |              |
+          +---- Fp3 -----+ +---- Fp2 -----+ +---- Fp1 -----+ +---- Fp0 -----+
+              offset 3         offset 2         offset 1         offset 0
+          |                                                                 |
+          +------------------------------ All ------------------------------+
 ```
 
 </Scrollbox>

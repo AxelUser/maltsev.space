@@ -1,12 +1,15 @@
 <!--
 	@component
-	Post hero: framed image and caption, with a `LiveCover` on top when `live` is set.
-	The AI flag shows only while a variant listed in `ai` is visible.
+	A post cover, either a plain image or live cover.
 -->
 <script lang="ts">
-	import type { EnhancedImageSrc } from '$lib/utils';
-	import { AiFlag, Frame, Picture } from '$lib/components/ui';
+	import { fade } from 'svelte/transition';
+	import { MediaQuery } from 'svelte/reactivity';
+	import { isMobileDevice, type EnhancedImageSrc } from '$lib/utils';
+	import { AiFlag, Figure, Picture } from '$lib/components/ui';
+	import { liveCoverPrefs } from '$lib/stores/live-cover.svelte';
 	import LiveCover from './live-cover.svelte';
+	import LiveCoverToggle from './live-cover-toggle.svelte';
 	import type { AiCoverKind, LiveCoverLoader } from './types';
 
 	interface Props {
@@ -16,43 +19,56 @@
 		live?: LiveCoverLoader;
 		caption?: string;
 		ai?: AiCoverKind[];
-		sizes?: string;
 	}
 
-	const {
-		image,
-		placeholder,
-		live,
-		caption,
-		ai = [],
-		sizes = '(min-width: 1104px) 1040px, 85vw'
-	}: Props = $props();
+	const { image, placeholder, live, caption, ai = [] }: Props = $props();
 
-	let playing = $state(false);
+	const mobile = isMobileDevice();
+	const desktopMotion = new MediaQuery(
+		'(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)',
+		false
+	);
+	const canAnimate = $derived(!!live && !mobile && desktopMotion.current);
+	const showLive = $derived(canAnimate && liveCoverPrefs.enabled);
 
-	const label = $derived(
-		playing
-			? ai.includes('Live') && 'AI Generated Animation'
-			: ai.includes('Image') && 'AI Generated Image'
+	let ready = $derived.by(() => {
+		void live;
+		void showLive;
+		return false;
+	});
+	let failed = $derived.by(() => {
+		void live;
+		return false;
+	});
+
+	const playing = $derived(showLive && ready);
+	const aiMedia = $derived(
+		playing ? ai.includes('Live') && 'Animation' : ai.includes('Image') && 'Image'
 	);
 </script>
 
-{#snippet still()}
-	<Picture src={image} {placeholder} {sizes} priority />
-{/snippet}
-
 {#if image || live}
-	<figure class="mx-auto mt-2 mb-14 max-w-[1040px]">
-		<Frame>
-			{#if live}
-				<LiveCover load={live} fallback={still} bind:playing />
-			{:else}
-				{@render still()}
+	<Figure.Root class="mx-auto mt-2 mb-14 max-w-[1040px]">
+		<Figure.Media>
+			<Picture src={image} {placeholder} sizes="min(1040px, 100vw)" priority />
+			{#key live}
+				{#if live && showLive && !failed}
+					<div class="absolute inset-0" out:fade={{ duration: 300 }}>
+						<LiveCover load={live} onready={() => (ready = true)} onerror={() => (failed = true)} />
+					</div>
+				{/if}
+			{/key}
+			{#if aiMedia}
+				<Figure.Corner at="top-left"><AiFlag media={aiMedia} /></Figure.Corner>
 			{/if}
-			{#if label}<AiFlag {label} />{/if}
-		</Frame>
+			{#if canAnimate && !failed}
+				<Figure.Corner at="top-right">
+					<LiveCoverToggle bind:enabled={liveCoverPrefs.enabled} />
+				</Figure.Corner>
+			{/if}
+		</Figure.Media>
 		{#if caption}
-			<figcaption class="eyebrow mt-1.5 text-right">{caption}</figcaption>
+			<Figure.Caption>{caption}</Figure.Caption>
 		{/if}
-	</figure>
+	</Figure.Root>
 {/if}

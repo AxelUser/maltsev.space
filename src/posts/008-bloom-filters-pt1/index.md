@@ -17,7 +17,10 @@ coverCaption: "Have you seen this before? Probably."
 ---
 
 <script>
+  import { PostImage, Scrollbox } from '$lib/components';
   import { SimpleBloomFilter, ParameterCalculator } from '$lib/components/visualization/bloom-filters';
+  import { Stepper } from '$lib/components/visualization/array-steps';
+  import { insertAndQuery } from './steps';
 </script>
 
 There's a special category of data structures known as probabilistic data structures — and I have a soft spot for some of them. One of my absolute favorites is the Bloom filter. It's a beautifully simple concept that tackles a surprisingly common challenge: how can we quickly check whether something belongs to a set — without eating up loads of memory?
@@ -55,81 +58,15 @@ The algorithm behind Bloom filters is elegantly built on three main components: 
 >
 > Examples of commonly used hash functions include MurmurHash, xxHash, CityHash, or cryptographic ones like SHA-256 (though cryptographic hashes are usually overkill for Bloom filters).
 
-```mermaid
-graph TD
-    A["Element: 'apple'"] --> B["Hash Function 1<br/>h1('apple') = 3"]
-    A --> C["Hash Function 2<br/>h2('apple') = 8"]
-    A --> D["Hash Function 3<br/>h3('apple') = 14"]
-
-    B --> E["Bit Array Position 3"]
-    C --> F["Bit Array Position 8"]
-    D --> G["Bit Array Position 14"]
-
-    E --> H["Set bit[3] = 1"]
-    F --> I["Set bit[8] = 1"]
-    G --> J["Set bit[14] = 1"]
-
-    H --> K["Bit Array:<br/>[0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0]"]
-    I --> K
-    J --> K
-
-    style A fill:#5d5fef,color:#f8f9fa
-    style K fill:#22d3ee,color:#212529
-```
-
 Inserting an element is fast and deterministic: the element is fed into each of the `k` hash functions, producing `k` unique array positions. The bits at all these positions are then set to 1. No matter how many elements have already been inserted, this operation always requires exactly `k` hash calculations and `k` bit updates. The beauty of this approach is its simplicity—there's no need for collision resolution or complex data structures.
 
 Lookup works similarly. To check whether an element might be in the set, the algorithm runs the element through the same `k` hash functions to obtain `k` positions. If any of these bits is 0, the element is definitely not in the set — this is guaranteed, since insertion would have set all these bits to 1.
 
-```mermaid
-graph TD
-    A["Query: 'banana'"] --> B["Hash Function 1<br/>h1('banana') = 3"]
-    A --> C["Hash Function 2<br/>h2('banana') = 7"]
-    A --> D["Hash Function 3<br/>h3('banana') = 14"]
-
-    B --> E["Check bit[3]<br/>Result: 1 ✓"]
-    C --> F["Check bit[7]<br/>Result: 0 ✗"]
-    D --> G["Check bit[14]<br/>Result: 1 ✓"]
-
-    E --> H["Current Bit Array:<br/>[0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0]"]
-    F --> H
-    G --> H
-
-    H --> I{"All bits = 1?"}
-    I -->|"No, bit[7] = 0"| J["DEFINITELY NOT in set<br/>(No false negative)"]
-
-    style A fill:#5d5fef,color:#f8f9fa
-    style J fill:#dc2626,color:#f8f9fa
-    style I fill:#f59e0b,color:#212529
-```
-
 However, if all the bits are 1, the element _might_ be in the set, but there's also a chance that these bits were set by previous insertions of other elements. This creates the possibility of a false positive.
 
-```mermaid
-graph TD
-    A["Query: 'cherry'"] --> B["Hash Function 1<br/>h1('cherry') = 3"]
-    A --> C["Hash Function 2<br/>h2('cherry') = 8"]
-    A --> D["Hash Function 3<br/>h3('cherry') = 14"]
+Here is a small example: a 16-bit array, `k = 3` hash functions, two inserted elements, `"apple"` and `"grape"`, and two queries, `"banana"` and `"cherry"`:
 
-    B --> E["Check bit[3]<br/>Result: 1 ✓"]
-    C --> F["Check bit[8]<br/>Result: 1 ✓"]
-    D --> G["Check bit[14]<br/>Result: 1 ✓"]
-
-    E --> H["Current Bit Array:<br/>[0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0]"]
-    F --> H
-    G --> H
-
-    H --> I{"All bits = 1?"}
-    I -->|"Yes, all = 1"| J["POSSIBLY in set<br/>(Could be false positive)"]
-
-    K["Note: 'cherry' was never inserted!<br/>But its hash positions match<br/>bits set by previous elements"]
-    K -.-> J
-
-    style A fill:#5d5fef,color:#f8f9fa
-    style J fill:#fde047,color:#212529
-    style I fill:#f59e0b,color:#212529
-    style K fill:#d97706,color:#f8f9fa
-```
+<Stepper title="Inserting and querying a 16-bit Bloom filter" steps={insertAndQuery} />
 
 The math behind this comes from the probabilistic nature of hash collisions. As more elements are added, more bits get flipped to 1, which increases the chance that any random combination of `k` positions is already occupied, even for elements that were never inserted. That's why the false positive rate grows with the number of elements, while the false negative rate stays at zero — if an element was inserted, it will always test as present.
 
@@ -162,39 +99,83 @@ As one researcher [puts it nicely:](https://www.math.umd.edu/~immortal/CMSC420/n
 > [!quote]
 > "There is no deletion basically because the only reasonable way to delete would be to hash the key and then set those corresponding bits to 0, but this could cause false negatives for other keys."
 
-Let's visualize this. Imagine a Bloom filter as a shared apartment building where multiple tenants (elements) occupy overlapping rooms (bit positions).
+Let's visualize this a little bit. For example we have a party. Carol is at the store, and Alice and Bob are at home texting her what to buy. Carol keeps one plain shopping list of items and doesn't write down who asked for what.
+Think of the list as the bit array, each person's order as an element, and each item in it as one of the element's bit positions.
 
-- When Alice moves in, she gets keys to rooms `3`, `7`, and `12`.
-- When Bob moves in, he gets keys to rooms `7`, `15`, and `23`.
+Alice is baking a cake and texts _eggs, milk, flour_. Bob is making milkshakes and texts _milk, ice cream, bananas_. Milk is already on the list, so Carol only adds the other two:
 
-Notice: both Alice and Bob share room `7`.
+<PostImage
+  src="/images/posts/008-bloom-filters-pt1/shop_comic_panel_1.jpg"
+  alt="Comic panel: at home, Alice texts eggs, milk, flour and Bob texts milk, ice cream, bananas. In the store, Carol has one list: eggs, milk, flour, ice cream, bananas, with milk written only once."
+  ai
+/>
 
-Now, if Alice moves out and we naively "delete" her by switching off the lights (setting bits to `0`) in rooms `3`, `7`, and `12`, we inadvertently turn off room `7`, which Bob still needs.  
-The next time someone asks, "Is Bob still living here?" the system might falsely answer "No" — even though Bob never left. That's a **false negative**, and Bloom filters are designed specifically to prevent that.
+<Scrollbox>
 
-```mermaid
-graph TD
-    A["Alice moves in"] --> A1["Gets keys to rooms:<br/>3, 7, 12"]
-    B["Bob moves in"] --> B1["Gets keys to rooms:<br/>7, 15, 23"]
+```svgbob alt="Shopping list: eggs, milk, flour, ice cream, bananas. Eggs and flour were asked by Alice, ice cream and bananas by Bob, and milk by both."
+ asked by              Alice     Alice,Bob     Alice        Bob         Bob
+                         ↓           ↓           ↓           ↓           ↓
+                   +-----------+-----------+-----------+-----------+-----------+
+ shopping list     |   eggs    |   milk    |   flour   | ice cream |  bananas  |
+                   +-----------+-----------+-----------+-----------+-----------+
 
-    A1 --> R["Room occupancy:<br/>Room 3: Alice<br/>Room 7: Alice + Bob<br/>Room 12: Alice<br/>Room 15: Bob<br/>Room 23: Bob"]
-    B1 --> R
-
-    R --> D["Alice moves out<br/>(Naive deletion)"]
-    D --> D1["Turn off lights in<br/>rooms 3, 7, 12"]
-
-    D1 --> P["Problem: Room 7 light<br/>is turned off but<br/>Bob still needs it!"]
-
-    P --> Q["Next query: 'Is Bob here?'<br/>Checks rooms 7, 15, 23<br/>Room 7 is dark (0)<br/>Answer: NO"]
-
-    Q --> F["FALSE NEGATIVE<br/>Bob never left!"]
-
-    style A fill:#22d3ee,color:#212529
-    style B fill:#22d3ee,color:#212529
-    style D fill:#dc2626,color:#f8f9fa
-    style F fill:#dc2626,color:#f8f9fa
-    style P fill:#f59e0b,color:#212529
+# Tones:
+accent  "milk"
+accent  "Alice,Bob"
 ```
+
+</Scrollbox>
+
+Then it turns out one of the guests is bringing a cake, so Alice texts "drop my stuff: eggs, milk, flour". Carol naively "deletes" Alice's order by crossing out all three items, including the milk that Bob still needs:
+
+<PostImage
+  src="/images/posts/008-bloom-filters-pt1/shop_comic_panel_2.jpg"
+  alt="Comic panel: a guest arrives with a cake, and Alice texts drop my stuff. In the store, Carol crosses out eggs, milk and flour, leaving ice cream and bananas."
+  ai
+/>
+
+<Scrollbox>
+
+```svgbob alt="Carol crosses out eggs, milk and flour. Only ice cream and bananas are left, although Bob still needs the milk."
+                +-----------+-----------+-----------+-----------+-----------+
+ shopping list  |   eggs    |   milk    |   flour   | ice cream |  bananas  |
+                +-----------+-----------+-----------+-----------+-----------+
+                                  ↑
+                        Bob still needs this
+
+# Tones:
+strike  shopping list: 0 1 2
+accent  "↑"
+accent  "Bob still needs this"
+```
+
+</Scrollbox>
+
+Later Bob texts "do you have my stuff?" which are milk, ice cream and bananas. Carol checks her list, finds no milk and replies "your order isn't on my list", even though Bob never cancelled its order. 
+
+That's a **false negative**, and Bloom filters are designed specifically to prevent that.
+
+<PostImage
+  src="/images/posts/008-bloom-filters-pt1/shop_comic_panels_3_4.jpg"
+  alt="Two comic panels. Bob texts milk, ice cream, bananas? Carol looks at her list with milk crossed out and replies: your order is not on my list. At the party, Bob sits deadpan with a blender, ice cream and bananas, but no milk."
+  ai
+/>
+
+<Scrollbox>
+
+```svgbob alt="Bob's query: milk is crossed out, ice cream and bananas are on the list, so Carol answers that his order is not there."
+ query Bob                        ✗                       ✓           ✓
+                                  ↓                       ↓           ↓
+                +-----------+-----------+-----------+-----------+-----------+
+ shopping list  |   eggs    |   milk    |   flour   | ice cream |  bananas  |
+                +-----------+-----------+-----------+-----------+-----------+
+
+# Tones:
+strike  shopping list: 0 1 2
+bad     shopping list: 1
+```
+
+</Scrollbox>
 
 Of course, for a quick and dirty workaround, an engineer might introduce a second "blacklist" Bloom filter to track deletions. When checking membership, an element would only be considered present if it's in the main filter **and** not in the deletion filter. But sometimes this comes with its own trade-offs — and I'll cover better solutions later, like [Counting Bloom Filters](https://maltsev.space/blog/009-counting-bloom-filters) and [Cuckoo Filters](https://maltsev.space/blog/010-cuckoo-filters).
 
@@ -270,31 +251,27 @@ This approach has several nice properties:
 - You get a whole sequence of hash values that are nicely spread across your bit array.
 - The results are nearly as good as having fully independent hashes, at least for practical Bloom filter usage.
 
-```mermaid
-graph LR
-    A["Element: 'data'"] --> B["h1('data') = 5"]
-    A --> C["h2('data') = 3"]
+For example, with `h1 = 5`, `h2 = 3`, `m = 16` and `k = 4`:
 
-    B --> D["position_0 = (5 + 0×3) % 16 = 5"]
-    B --> E["position_1 = (5 + 1×3) % 16 = 8"]
-    B --> F["position_2 = (5 + 2×3) % 16 = 11"]
-    B --> G["position_3 = (5 + 3×3) % 16 = 14"]
+<Scrollbox>
 
-    C --> D
-    C --> E
-    C --> F
-    C --> G
+```svgbob alt="Double hashing with h1 = 5 and h2 = 3 on a 16-bit array: the positions are 5, 8, 11 and 14, each 3 apart."
+ i, jump by h2                            0   +3 →    1   +3 →    2   +3 →    3
+                                          ↓           ↓           ↓           ↓
+                    +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+ bit array          | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 1 | 0 |
+                    +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+                      0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
 
-    D --> H["Set bits: 5, 8, 11, 14"]
-    E --> H
-    F --> H
-    G --> H
-
-    style A fill:#5d5fef,color:#f8f9fa
-    style B fill:#495057,color:#f8f9fa
-    style C fill:#495057,color:#f8f9fa
-    style H fill:#22d3ee,color:#212529
+# Tones:
+changed  bit array: 5 8 11 14
+accent   "+3 →"
 ```
+
+</Scrollbox>
+
+> [!info]
+> In other words, double hashing starts at bit `h1` and jumps forward by `h2` another `k − 1` times, wrapping around the end of the array (that's the `mod m`).
 
 #### Why does Double-Hashing Work?
 

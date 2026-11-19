@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { PostPreview } from '$lib/types';
 	import { getPostHeroImage } from '$lib/utils';
-	import { Thumb } from '$lib/components/ui';
+	import { Picture } from '$lib/components/ui';
 
 	interface Props {
 		older?: PostPreview;
@@ -31,7 +31,11 @@
 			href={link.href}
 			class="grid grid-cols-[96px_1fr] items-center gap-4 border border-line p-3.5 no-underline transition-colors hover:border-line-2 hover:bg-surface"
 		>
-			<Thumb src={link.post && getPostHeroImage(link.post.slug)} sizes="96px" class="w-24" />
+			<Picture
+				src={link.post && getPostHeroImage(link.post.slug)}
+				sizes="96px"
+				class="aspect-[3/2] h-auto shrink-0 bg-surface w-24"
+			/>
 			<span>
 				<span class="eyebrow block">{link.label}</span>
 				<span class="mt-1 block font-display text-[15.5px]/[1.35] font-medium">{link.title}</span>

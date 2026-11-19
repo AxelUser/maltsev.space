@@ -1,5 +1,6 @@
 <script lang="ts">
 	import '../../../svgbob.css';
+	import '../../../zombie-mermaid.css';
 	import { SEO } from '$lib/components';
 	import { Container } from '$lib/components/layout';
 	import { Tag } from '$lib/components/ui';
@@ -9,22 +10,6 @@
 	import { getPostHeroImage } from '$lib/utils';
 
 	const { data }: PageProps = $props();
-
-	const isDark = () =>
-		document.documentElement.getAttribute('color-scheme') === 'dark' ||
-		(!document.documentElement.hasAttribute('color-scheme') &&
-			matchMedia('(prefers-color-scheme: dark)').matches);
-
-	$effect(() => {
-		if (!data.content || !document.querySelector('.mermaid')) return;
-		// FIXME: This should be anyway rendered as static svg for each post, using runtime mermaid is not efficient.
-		import('mermaid')
-			.then(({ default: mermaid }) => {
-				mermaid.initialize({ startOnLoad: false, theme: isDark() ? 'dark' : 'neutral' });
-				mermaid.run({ querySelector: '.mermaid' });
-			})
-			.catch((err) => console.error('Could not load mermaid', err));
-	});
 
 	const heroImage = $derived(getPostHeroImage(data.slug));
 	const publishedTime = $derived(data.date ? new Date(data.date).toISOString() : undefined);

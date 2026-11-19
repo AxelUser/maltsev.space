@@ -161,6 +161,11 @@
 	color: var(--color-ink-3);
 }
 
+/* Translucent label over images, e.g. the AI flag and the live cover toggle. */
+@utility badge {
+	@apply inline-flex items-center gap-1.5 border border-white/15 bg-[rgb(7_10_15/0.55)] px-2 py-0.5 font-mono text-[11px]/[1.4] font-medium text-white/80 backdrop-blur-sm;
+}
+
 /* ------------------------------------------------------------------ */
 /* Base                                                                */
 /* ------------------------------------------------------------------ */
@@ -341,10 +346,6 @@
 		pre::before {
 			content: '';
 			@apply livery absolute -top-px -left-px h-[3px] w-16;
-		}
-
-		pre.mermaid::before {
-			display: none;
 		}
 
 		pre code {
