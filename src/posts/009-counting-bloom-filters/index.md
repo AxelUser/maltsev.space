@@ -17,6 +17,8 @@ coverCaption: "Taking samples and keeping count."
 
 <script>
     import { Scrollbox } from '$lib/components';
+    import { Stepper } from '$lib/components/visualization/array-steps';
+    import { naiveDeletion, countingInsertDelete, deleteNonExistent } from './steps';
 </script>
 
 Bloom filters are incredibly space-efficient probabilistic data structures, perfect for answering a simple question: "Is this element in the set — no or maybe?"
@@ -47,53 +49,9 @@ Let's see this in action. Suppose we have a Bloom filter with 10 bits and we wan
 
 Notice that both elements share position 5 — this is where the trouble begins.
 
-First, we insert both elements. Element A sets bits at positions 0, 5, and 8. Then Element B tries to set bits at positions 5, 7, and 9. Position 5 is already set from Element A, so it remains `1`, while positions 7 and 9 are newly set:
+First, we insert both elements. Position 5 is set by Element A, so it simply stays `1` when Element B arrives. Then we attempt to delete Element A the naive way, by resetting its bits at positions 0, 5, and 8 back to `0`. Position 5 goes too, and with it Element B's contribution. When we later check for Element B, position 5 is `0`, so the Bloom filter reports that B is not present — a **false negative**. This is catastrophic because Element B was never deleted; it's still supposed to be in the set.
 
-<Scrollbox>
-
-```svgbob
- set by                A                            A,B          B     A     B
-                       ↓                             ↓           ↓     ↓     ↓
-                    +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
- after A and B      |  1  |  0  |  0  |  0  |  0  |  1  |  0  |  1  |  1  |  1  |
-                    +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
-                       0     1     2     3     4     5     6     7     8     9
-```
-
-</Scrollbox>
-
-Now, let's attempt to delete Element A. The naive approach would be to reset its bits at positions 0, 5, and 8 back to `0`. This seems straightforward, but here's the problem: when we reset position 5, we're also removing Element B's contribution to that position. After this "deletion," only bits 7 and 9 remain set:
-
-<Scrollbox>
-
-```svgbob
- reset to 0            0                             0                 0
-                       ↓                             ↓                 ↓
-                    +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
- after deleting A   |  0  |  0  |  0  |  0  |  0  |  0  |  0  |  1  |  0  |  1  |
-                    +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
-                       0     1     2     3     4     5     6     7     8     9
-                                                     ↑
-                                          B still needed this bit
-```
-
-</Scrollbox>
-
-The corruption becomes evident when we later check for Element B. We hash it to positions 5, 7, and 9, but now position 5 is `0`. Since not all of Element B's positions are set, the Bloom filter incorrectly reports that Element B is not present — a **false negative**. This is catastrophic because Element B was never deleted; it's still supposed to be in the set.
-
-<Scrollbox>
-
-```svgbob
- query B                                             ✗           ✓           ✓
-                                                     ↓           ↓           ↓
-                    +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
- after deleting A   |  0  |  0  |  0  |  0  |  0  |  0  |  0  |  1  |  0  |  1  |
-                    +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
-                       0     1     2     3     4     5     6     7     8     9
-
-```
-
-</Scrollbox>
+<Stepper title="Naive deletion in a classic Bloom filter" steps={naiveDeletion} />
 
 > [!tip]
 > It's similar to erasing your tag from a public graffiti wall — you might end up scrubbing off someone else's mark too, and now no one can tell they were ever there.
@@ -165,29 +123,7 @@ When inserting an element into a CBF:
 1. **Hash the element** to determine `k` positions in the counter array
 2. **Increment each counter** at those `k` positions by 1
 
-The key insight is that **multiple elements may share the same positions** — but now we track exactly how many elements contributed to each position through the counter values. Suppose **A** hashes to positions 1, 4, 7 and **B** to positions 4, 6, 9:
-
-<Scrollbox>
-
-```svgbob
- insert A                    +1                +1                +1
-                             ↓                 ↓                 ↓
-                    +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
- after A            |  0  |  1  |  0  |  0  |  1  |  0  |  0  |  1  |  0  |  0  |
-                    +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
-                       0     1     2     3     4     5     6     7     8     9
-
- insert B                                      +1          +1                +1
-                                               ↓           ↓                 ↓
-                    +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
- after A and B      |  0  |  1  |  0  |  0  |  2  |  0  |  1  |  1  |  0  |  1  |
-                    +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
-                       0     1     2     3     4     5     6     7     8     9
-                                               ↑
-                                       shared by A and B
-```
-
-</Scrollbox>
+The key insight is that **multiple elements may share the same positions** — but now we track exactly how many elements contributed to each position through the counter values.
 
 #### Membership Query Operation
 
@@ -208,22 +144,9 @@ The deletion operation is just the opposite of the insertion operation:
 1. **Hash the element** to get the same `k` positions used during insertion
 2. **Decrement each counter** at those positions by 1
 
-The result is that other elements sharing those positions remain unaffected because their contributions are still counted.
+The result is that other elements sharing those positions remain unaffected because their contributions are still counted. For example, suppose **A** hashes to positions 1, 4, 7 and **B** to positions 4, 6, 9. Insert both, then delete A:
 
-<Scrollbox>
-
-```svgbob
- delete A                    −1                −1                −1
-                             ↓                 ↓                 ↓
-                    +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
- after deleting A   |  0  |  0  |  0  |  0  |  1  |  0  |  1  |  0  |  0  |  1  |
-                    +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
-                       0     1     2     3     4     5     6     7     8     9
-                                               ↑
-                                       still 1: B survives
-```
-
-</Scrollbox>
+<Stepper title="Insert and delete in a counting Bloom filter" steps={countingInsertDelete} />
 
 This counter-based approach enables **insert**, **query**, and **delete** operations while preserving the probabilistic guarantees of the original Bloom filter structure. However, it's not without its own challenges.
 
@@ -259,46 +182,13 @@ Now suppose you insert **A** — this increments the counters at positions `1, 5
 
 Then, without inserting **B**, you try to delete it. This decrements counters at `1, 3, 7, 8`.
 
-<Scrollbox>
-
-```svgbob
- insert A                    +1                      +1          +1          +1
-                             ↓                       ↓           ↓           ↓
-                    +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
- after A            |  0  |  1  |  0  |  0  |  0  |  1  |  0  |  1  |  0  |  1  |
-                    +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
-                       0     1     2     3     4     5     6     7     8     9
-
- delete B                    −1         skip                     −1   skip
-                             ↓           ↓                       ↓     ↓
-                    +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
- after deleting B   |  0  |  0  |  0  |  0  |  0  |  1  |  0  |  0  |  0  |  1  |
-                    +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
-                       0     1     2     3     4     5     6     7     8     9
-
-```
-
-</Scrollbox>
-
 Here's what goes wrong:
 
 - Counters at positions `1` and `7` (shared with A) are decremented (capped at 0).
 - When you later check for **A**, it may appear absent, even though it was never deleted.
 - Counters at positions `5` and `9` remain set, creating an inconsistent state.
 
-<Scrollbox>
-
-```svgbob
- query A                     ✗                       ✓           ✗           ✓
-                             ↓                       ↓           ↓           ↓
-                    +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
- after deleting B   |  0  |  0  |  0  |  0  |  0  |  1  |  0  |  0  |  0  |  1  |
-                    +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
-                       0     1     2     3     4     5     6     7     8     9
-
-```
-
-</Scrollbox>
+<Stepper title="Deleting a never-inserted element" steps={deleteNonExistent} />
 
 This creates a **false negative**, something Bloom filters are explicitly designed to avoid. And the worst part? There's no way to detect this corruption after the fact.
 

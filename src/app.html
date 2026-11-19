@@ -18,6 +18,8 @@
 		<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#070a0f" />
 		<!-- Apply the saved Day / Night choice before first paint; Auto leaves it to the OS -->
 		<script>
+			// Lets components (e.g. the post Stepper) style their JS-enabled layout before hydration
+			document.documentElement.classList.add('js');
 			try {
 				var t = localStorage.getItem('theme');
 				if (t === 'light' || t === 'dark') document.documentElement.setAttribute('color-scheme', t);

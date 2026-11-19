@@ -19,6 +19,8 @@ coverCaption: "Have you seen this before? Probably."
 <script>
   import { PostImage, Scrollbox } from '$lib/components';
   import { SimpleBloomFilter, ParameterCalculator } from '$lib/components/visualization/bloom-filters';
+  import { Stepper } from '$lib/components/visualization/array-steps';
+  import { insertAndQuery } from './steps';
 </script>
 
 There's a special category of data structures known as probabilistic data structures — and I have a soft spot for some of them. One of my absolute favorites is the Bloom filter. It's a beautifully simple concept that tackles a surprisingly common challenge: how can we quickly check whether something belongs to a set — without eating up loads of memory?
@@ -56,60 +58,15 @@ The algorithm behind Bloom filters is elegantly built on three main components: 
 >
 > Examples of commonly used hash functions include MurmurHash, xxHash, CityHash, or cryptographic ones like SHA-256 (though cryptographic hashes are usually overkill for Bloom filters).
 
-For example, take a 16-bit array and `k = 3` hash functions, and insert two elements, `"apple"` and `"grape"`:
-
-<Scrollbox>
-
-```svgbob
- insert apple                     h1                  h2                      h3
-                                  ↓                   ↓                       ↓
-                    +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
- after apple        | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
-                    +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
-                      0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
-
- insert grape             h1                      h2              h3
-                          ↓                       ↓               ↓
-                    +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
- after apple, grape | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 1 | 0 |
-                    +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
-                      0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
-```
-
-</Scrollbox>
-
 Inserting an element is fast and deterministic: the element is fed into each of the `k` hash functions, producing `k` unique array positions. The bits at all these positions are then set to 1. No matter how many elements have already been inserted, this operation always requires exactly `k` hash calculations and `k` bit updates. The beauty of this approach is its simplicity—there's no need for collision resolution or complex data structures.
 
-Lookup works similarly. To check whether an element might be in the set, the algorithm runs the element through the same `k` hash functions to obtain `k` positions. If any of these bits is 0, the element is definitely not in the set — this is guaranteed, since insertion would have set all these bits to 1. For example, `"banana"` hashes to positions 3, 5 and 14. Bit 5 is 0, so `"banana"` was never inserted:
+Lookup works similarly. To check whether an element might be in the set, the algorithm runs the element through the same `k` hash functions to obtain `k` positions. If any of these bits is 0, the element is definitely not in the set — this is guaranteed, since insertion would have set all these bits to 1.
 
-<Scrollbox>
+However, if all the bits are 1, the element _might_ be in the set, but there's also a chance that these bits were set by previous insertions of other elements. This creates the possibility of a false positive.
 
-```svgbob
- query banana                     ✓       ✗                                   ✓
-                                  ↓       ↓                                   ↓
-                    +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
- after apple, grape | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 1 | 0 |
-                    +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
-                      0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
-```
+Here is a small example: a 16-bit array, `k = 3` hash functions, two inserted elements, `"apple"` and `"grape"`, and two queries, `"banana"` and `"cherry"`:
 
-</Scrollbox>
-
-However, if all the bits are 1, the element _might_ be in the set, but there's also a chance that these bits were set by previous insertions of other elements. This creates the possibility of a false positive. For example, `"cherry"` was never inserted, but it hashes to positions 3, 7 and 11: bit 3 was set by `"apple"`, bits 7 and 11 by `"grape"`, so the filter answers "maybe":
-
-<Scrollbox>
-
-```svgbob
- query cherry                     ✓               ✓               ✓
-                                  ↓               ↓               ↓
-                    +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
- after apple, grape | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 1 | 0 |
-                    +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
-                      0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
- set by                         apple           grape           grape
-```
-
-</Scrollbox>
+<Stepper title="Inserting and querying a 16-bit Bloom filter" steps={insertAndQuery} />
 
 The math behind this comes from the probabilistic nature of hash collisions. As more elements are added, more bits get flipped to 1, which increases the chance that any random combination of `k` positions is already occupied, even for elements that were never inserted. That's why the false positive rate grows with the number of elements, while the false negative rate stays at zero — if an element was inserted, it will always test as present.
 
