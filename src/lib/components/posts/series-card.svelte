@@ -1,15 +1,15 @@
 <!--
 	@component
-	`posts` must be in reading order (oldest first).
+	A series card, showing the series name, description and a link to the first note.
 -->
 <script lang="ts">
 	import type { PostPreview } from '$lib/types';
 	import { seriesDescription } from '$lib/content';
-	import { getPostHeroImage } from '$lib/utils';
-	import { HudBox, Picture } from '$lib/components/ui';
+	import { NoteArrow, NoteLink, NoteThumb, NoteTitle } from './note-link';
 
 	interface Props {
 		name: string;
+		/** The series posts in reading order (oldest first). */
 		posts: PostPreview[];
 	}
 
@@ -18,30 +18,30 @@
 </script>
 
 {#if posts.length > 0}
-	<HudBox
+	<NoteLink
 		href="/blog/{posts[0].slug}"
-		accent="var(--color-livery-4)"
+		boxed
 		class="grid items-center gap-3.5 p-[22px] md:grid-cols-[auto_1fr_auto] md:gap-7"
 	>
 		<span class="flex" aria-hidden="true">
 			{#each posts as post, i (post.slug)}
-				<Picture
-					src={getPostHeroImage(post.slug)}
+				<NoteThumb
+					slug={post.slug}
+					placeholder={post.placeholder}
 					sizes="96px"
-					class={[
-						'aspect-[3/2] h-auto w-24 shrink-0 bg-surface shadow-frame outline-[3px] outline-canvas',
-						i > 0 && '-ml-9'
-					]}
+					class={['w-24 outline-[3px] outline-canvas', i > 0 && '-ml-9']}
 				/>
 			{/each}
 		</span>
-		<div>
-			<span class="eyebrow">Series · {posts.length} parts</span>
-			<h3 class="mt-1 mb-0.5 text-[22px] font-semibold font-stretch-[108%]">{name}</h3>
+		<span>
+			<span class="eyebrow block">Series · {posts.length} parts</span>
+			<NoteTitle as="h3" class="mt-1 mb-0.5 font-semibold font-stretch-[108%] sm:text-[22px]">
+				{name}
+			</NoteTitle>
 			{#if description}
-				<p class="m-0 text-[15px] text-ink-2">{description}</p>
+				<span class="block text-[15px] text-ink-2">{description}</span>
 			{/if}
-		</div>
-		<span class="font-display text-[15px] font-semibold text-link">Start reading →</span>
-	</HudBox>
+		</span>
+		<NoteArrow label="Start reading" />
+	</NoteLink>
 {/if}

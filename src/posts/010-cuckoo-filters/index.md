@@ -16,12 +16,14 @@ liveCover: true
 ---
 
 <script>
-    import { Scrollbox } from '$lib/components';
+    import { PostRef, Scrollbox } from '$lib/components';
     import { Stepper } from '$lib/components/visualization/array-steps';
     import { cuckooKickout } from './steps';
 </script>
 
-Bloom Filters are brilliant, they use minimal memory to support approximate membership query operations, i.e., answering what elements may be represented in a set, or what absolutely not. Their simplicity is both their strength and weakness. As I’ve described in a [previous article about Counting Bloom Filter](https://maltsev.space/blog/009-counting-bloom-filters), it’s not trivial to support deletion and preserve their guarantees of absence of false-negative results, i.e., telling what elements are not in a set.
+Bloom Filters are brilliant, they use minimal memory to support approximate membership query operations, i.e., answering what elements may be represented in a set, or what absolutely not. Their simplicity is both their strength and weakness. As I’ve described in a [previous article about Counting Bloom Filter](/blog/009-counting-bloom-filters), it’s not trivial to support deletion and preserve their guarantees of absence of false-negative results, i.e., telling what elements are not in a set.
+
+<PostRef slug="009-counting-bloom-filters" />
 
 Counting Bloom Filters (CBF) and d-left Counting Bloom Filters are supposed to solve this issue, but they come at a cost of greater memory overhead, **1.5** to **4** times more than classic Bloom Filters do.
 
@@ -31,9 +33,11 @@ In this article, I’ll describe a memory-efficient and deletion-friendly soluti
 
 ## What are Cuckoo Filters?
 
-Cuckoo Filters are a clever step forward in the world of probabilistic data structures. [Introduced by Fan et al. in 2014](https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf), they were designed to overcome some of the major limitations of [classic Bloom Filters](https://maltsev.space/blog/008-bloom-filters-pt1), especially around memory efficiency and the lack of support for deletions.
+Cuckoo Filters are a clever step forward in the world of probabilistic data structures. [Introduced by Fan et al. in 2014](https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf), they were designed to overcome some of the major limitations of [classic Bloom Filters](/blog/008-bloom-filters-pt1), especially around memory efficiency and the lack of support for deletions.
 
-What sets them apart is the internal structure. While Bloom Filters use a flat bit array, Cuckoo Filters adopt a more flexible **hash-table** layout with buckets and slots, and that subtle shift unlocks new capabilities. At first glance, they might remind you of the [d-left Counting Bloom Filters](https://maltsev.space/blog/009-counting-bloom-filters#d-left-counting-bloom-filter) we discussed earlier, since both use a hash-table-like structure, but with quite impressive mechanics.
+<PostRef slug="008-bloom-filters-pt1" />
+
+What sets them apart is the internal structure. While Bloom Filters use a flat bit array, Cuckoo Filters adopt a more flexible **hash-table** layout with buckets and slots, and that subtle shift unlocks new capabilities. At first glance, they might remind you of the [d-left Counting Bloom Filters](/blog/009-counting-bloom-filters#d-left-counting-bloom-filter) we discussed earlier, since both use a hash-table-like structure, but with quite impressive mechanics.
 
 > [!NOTE]
 > If you’re unfamiliar with hash tables, here’s the short version: a hash table is a data structure that lets you store values and look them up efficiently using a key. Under the hood, it works like an array of **buckets**. A bucket can contain one or more key-value pairs in its **slots**. When you insert a key-value pair, the key is hashed — turned into a number — to figure out which bucket to use. A good hash function ensures that even similar keys produce very different hash values, which helps spread data evenly across buckets.

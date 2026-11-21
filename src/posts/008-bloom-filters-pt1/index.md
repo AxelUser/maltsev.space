@@ -17,7 +17,7 @@ coverCaption: "Have you seen this before? Probably."
 ---
 
 <script>
-  import { PostImage, Scrollbox } from '$lib/components';
+  import { PostImage, PostRef, Scrollbox } from '$lib/components';
   import { SimpleBloomFilter, ParameterCalculator } from '$lib/components/visualization/bloom-filters';
   import { Stepper } from '$lib/components/visualization/array-steps';
   import { insertAndQuery } from './steps';
@@ -177,7 +177,11 @@ bad     shopping list: 1
 
 </Scrollbox>
 
-Of course, for a quick and dirty workaround, an engineer might introduce a second "blacklist" Bloom filter to track deletions. When checking membership, an element would only be considered present if it's in the main filter **and** not in the deletion filter. But sometimes this comes with its own trade-offs — and I'll cover better solutions later, like [Counting Bloom Filters](https://maltsev.space/blog/009-counting-bloom-filters) and [Cuckoo Filters](https://maltsev.space/blog/010-cuckoo-filters).
+Of course, for a quick and dirty workaround, an engineer might introduce a second "blacklist" Bloom filter to track deletions. When checking membership, an element would only be considered present if it's in the main filter **and** not in the deletion filter. But sometimes this comes with its own trade-offs — and I'll cover better solutions later, like [Counting Bloom Filters](/blog/009-counting-bloom-filters) and [Cuckoo Filters](/blog/010-cuckoo-filters).
+
+<PostRef slug="009-counting-bloom-filters" />
+
+<PostRef slug="010-cuckoo-filters" />
 
 ### Can It Scale?
 

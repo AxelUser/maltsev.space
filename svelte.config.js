@@ -12,6 +12,7 @@ import rehypeCallouts from 'rehype-callouts';
 import readingTime from 'mdsvex-reading-time';
 import { remarkLinksToReferences } from './src/lib/plugins/remark-links-to-references.js';
 import { remarkZombieMermaid } from './src/lib/plugins/remark-zombie-mermaid.js';
+import { config as siteConfig } from './src/lib/config.ts';
 import { loadEnv } from 'vite';
 
 // Analytics is optional, but $env/static/* only exports variables that exist. Default the
@@ -62,7 +63,7 @@ const mdsvexOptions = {
 		remarkSvgbobTones,
 		// ```mermaid fences → inline SVG at build time; must run before `highlight`.
 		remarkZombieMermaid,
-		remarkLinksToReferences,
+		[remarkLinksToReferences, { site: siteConfig.websiteUrl }],
 		readingTime
 	],
 	rehypePlugins: [

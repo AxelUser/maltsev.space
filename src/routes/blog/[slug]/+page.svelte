@@ -5,11 +5,14 @@
 	import { Container } from '$lib/components/layout';
 	import { Tag } from '$lib/components/ui';
 	import { PostCover } from '$lib/components/cover';
-	import { PostIndex, PostPager, PostRows, SeriesParts } from '$lib/components/posts';
+	import { PostIndex, PostPager, PostRows, SeriesParts, setPostRefs } from '$lib/components/posts';
 	import type { PageProps } from './$types';
 	import { getPostHeroImage } from '$lib/utils';
 
 	const { data }: PageProps = $props();
+
+	// For <PostRef> cards to work efficiently inside the markdown content.
+	setPostRefs(() => data.referencedPosts);
 
 	const heroImage = $derived(getPostHeroImage(data.slug));
 	const publishedTime = $derived(data.date ? new Date(data.date).toISOString() : undefined);

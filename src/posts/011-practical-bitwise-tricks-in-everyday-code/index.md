@@ -12,6 +12,10 @@ aiCover: [Image]
 coverCaption: "0x2A: the answer, in hex."
 ---
 
+<script>
+    import { PostRef } from '$lib/components';
+</script>
+
 I’m not exactly a big fan of writing bitwise operations everywhere. Don’t get me wrong, I still enjoy this kind of “brain gymnastics”, but sometimes it gets out of hand.
 
 Let me show you a classic example. Can you guess what this code does?
@@ -22,7 +26,7 @@ b ^= a;
 a ^= b;
 ```
 
-Three XOR operations look neat, right? XOR tricks can be pretty cool when [used properly](https://maltsev.space/blog/010-cuckoo-filters#fingerprints-and-partial-key-cuckoo-hashing). But in this case, all it does is something very common in everyday code:
+Three XOR operations look neat, right? XOR tricks can be pretty cool when [used properly](/blog/010-cuckoo-filters#fingerprints-and-partial-key-cuckoo-hashing). But in this case, all it does is something very common in everyday code:
 
 ```csharp
 var temp = a;
@@ -31,6 +35,8 @@ b = temp;
 ```
 
 Yep, just a plain old swap of two variables.
+
+<PostRef slug="010-cuckoo-filters" hash="fingerprints-and-partial-key-cuckoo-hashing" />
 
 I’ve used the XOR version maybe twice in my life: once during a university assignment and once in early job interviews (which I’d rather not relive, lol). So, which version do you think is easier to read?
 
@@ -71,7 +77,9 @@ This works because shifting left fills in zeros on the right (doubling the value
 
 ## Case 2: Extracting Parts of a Big Value
 
-Go on with another widespread use case. Imagine you're working with a hashing function that gives you a 64-bit unsigned integer. But in your code, you actually need two 32-bit values instead. Maybe you want to use one for bucketing and the other for a cache key — whatever the case, you'd prefer to [avoid hashing twice](https://maltsev.space/blog/008-bloom-filters-pt1#wide-hash-split) if you can just reuse the result.
+Go on with another widespread use case. Imagine you're working with a hashing function that gives you a 64-bit unsigned integer. But in your code, you actually need two 32-bit values instead. Maybe you want to use one for bucketing and the other for a cache key — whatever the case, you'd prefer to [avoid hashing twice](/blog/008-bloom-filters-pt1#wide-hash-split) if you can just reuse the result.
+
+<PostRef slug="008-bloom-filters-pt1" hash="wide-hash-split" />
 
 So, how do we split that big 64-bit value into smaller chunks?
 
@@ -163,7 +171,9 @@ permissions ^= FlagDelete; // toggles delete permission
 
 If the flag is off, it turns on; if it is on, it turns off.
 
-Using bit flags is super compact; for example, one 64-bit integer can store 64 flags. This is especially handy when packing lots of booleans into memory-efficient structures and implementing a general approach to [C-flavored enums, e.g., in C#](https://maltsev.space/blog/001-binary-shifts-for-flags).
+Using bit flags is super compact; for example, one 64-bit integer can store 64 flags. This is especially handy when packing lots of booleans into memory-efficient structures and implementing a general approach to [C-flavored enums, e.g., in C#](/blog/001-binary-shifts-for-flags).
+
+<PostRef slug="001-binary-shifts-for-flags" />
 
 ## Stay ~~Hungry~~ Reasonable
 

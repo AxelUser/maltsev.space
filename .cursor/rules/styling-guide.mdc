@@ -55,8 +55,16 @@ Before writing markup, reuse what exists in `$lib/components`:
 
 - `ui/` primitives: `Button` (primary | ghost), `Tag`, `Chip`, `HudBox`, `Frame` (framed 3:2 or natural-ratio box), `Figure` (`Root`/`Media`/`Corner`/`Caption`: framed media with corner overlays and a caption), `Picture` (enhanced image with blurred placeholder; `sizes` required), `AiFlag`, `PageHeader`, `SectionHeading`, `TechList`, `PillLinks`.
 - `layout/`: `Container` (page column), `SiteHeader`, `SiteFooter`, `ThemeSwitch`, `Starfield`, `ReadingProgress`.
-- `posts/`: `PostImage` (inline post image by public URL; `ai` flags it as AI-generated), `PostCard`, `PostRow(s)`, `PostFeature`, `PostMeta`, `PostsByYear`, `SeriesCard`, `SeriesParts`, `PostPager`, `PostIndex` (all-notes rail beside a post, `2xl` and up).
+- `posts/`: `PostImage` (inline post image by public URL; `ai` flags it as AI-generated), `PostRef` (inline card for another note, placed after the paragraph that first links to it; `hash` deep-links a heading), `PostCard`, `PostRow(s)`, `PostFeature`, `PostMeta`, `PostsByYear`, `SeriesCard`, `SeriesParts`, `PostPager`, `PostIndex` (all-notes rail beside a post, `2xl` and up).
 - `home/`, `about/`, `art/`: page sections composed from the above.
+
+## Note links
+
+Every link to a note is built from `posts/note-link`: `NoteLink` (the `<a>`: hover group, zoom area, accent; `boxed` adds brackets), `NoteThumb` (hero image, `framed` for big cards), `NoteTitle` (`lg` featured, `md` cards/rows, `sm` pager/series parts), `NoteArrow` (the arrow; `label` for "Read the note →"-style calls to action). Layouts: `PostFeature` (home), `PostCard` (blog grid), `SeriesCard` / `SeriesParts`, `PostRow` (lists; `boxed` for `PostRef` inline cards and `PostPager`).
+
+- Hover is the same everywhere: title turns `text-link`, image zooms 1.02, arrow nudges. Boxed links also get `bg-surface` and brackets in the accent.
+- Accent is always Blog `livery-1`. No hairline-bordered link boxes.
+- One arrow per link, always `NoteArrow`. Rows and boxed links put it in a trailing column; cards without one (blog grid, series parts) put it inline after the title's last word, joined with `&nbsp;`.`PostMeta` (tag + date) is the meta line; eyebrows are only for context ("Linked note · 009", "Previous", "Series · 3 parts").
 
 Content (bio, career, projects, art collections, tag labels) lives in `$lib/content`, not in pages.
 Images: use `Picture` (or `<enhanced:img>`) via `getPostHeroImage()` / `getArtImage()` / `getPostImage()` and pass a realistic `sizes`.

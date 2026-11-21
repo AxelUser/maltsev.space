@@ -16,14 +16,16 @@ coverCaption: "Taking samples and keeping count."
 ---
 
 <script>
-    import { Scrollbox } from '$lib/components';
+    import { PostRef, Scrollbox } from '$lib/components';
     import { Stepper } from '$lib/components/visualization/array-steps';
     import { naiveDeletion, countingInsertDelete, deleteNonExistent } from './steps';
 </script>
 
 Bloom filters are incredibly space-efficient probabilistic data structures, perfect for answering a simple question: "Is this element in the set — no or maybe?"
 
-But as we discussed in [deep dive into Bloom filters](https://maltsev.space/blog/008-bloom-filters-pt1), there's a big limitation: **they don't support deletion**.
+But as we discussed in [deep dive into Bloom filters](/blog/008-bloom-filters-pt1), there's a big limitation: **they don't support deletion**.
+
+<PostRef slug="008-bloom-filters-pt1" />
 
 In this part of the series, we'll tackle that problem. We'll explore how we can extend Bloom filters to allow element removal — and what trade-offs come with that.
 
@@ -307,4 +309,6 @@ Counting Bloom Filters are a natural extension of the classic Bloom Filter — t
 
 It's a bit sad, honestly. There's no simple way to preserve the elegance of the original Bloom Filter and still get reliable deletions. Every attempt to fix that tends to compromise either performance or memory efficiency.
 
-That said, the alternatives — like [Cuckoo Filters](https://maltsev.space/blog/010-cuckoo-filters) and the newer Ribbon Filters — are surprisingly elegant in their own right. They're more complex under the hood, but if you're working with modern libraries, that complexity is abstracted away. For most real-world use cases where deletions matter, these filters are excellent, first-class replacements for classic Bloom Filters.
+That said, the alternatives — like [Cuckoo Filters](/blog/010-cuckoo-filters) and the newer Ribbon Filters — are surprisingly elegant in their own right. They're more complex under the hood, but if you're working with modern libraries, that complexity is abstracted away. For most real-world use cases where deletions matter, these filters are excellent, first-class replacements for classic Bloom Filters.
+
+<PostRef slug="010-cuckoo-filters" />

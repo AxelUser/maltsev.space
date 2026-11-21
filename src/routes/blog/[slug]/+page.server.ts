@@ -1,19 +1,20 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { config } from '$lib/config';
 import { getNeighbours, getPosts, getSeries } from '$lib/posts';
 import { generatePostHeroThumbhash, getOGImagePath } from '$lib/server/images';
 import { getArticleViews } from '$lib/server/analytics';
-import type { PostIndexEntry } from '$lib/types';
+import type { PostIndexEntry, PostPreview } from '$lib/types';
 
-/** Slugs of other notes this post links to (front-matter `links`, filled by remark-links-to-references). */
-function referencedSlugs(links: string[] | undefined, self: string): string[] {
-	if (!links) return [];
-	const slugs = links
-		.filter((link) => link.includes(config.websiteUrl))
-		.map((link) => link.substring(link.indexOf('/blog/') + 6).split('#')[0])
-		.filter((slug) => slug.length > 0 && slug !== self);
-	return [...new Set(slugs)];
+/** Published posts by slug, each with its hero placeholder. */
+async function referencedPosts(slugs: string[]): Promise<PostPreview[]> {
+	if (slugs.length === 0) return [];
+	const posts = getPosts(null, 'published', slugs);
+	await Promise.all(
+		posts.map(async (post) => {
+			post.placeholder = await generatePostHeroThumbhash(post.slug, 100);
+		})
+	);
+	return posts;
 }
 
 // Post-list data is built here, not in +page.ts, to keep $lib/posts out of the client bundle.
@@ -26,12 +27,14 @@ export const load: PageServerLoad = async ({ params }) => {
 		throw error(404, `Could not find article ${params.slug}`);
 	}
 
-	const [placeholderUrl, views, ogImagePath] = await Promise.all([
+	// linked notes (see remark-links-to-references).
+	const slugs = (metadata.refs as string[] | undefined) ?? [];
+	const [placeholderUrl, views, ogImagePath, refs] = await Promise.all([
 		generatePostHeroThumbhash(params.slug, 100),
 		getArticleViews(params.slug),
-		Promise.resolve(getOGImagePath(params.slug))
+		Promise.resolve(getOGImagePath(params.slug)),
+		referencedPosts(slugs)
 	]);
-	const slugs = referencedSlugs(metadata.links as string[] | undefined, params.slug);
 
 	return {
 		placeholderUrl,
@@ -39,7 +42,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		ogImagePath,
 		series: getSeries(metadata.series as string),
 		neighbours: getNeighbours(params.slug),
-		referencedPosts: slugs.length > 0 ? getPosts(null, 'published', slugs) : [],
+		referencedPosts: refs,
 		index: getPosts().map(
 			({ slug, number, title, date }): PostIndexEntry => ({
 				slug,

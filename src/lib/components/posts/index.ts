@@ -8,4 +8,7 @@ export { default as PostsByYear } from './posts-by-year.svelte';
 export { default as SeriesCard } from './series-card.svelte';
 export { default as SeriesParts } from './series-parts.svelte';
 export { default as PostImage } from './post-image.svelte';
+export { default as PostRef } from './post-ref.svelte';
+export { setPostRefs } from './post-refs-context';
 export { default as PostIndex } from './post-index.svelte';
+export * from './note-link';

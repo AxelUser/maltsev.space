@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PostPreview } from '$lib/types';
+	import { NoteArrow, NoteLink, NoteTitle } from './note-link';
 
 	interface Props {
 		name: string;
@@ -21,16 +22,14 @@
 						{String(i + 1).padStart(2, '0')}
 					</span>
 					{#if isCurrent}
-						<span class="font-display text-[16px] font-semibold" aria-current="page">
-							{post.title}
+						<span aria-current="page">
+							<NoteTitle size="sm" class="font-semibold">{post.title}</NoteTitle>
 						</span>
 					{:else}
-						<a
-							href="/blog/{post.slug}"
-							class="font-display text-[16px] font-medium text-ink-2 no-underline hover:text-link"
-						>
-							{post.title}
-						</a>
+						<NoteLink href="/blog/{post.slug}" class="inline-flex items-baseline gap-2">
+							<NoteTitle size="sm" class="text-ink-2">{post.title}</NoteTitle>
+							<NoteArrow class="text-[14px]" />
+						</NoteLink>
 					{/if}
 				</li>
 			{/each}

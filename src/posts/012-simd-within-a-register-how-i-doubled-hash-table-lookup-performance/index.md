@@ -17,12 +17,14 @@ liveCover: true
 ---
 
 <script>
-    import { Scrollbox } from '$lib/components';
+    import { PostRef, Scrollbox } from '$lib/components';
     import { ByteLanes, ByteLanesStepper } from '$lib/components/visualization/byte-lanes';
     import { hasZeroSteps, xorExample, existingZeroOther, existingZeroEmpty } from './steps';
 </script>
 
-While working on a [Cuckoo Filter](https://maltsev.space/blog/010-cuckoo-filters) implementation in C#, I created an array-like structure for the underlying hash table. I chose an 8-bit fingerprint: it aligns nicely on a byte boundary and still keeps the false-positive rate around **3 %**.
+While working on a [Cuckoo Filter](/blog/010-cuckoo-filters) implementation in C#, I created an array-like structure for the underlying hash table. I chose an 8-bit fingerprint: it aligns nicely on a byte boundary and still keeps the false-positive rate around **3 %**.
+
+<PostRef slug="010-cuckoo-filters" />
 
 The layout looked straightforward—just a byte array where the start of each bucket is calculated as `bucketIdx * bucketSize`. The size of each bucket is 4 slots, which is a solid choice for Cuckoo Filter.
 
@@ -345,4 +347,6 @@ The benchmarks confirmed this bit-twiddling exercise was well worth the effort. 
 
 ## Final Thoughts
 
-I’m still not a huge fan of stuffing dense [bit tricks](https://maltsev.space/blog/011-practical-bitwise-tricks-in-everyday-code) into production C#—they can be hard to read and even harder to maintain if something goes wrong. But I think this little adventure has been worth it: the lookup path is now twice as fast, and the codebase is still compact enough to keep the trick well-commented. I hope these notes save someone else a detour—or at the very least that you enjoyed this little optimization trip with me.
+I’m still not a huge fan of stuffing dense [bit tricks](/blog/011-practical-bitwise-tricks-in-everyday-code) into production C#—they can be hard to read and even harder to maintain if something goes wrong. But I think this little adventure has been worth it: the lookup path is now twice as fast, and the codebase is still compact enough to keep the trick well-commented. I hope these notes save someone else a detour—or at the very least that you enjoyed this little optimization trip with me.
+
+<PostRef slug="011-practical-bitwise-tricks-in-everyday-code" />
