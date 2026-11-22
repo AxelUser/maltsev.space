@@ -34,3 +34,6 @@ storybook-static
 /perf-builds
 /test-results
 /perf-data
+
+# Local post reviews (redditor-audit); never leave this machine
+src/posts/*/review.*.json

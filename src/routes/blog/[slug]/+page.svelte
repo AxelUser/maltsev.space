@@ -8,6 +8,7 @@
 	import { PostIndex, PostPager, PostRows, SeriesParts, setPostRefs } from '$lib/components/posts';
 	import type { PageProps } from './$types';
 	import { getPostHeroImage } from '$lib/utils';
+	import { dev } from '$app/environment';
 
 	const { data }: PageProps = $props();
 
@@ -80,6 +81,12 @@
 				<PostIndex posts={data.index} current={data.slug} />
 			</div>
 		</aside>
+
+		{#if dev}
+			{#await import('$lib/components/dev/review') then review}
+				<review.ReviewOverlay slug={data.slug} />
+			{/await}
+		{/if}
 
 		{#if data.seriesName}
 			<SeriesParts name={data.seriesName} posts={data.series} current={data.slug} />
