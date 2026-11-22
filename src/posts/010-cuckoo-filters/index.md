@@ -67,7 +67,7 @@ set  "0x"
 </Scrollbox>
 
 - In a Bloom Filter, every bit position is shared by multiple elements. Once a bit is set to `1`, there's no way to know who set it.
-- In a Cuckoo Filter, we store compact hashes of the original item, which are called **fingerprints**.
+- In a Cuckoo Filter, we store compact hashes of the original item, which are called [**fingerprints**](#fingerprints-and-partial-key-cuckoo-hashing).
 
 Let’s see how Cuckoo Filters work under the hood and the main concepts used in their design.
 
@@ -116,7 +116,7 @@ But Cuckoo Filter aims to beat Bloom Filter at its own game—fast, compact memb
 
 In the article about **Counting Bloom Filters**, I mentioned a variant called the **d-left Counting Bloom Filter**. TL;DR: it’s a hash-table-like structure that doesn’t store full keys either. Instead, it stores **fingerprints** — small, fixed-size pieces of a hashed key, like 1 byte (8 bits). Fingerprints are compact and help keep the structure lightweight, so they are an excellent choice for the Cuckoo Filter.
 
-Now here’s the challenge: the classic Cuckoo Hashing algorithm relies on knowing the **entire key** when moving elements around. But in a Cuckoo Filter, we **don’t store the key at all**, only the fingerprint. That means the original eviction logic won’t work out of the box.
+Now here’s the challenge: the classic Cuckoo Hashing algorithm relies on knowing the **entire key** and hashing it when moving elements around. But in a Cuckoo Filter, we **don’t store the key at all**, only the fingerprint. That means the original eviction logic won’t work out of the box.
 
 To solve this, Fan et al. used a [clever modification of Cuckoo Hashing](https://www.cs.cmu.edu/~dga/papers/silt-sosp2011.pdf), called **partial-key Cuckoo Hashing**.
 
@@ -154,11 +154,11 @@ The core idea remains the same: each element still has two possible buckets, jus
 What makes XOR perfect for this use case is its **reversible property**:
 
 ```typescript
-b1 ^ (hash(fp) == b2);
-b2 ^ (hash(fp) == b1);
+b1 ^ hash(fp) == b2;
+b2 ^ hash(fp) == b1;
 ```
 
-That means if you know one bucket and the fingerprint, you can always calculate the other bucket, in either direction.
+That means if you know one bucket and the fingerprint, you can always calculate the other bucket, in either direction, as long as number of buckets [is a power of two](#table-size-must-be-a-power-of-two).
 That’s what makes it awesome: the Cuckoo Filter doesn’t need to store or look up the original key at all. Everything it needs to manage insertions, lookups, and evictions is right there in the table.
 
 ## Basic Operations
@@ -185,7 +185,7 @@ return buckets[i1].contains(fp) || buckets[i2].contains(fp);
 ```
 
 > [!tip]
-> Don’t forget that, just like a Bloom filter, this is a **probabilistic check**. You may get a false positive, but never a false negative.
+> Don’t forget that, just like a Bloom filter, this is a **probabilistic check**. You may get a [false positive](/blog/008-bloom-filters-pt1#what-is-a-bloom-filter), but never a false negative.
 
 ### Insertion
 
@@ -197,7 +197,7 @@ To insert a new element:
 2. Calculate its **two candidate buckets** (same as in lookup).
 3. Try placing the fingerprint into either bucket.
 4. If both are full, randomly pick one, **evict** an existing fingerprint, and try to reinsert the evicted one in its alternate bucket.
-5. Repeat for a fixed number of steps (e.g., 500). If all fail, report insertion failure or grow the table.
+5. Repeat for a fixed number of steps (e.g., 500). If all fail, report insertion failure or grow the table (i.e. rebuild it from the source data or add a second filter).
 
 **Time complexity:**
 
@@ -221,12 +221,14 @@ for (let n = 0; n < MAX_KICKS; n++) {
 	if (buckets[i].insert(evictedFp)) return true;
 }
 
-// Table is too full
+// Table is too full. Note that the last evicted fingerprint has nowhere to go,
+// so better to put it somewhere where Lookup can find it, e.g.:
+// victim = { fp: currentFp, bucket: i };
 return false;
 ```
 
 > [!warning]
-> This is the main downside of Cuckoo Filters: **insertions can fail**. That usually means the table is too full, a common challenge with hash-based structures, which you can handle by resizing.
+> This is the main downside of Cuckoo Filters: **insertions can fail**. When that happens, the last evicted fingerprint has nowhere to go. Real implementations keep it in a one-entry _victim cache_ and stop accepting new items. A filter can't be resized because it doesn't store the original keys, so choose its size up front or rebuild it from the source data.
 
 ### Deletion
 
@@ -251,7 +253,7 @@ return buckets[i1].delete(fp) || buckets[i2].delete(fp);
 
 ## Load Factor in Cuckoo Filter
 
-In any open-addressing hash table, you keep an eye on a simple but important ratio:
+In any [open-addressing](https://en.wikipedia.org/wiki/Open_addressing) hash table, you keep an eye on a simple but important ratio:
 
 $$
 \text{load factor } (\alpha) \;=\;
@@ -274,9 +276,9 @@ With 4-slot buckets, you can usually push α as high as ≈0.95 before inserts s
 
 Cuckoo Filters come with several practical advantages, especially when you're aiming for **low false positive rates**.
 
-According to the original research by Fan et al., Cuckoo Filters outperform Bloom Filters in terms of space efficiency when the false positive rate is below **3%**. In other words, if you care about accuracy, they pack more data into less space.
+According to the original research by [Fan et al.](https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf), Cuckoo Filters outperform Bloom Filters in terms of space efficiency when the false positive rate is below **3%**. In other words, if you care about accuracy, they pack more data into less space.
 
-For example, this empirical analysis is provided by the authors _(all filters sized to 192 MiB)_:
+For example, this empirical analysis is provided by the authors (_all filters sized to 192 MiB_):
 
 - **Cuckoo Filter**: 12.60 bits per item, **0.19%** false positive rate
 - **Bloom Filter**: 13.00 bits per item, **0.19%** false positive rate
@@ -284,15 +286,57 @@ For example, this empirical analysis is provided by the authors _(all filters si
 
 So, not only do Cuckoo Filters match the false positive rate of Bloom Filters, but they often beat them by **using less memory**.
 
-> [!note] **Wait — what’s “semi-sorting”?**
->
-> In the standard Cuckoo-Filter setup, a bucket holds **4 fingerprints of 4 bits each** — 16 bits total. But look-ups only check “does this fingerprint exist?”, so the _order_ of those four values doesn’t matter.
->
-> The authors sorted each bucket’s fingerprints and listed every possible sorted pattern — just **3876 unique combinations**, far fewer than the 65536 raw bit-patterns. A bucket now stores a **12-bit index** into that pre-computed table instead of the full 16 bits.
->
-> Savings are \***\*roughly **1 bit per element\*\* with zero hit to query speed and only a tiny extra cost when inserting or deleting due to encoding/decoding gymnastics.
+What is semi-sorting? Take a bucket with **4 fingerprints of 4 bits each**, 16 bits in total. A lookup only checks whether a fingerprint is in the bucket, so the _order_ of the four values doesn't matter.
 
-One of the biggest wins is that Cuckoo Filters support **native deletions:** no workarounds, no tombstones or full rebuilds. To delete an element, you just locate its fingerprint in one of the two candidate buckets and remove it. Simple as that.
+If you sort the four values, only **3876 unique combinations** are possible, i.e. that's the number of ways to pick 4 values out of 16 when repeats are allowed. The raw 16 bits have 65536 patterns. So a bucket can store a **12-bit row number** in a pre-computed table of these combinations instead of the full 16 bits.
+
+<Scrollbox>
+
+```svgbob alt="Semi-sorting one bucket of four 4-bit fingerprints: A, 2, 1 and 6 take 16 bits. Sorted, they are 1, 2, 6, A. A pre-computed table lists all 3876 sorted combinations in order, from 0 0 0 0 at row 0 to F F F F at row 3875; 1 2 6 A is row 990. The bucket stores only the 12-bit row number 990."
+                    +------+------+------+------+
+ bucket             |  A   |  2   |  1   |  6   |   4 × 4 = 16 bits
+                    | 1010 | 0010 | 0001 | 0110 |
+                    +------+------+------+------+
+                                   ↓
+                    +------+------+------+------+
+ sorted             |  1   |  2   |  6   |  A   |
+                    +------+------+------+------+
+                                   ↓
+                    +-------+---------------+
+                    |  row  |  combination  |
+                    +-------+---------------+
+                    |     0 |  0  0  0  0   |
+                    |     1 |  0  0  0  1   |
+                    |     2 |  0  0  0  2   |
+                    |   ... |      ...      |
+                    |   989 |  1  2  6  9   |
+                    +-------+---------------+
+ lookup             |   990 |  1  2  6  A   |   ← find the sorted values
+                    +-------+---------------+
+                    |   991 |  1  2  6  B   |
+                    |   ... |      ...      |
+                    |  3875 |  F  F  F  F   |
+                    +-------+---------------+
+                                   ↓
+                    +---------------------------+
+ stored             |  row 990: 001111011110    |   12 bits
+                    +---------------------------+
+
+# Tones:
+set      sorted: 0 1 2 3
+set      lookup: 0 1
+changed  stored: 0
+```
+
+</Scrollbox>
+
+To read the bucket, the filter goes the other way. It takes row 990 from the table and gets `1 2 6 A` back.
+
+> [!warning]
+> Although as the authors note, real fingerprints are longer, like the 8-bit ones in this post, the filter in that case packs only the **4 highest bits** of each fingerprint this way and stores the other bits unchanged.
+> This saves **1 bit per element**. The cost is speed and general complexity of the implementation in case of bigger fingerprints. Every lookup, insert and delete has to decode the bucket first, so each of them gets slower.
+
+One of the biggest wins is that Cuckoo Filters support **native deletions**. To delete an element, you just locate its fingerprint in one of the two candidate buckets and remove it.
 
 This makes them a clean replacement for **Counting Bloom Filters**, which simulate deletion by using small counters, but at the cost of 3–4× more memory.
 
