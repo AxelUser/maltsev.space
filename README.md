@@ -47,4 +47,4 @@ Numbers are only reported. The check fails only when a page errors.
 - **Language**: TypeScript
 - **UI Framework**: Svelte 5
 - **Routing**: SvelteKit
-- **Styling**: OpenProps
+- **Styling**: Tailwind CSS v4
