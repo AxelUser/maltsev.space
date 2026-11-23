@@ -6,14 +6,16 @@ function getPosts(
 	status: 'draft' | 'published' | 'all' = 'published',
 	slugs: string[] | null = null
 ): PostPreview[] {
-	const paths = import.meta.glob<{ metadata: Partial<PostPreview> }>('/src/posts/*/*.md', {
+	// `?metadata` imports only the front matter, not each post's component.
+	const paths = import.meta.glob<Partial<PostPreview>>('/src/posts/*/index.svx', {
+		query: '?metadata',
+		import: 'metadata',
 		eager: true
 	});
 
 	const posts = Object.entries(paths)
-		.map(([path, post]) => {
-			const slug = path.replace('/index.md', '').split('/').pop()!;
-			const metadata = post.metadata;
+		.map(([path, metadata]) => {
+			const slug = path.replace('/index.svx', '').split('/').pop()!;
 
 			return {
 				slug,

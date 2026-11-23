@@ -416,96 +416,19 @@
 		@apply text-link;
 	}
 
-	.katex-display > .katex {
-		max-width: 100% !important;
-		overflow-y: hidden !important;
-		white-space: normal !important;
+	.prose .header-anchor::before {
+		content: '#';
 	}
 
-	/* Callouts (https://github.com/lin-stephanie/rehype-callouts), painted with the livery */
-	.callout {
-		@apply my-6 border border-l-[3px] border-line p-0;
-		background: color-mix(in srgb, var(--rc-color) 5%, var(--color-surface));
-		border-left-color: var(--rc-color);
-
-		&[data-collapsible='true'] {
-			@apply cursor-pointer;
-		}
+	.math-display {
+		@apply my-6 overflow-x-auto overflow-y-hidden py-1 text-[1.2em];
 	}
 
-	.callout-title {
-		@apply m-0 flex items-center gap-2 bg-transparent px-4 py-2 font-display text-[16px] font-semibold text-ink md:px-5;
-	}
-
-	details.callout summary.callout-title {
-		list-style: none;
-
-		&::-webkit-details-marker {
-			display: none;
-		}
-	}
-
-	.callout-title-icon {
-		@apply size-4 shrink-0;
-		color: var(--rc-color);
-	}
-
-	.callout-title-text {
-		@apply flex-1;
-	}
-
-	.callout-content {
-		@apply px-4 pb-3 text-ink-2 md:px-5 md:pb-4;
-
-		& > *:first-child {
-			@apply mt-0;
-		}
-
-		& > *:last-child {
-			@apply mb-0;
-		}
-
-		p {
-			@apply mb-2;
-		}
-	}
-
-	.callout-fold-icon {
-		@apply ml-auto size-4 text-ink-3 transition-transform;
-	}
-
-	details.callout[open] .callout-fold-icon {
-		@apply rotate-90;
-	}
-
-	[data-callout='note'] {
-		--rc-color: var(--color-link);
-	}
-	[data-callout='info'],
-	[data-callout='tip'],
-	[data-callout='success'] {
-		--rc-color: var(--color-livery-4);
-	}
-	[data-callout='warning'] {
-		--rc-color: var(--color-livery-2);
-	}
-	[data-callout='danger'],
-	[data-callout='error'] {
-		--rc-color: var(--color-livery-1);
-	}
-	[data-callout='important'] {
-		--rc-color: var(--color-livery-3);
-	}
-	[data-callout='question'],
-	[data-callout='quote'] {
-		--rc-color: var(--color-ink-3);
-	}
-	[data-callout='quote'] {
-		@apply italic;
+	.math-inline {
+		@apply text-[1.1em];
 	}
 }
 
-/* Syntax highlighting: Shiki emits both themes inline; the block background is ours */
 .prose pre.shiki {
 	background-color: var(--color-surface) !important;
 }

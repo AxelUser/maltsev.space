@@ -28,7 +28,7 @@ function liveCover(slug: string, enabled: boolean): LiveCoverLoader | undefined 
 
 export const load: PageLoad = async ({ params, data }) => {
 	try {
-		const post = await import(`../../../posts/${params.slug}/index.md`);
+		const post = await import(`../../../posts/${params.slug}/index.svx`);
 		return {
 			content: post.default,
 			title: post.metadata.title as string,
@@ -37,7 +37,7 @@ export const load: PageLoad = async ({ params, data }) => {
 			keywords: post.metadata?.keywords as string[] | undefined,
 			tags: (post.metadata?.tags as string[] | undefined) ?? [],
 			draft: !!post.metadata?.draft,
-			readingTimeMinutes: Math.round(post.metadata?.readingTime?.minutes as number),
+			readingTimeMinutes: post.plugin_data?.page?.minutes as number | undefined,
 			slug: params.slug,
 			number: params.slug.split('-')[0],
 			aiCover: aiCover(params.slug, post.metadata.aiCover),

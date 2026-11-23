@@ -1,12 +1,12 @@
-import { createHash } from 'node:crypto';
-import { visit } from 'unist-util-visit';
 import { renderMermaidSVG } from 'zombie-mermaid';
+import { escapeHtml, fenceHtml } from './fence-html.js';
 
 /**
- * Build-time Mermaid → inline SVG for mdsvex, via zombie-mermaid.
+ * An mdsvex bundle that renders ```mermaid fences to inline SVG at build time with
+ * zombie-mermaid.
  *
- * Replaces each ```mermaid fence with a <figure class="zm-diagram"> holding a
- * pre-rendered SVG, so no diagram library ships to the browser.
+ * Each fence becomes a <figure class="zm-diagram"> that holds the SVG, so the
+ * browser downloads no diagram library.
  *
  * Colours are NOT baked in: the SVG is rendered with `styleAttribute: false`,
  * so it reads its theme from CSS custom properties (--bg, --fg, --line, ...)
@@ -35,73 +35,24 @@ const DEFAULT_RENDER_OPTIONS = {
 /**
  * @typedef {object} Options
  * @property {string} [className] Class on the wrapping <figure>.
- * @property {(file: { filename?: string, data: { fm?: Record<string, unknown> } }) => boolean} [enabled]
- *   Per-file gate; fences in files where it returns false are left untouched.
  * @property {import('zombie-mermaid').RenderOptions} [render] Merged over the defaults.
  */
 
 /**
- * The bits of an mdast `code` node this plugin reads.
- * @typedef {{ lang?: string | null, meta?: string | null, value: string, position?: { start: { line: number } } }} CodeNode
+ * @param {Options} [options]
+ * @returns {import('mdsvex').Bundle}
  */
-
-/** @param {Options} [options] */
-export function remarkZombieMermaid(options = {}) {
-	const { className = 'zm-diagram', enabled = () => true, render = {} } = options;
+export function zombieMermaid(options = {}) {
+	const { className = 'zm-diagram', render = {} } = options;
 	const renderOptions = { ...DEFAULT_RENDER_OPTIONS, ...render };
 
-	/**
-	 * @param {Parameters<typeof visit>[0]} tree
-	 * @param {any} file
-	 */
-	return (tree, file) => {
-		if (!enabled(file)) return;
-
-		let index = 0;
-		visit(tree, 'code', (/** @type {any} */ anyNode, position, /** @type {any} */ parent) => {
-			/** @type {CodeNode} */
-			const node = anyNode;
-			if (node.lang !== 'mermaid' || !parent || position === undefined) return;
-
-			const meta = parseMeta(node.meta);
-			const id = `zm-${hash(`${file.filename ?? ''}\0${index++}\0${node.value}`)}`;
-
-			let svg;
-			try {
-				svg = renderMermaidSVG(node.value, { ...renderOptions, title: meta.title });
-			} catch (error) {
-				const where = `${file.filename ?? 'unknown file'}:${node.position?.start.line ?? '?'}`;
-				throw new Error(`[remark-zombie-mermaid] failed to render diagram at ${where}`, {
-					cause: error
-				});
-			}
-
-			const caption = meta.caption ? `<figcaption>${escapeHtml(meta.caption)}</figcaption>` : '';
-			const html = `<figure id="${id}" class="${className}">${scopeStyles(prefixIds(svg, id), id)}${caption}</figure>`;
-
-			// One {@html} expression so Svelte never parses the braces in the SVG's <style>.
-			parent.children[position] = { type: 'html', value: `{@html ${JSON.stringify(html)}}` };
-		});
-	};
-}
-
-/** @param {string} value */
-function hash(value) {
-	return createHash('sha1').update(value).digest('hex').slice(0, 8);
-}
-
-/**
- * Parses `key="value"` / `key='value'` pairs from the fence meta string.
- * @param {string | null | undefined} meta
- * @returns {Record<string, string>}
- */
-function parseMeta(meta) {
-	/** @type {Record<string, string>} */
-	const result = {};
-	for (const match of (meta ?? '').matchAll(/(\w+)=(?:"([^"]*)"|'([^']*)')/g)) {
-		result[match[1]] = match[2] ?? match[3];
-	}
-	return result;
+	return fenceHtml('zombie-mermaid', 'mermaid', (code, meta, ctx) => {
+		// ctx.id returns an id that no other element in the document has, heading ids included.
+		const id = ctx.id('zm');
+		const svg = renderMermaidSVG(code, { ...renderOptions, title: meta.title });
+		const caption = meta.caption ? `<figcaption>${escapeHtml(meta.caption)}</figcaption>` : '';
+		return `<figure id="${id}" class="${className}">${scopeStyles(prefixIds(svg, id), id)}${caption}</figure>`;
+	});
 }
 
 /**
@@ -160,13 +111,4 @@ function extractKeyframes(css) {
 		cursor = pattern.lastIndex = end;
 	}
 	return { keyframes, rest: rest + css.slice(cursor) };
-}
-
-/** @param {string} value */
-function escapeHtml(value) {
-	return value
-		.replace(/&/g, '&amp;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;')
-		.replace(/"/g, '&quot;');
 }

@@ -25,11 +25,13 @@ Bloom Filters are brilliant, they use minimal memory to support approximate memb
 
 <PostRef slug="009-counting-bloom-filters" />
 
-Counting Bloom Filters (CBF) and d-left Counting Bloom Filters are supposed to solve this issue, but they come at a cost of greater memory overhead, **1.5** to **4** times more than classic Bloom Filters do.
+Counting Bloom Filters (CBF) and d-left Counting Bloom Filters are supposed to solve this issue, but they come at a cost of greater memory overhead, *1.5* to *4* times more than classic Bloom Filters do.
 
 In this article, I’ll describe a memory-efficient and deletion-friendly solution. Meet the Cuckoo Filters!
 
-## Contents
+## Contents <!-- no-toc -->
+
+::toc
 
 ## What are Cuckoo Filters?
 
@@ -37,10 +39,11 @@ Cuckoo Filters are a clever step forward in the world of probabilistic data stru
 
 <PostRef slug="008-bloom-filters-pt1" />
 
-What sets them apart is the internal structure. While Bloom Filters use a flat bit array, Cuckoo Filters adopt a more flexible **hash-table** layout with buckets and slots, and that subtle shift unlocks new capabilities. At first glance, they might remind you of the [d-left Counting Bloom Filters](/blog/009-counting-bloom-filters#d-left-counting-bloom-filter) we discussed earlier, since both use a hash-table-like structure, but with quite impressive mechanics.
+What sets them apart is the internal structure. While Bloom Filters use a flat bit array, Cuckoo Filters adopt a more flexible *hash-table* layout with buckets and slots, and that subtle shift unlocks new capabilities. At first glance, they might remind you of the [d-left Counting Bloom Filters](/blog/009-counting-bloom-filters#d-left-counting-bloom-filter) we discussed earlier, since both use a hash-table-like structure, but with quite impressive mechanics.
 
-> [!NOTE]
-> If you’re unfamiliar with hash tables, here’s the short version: a hash table is a data structure that lets you store values and look them up efficiently using a key. Under the hood, it works like an array of **buckets**. A bucket can contain one or more key-value pairs in its **slots**. When you insert a key-value pair, the key is hashed — turned into a number — to figure out which bucket to use. A good hash function ensures that even similar keys produce very different hash values, which helps spread data evenly across buckets.
+:::note
+If you’re unfamiliar with hash tables, here’s the short version: a hash table is a data structure that lets you store values and look them up efficiently using a key. Under the hood, it works like an array of *buckets*. A bucket can contain one or more key-value pairs in its *slots*. When you insert a key-value pair, the key is hashed — turned into a number — to figure out which bucket to use. A good hash function ensures that even similar keys produce very different hash values, which helps spread data evenly across buckets.
+:::
 
 To help visualize the difference, let’s give both filters the same 64 bits of memory. The Bloom filter uses them as 64 independent bits. The Cuckoo filter splits them into 4 buckets of 2 slots, and each slot holds one 8-bit fingerprint (a blank slot is empty):
 
@@ -67,27 +70,27 @@ set  "0x"
 </Scrollbox>
 
 - In a Bloom Filter, every bit position is shared by multiple elements. Once a bit is set to `1`, there's no way to know who set it.
-- In a Cuckoo Filter, we store compact hashes of the original item, which are called [**fingerprints**](#fingerprints-and-partial-key-cuckoo-hashing).
+- In a Cuckoo Filter, we store compact hashes of the original item, which are called [*fingerprints*](#fingerprints-and-partial-key-cuckoo-hashing).
 
 Let’s see how Cuckoo Filters work under the hood and the main concepts used in their design.
 
 ## Cuckoo Hashing and Cuckoo Tables
 
-The "Cuckoo" in **Cuckoo Filter** comes from a collision-handling technique called **Cuckoo Hashing**. It's a clever and slightly mischievous way of dealing with a common problem in hash tables — what happens when two different elements want to land in the same bucket?
+The "Cuckoo" in *Cuckoo Filter* comes from a collision-handling technique called *Cuckoo Hashing*. It's a clever and slightly mischievous way of dealing with a common problem in hash tables — what happens when two different elements want to land in the same bucket?
 
 Classic hash tables handle this with techniques like:
 
-- **Chaining**: placing all colliding elements in a list inside the bucket, usually into a linked list.
-- **Linear probing**: scanning for the next available bucket if the first is fully occupied.
+- *Chaining*: placing all colliding elements in a list inside the bucket, usually into a linked list.
+- *Linear probing*: scanning for the next available bucket if the first is fully occupied.
 
 Cuckoo Hashing, however, takes a very different approach.
 
-In Cuckoo Hashing, each element has **two possible buckets** where it can be stored. Two different hash functions determine these.
+In Cuckoo Hashing, each element has *two possible buckets* where it can be stored. Two different hash functions determine these.
 
 When inserting a new element:
 
 1. You first try placing it in one of its two candidate buckets.
-2. If both are full, the algorithm **evicts** a randomly selected existing element from one of them.
+2. If both are full, the algorithm *evicts* a randomly selected existing element from one of them.
 3. The evicted element is reinserted into its alternate bucket, possibly kicking out another element.
 4. This process repeats recursively until everyone finds a home, or the table expands if the chain doesn't resolve.
 
@@ -106,34 +109,34 @@ const h2 = hash2(key) % bucketCount; // Alternate bucket
 
 Insertion picks either `h1` or `h2`, depending on which one has space. If both are full, one is chosen (often randomly), and the current occupant is kicked out and reinserted into its alternate bucket.
 
-This chain of evictions continues until a vacant slot is found — or until the process loops back on itself. In some rare cases, the eviction chain can become **cyclic**, meaning the same buckets get checked repeatedly with no progress. This indicates that the table is too full, and the only fix is to **resize and rehash** everything into a larger table.
+This chain of evictions continues until a vacant slot is found — or until the process loops back on itself. In some rare cases, the eviction chain can become *cyclic*, meaning the same buckets get checked repeatedly with no progress. This indicates that the table is too full, and the only fix is to *resize and rehash* everything into a larger table.
 
 ## Fingerprints and Partial Key Cuckoo Hashing
 
-Hash tables work differently from Bloom Filters, Cuckoo Filters, and other approximate membership structures. **They store the actual keys**, which means they can answer lookups with zero false positives.
+Hash tables work differently from Bloom Filters, Cuckoo Filters, and other approximate membership structures. *They store the actual keys*, which means they can answer lookups with zero false positives.
 
 But Cuckoo Filter aims to beat Bloom Filter at its own game—fast, compact membership checks with low memory use. Storing full keys would waste space and defeat that purpose. So what’s the alternative?
 
-In the article about **Counting Bloom Filters**, I mentioned a variant called the **d-left Counting Bloom Filter**. TL;DR: it’s a hash-table-like structure that doesn’t store full keys either. Instead, it stores **fingerprints** — small, fixed-size pieces of a hashed key, like 1 byte (8 bits). Fingerprints are compact and help keep the structure lightweight, so they are an excellent choice for the Cuckoo Filter.
+In the article about *Counting Bloom Filters*, I mentioned a variant called the *d-left Counting Bloom Filter*. TL;DR: it’s a hash-table-like structure that doesn’t store full keys either. Instead, it stores *fingerprints* — small, fixed-size pieces of a hashed key, like 1 byte (8 bits). Fingerprints are compact and help keep the structure lightweight, so they are an excellent choice for the Cuckoo Filter.
 
-Now here’s the challenge: the classic Cuckoo Hashing algorithm relies on knowing the **entire key** and hashing it when moving elements around. But in a Cuckoo Filter, we **don’t store the key at all**, only the fingerprint. That means the original eviction logic won’t work out of the box.
+Now here’s the challenge: the classic Cuckoo Hashing algorithm relies on knowing the *entire key* and hashing it when moving elements around. But in a Cuckoo Filter, we *don’t store the key at all*, only the fingerprint. That means the original eviction logic won’t work out of the box.
 
-To solve this, Fan et al. used a [clever modification of Cuckoo Hashing](https://www.cs.cmu.edu/~dga/papers/silt-sosp2011.pdf), called **partial-key Cuckoo Hashing**.
+To solve this, Fan et al. used a [clever modification of Cuckoo Hashing](https://www.cs.cmu.edu/~dga/papers/silt-sosp2011.pdf), called *partial-key Cuckoo Hashing*.
 
-$$
+```math
 \begin{aligned}
 \operatorname{fp} &= \operatorname{fingerprint}(x) \\
 b_1 &= H(x) \bmod m \\
 b_2 &= \left( b_1 \oplus H(\operatorname{fp}) \right) \bmod m
 \end{aligned}
-$$
+```
 
 Where:
 
-- $x$ is the key
-- $H$ is a hash function
-- $m$ is the bucket count
-- $\oplus$ denotes the XOR operation
+- $`x`$ is the key
+- $`H`$ is a hash function
+- $`m`$ is the bucket count
+- $`\oplus`$ denotes the XOR operation
 
 The code usually is very straightforward:
 
@@ -143,15 +146,17 @@ const b1 = hash(key) % bucketCount;
 const b2 = (b1 ^ hash(fp)) % bucketCount;
 ```
 
-The core idea remains the same: each element still has two possible buckets, just like in regular Cuckoo Hashing. But instead of computing both directly from the key, the second bucket is derived from the first bucket and the fingerprint, using a simple bitwise **XOR** operation.
+The core idea remains the same: each element still has two possible buckets, just like in regular Cuckoo Hashing. But instead of computing both directly from the key, the second bucket is derived from the first bucket and the fingerprint, using a simple bitwise *XOR* operation.
 
-> [!note] > **XOR**, short for "exclusive OR", is a simple binary operation: it compares two bits and returns `1` if they’re different, `0` if they’re the same. So:
->
-> - `0 ^ 0 = 0`
-> - `1 ^ 0 = 1`
-> - `1 ^ 1 = 0`
+:::note
+*XOR*, short for "exclusive OR", is a simple binary operation: it compares two bits and returns `1` if they’re different, `0` if they’re the same. So:
 
-What makes XOR perfect for this use case is its **reversible property**:
+- `0 ^ 0 = 0`
+- `1 ^ 0 = 1`
+- `1 ^ 1 = 0`
+:::
+
+What makes XOR perfect for this use case is its *reversible property*:
 
 ```typescript
 b1 ^ hash(fp) == b2;
@@ -169,12 +174,12 @@ Now that we understand the internal structure of a Cuckoo Filter, let’s walk t
 
 To check if an element _might_ be in the filter, you just need to check two buckets for the presence of the computed fingerprint:
 
-1. Hash the element to get its **fingerprint**.
-2. Compute the **first bucket** from the element.
-3. Compute the **second bucket** using XOR with the fingerprint.
+1. Hash the element to get its *fingerprint*.
+2. Compute the *first bucket* from the element.
+3. Compute the *second bucket* using XOR with the fingerprint.
 4. Check both buckets. If either contains the fingerprint, return `true`.
 
-**Time complexity:** `O(1)` — just two hash calculations and two bucket scans.
+*Time complexity:* `O(1)` — just two hash calculations and two bucket scans.
 
 ```typescript
 const fp = fingerprint('apple');
@@ -184,8 +189,9 @@ const i2 = (i1 ^ hash(fp)) % bucketCount;
 return buckets[i1].contains(fp) || buckets[i2].contains(fp);
 ```
 
-> [!tip]
-> Don’t forget that, just like a Bloom filter, this is a **probabilistic check**. You may get a [false positive](/blog/008-bloom-filters-pt1#what-is-a-bloom-filter), but never a false negative.
+:::tip
+Don’t forget that, just like a Bloom filter, this is a *probabilistic check*. You may get a [false positive](/blog/008-bloom-filters-pt1#what-is-a-bloom-filter), but never a false negative.
+:::
 
 ### Insertion
 
@@ -193,13 +199,13 @@ Insertion is trickier, as it involves chained eviction of conflicted elements to
 
 To insert a new element:
 
-1. Compute its **fingerprint**.
-2. Calculate its **two candidate buckets** (same as in lookup).
+1. Compute its *fingerprint*.
+2. Calculate its *two candidate buckets* (same as in lookup).
 3. Try placing the fingerprint into either bucket.
-4. If both are full, randomly pick one, **evict** an existing fingerprint, and try to reinsert the evicted one in its alternate bucket.
+4. If both are full, randomly pick one, *evict* an existing fingerprint, and try to reinsert the evicted one in its alternate bucket.
 5. Repeat for a fixed number of steps (e.g., 500). If all fail, report insertion failure or grow the table (i.e. rebuild it from the source data or add a second filter).
 
-**Time complexity:**
+*Time complexity:*
 
 - Best case: `O(1)` (when fingerprint fits right away)
 - Worst case: `O(k)` where `k = MAX_KICKS`
@@ -227,18 +233,19 @@ for (let n = 0; n < MAX_KICKS; n++) {
 return false;
 ```
 
-> [!warning]
-> This is the main downside of Cuckoo Filters: **insertions can fail**. When that happens, the last evicted fingerprint has nowhere to go. Real implementations keep it in a one-entry _victim cache_ and stop accepting new items. A filter can't be resized because it doesn't store the original keys, so choose its size up front or rebuild it from the source data.
+:::warning
+This is the main downside of Cuckoo Filters: *insertions can fail*. When that happens, the last evicted fingerprint has nowhere to go. Real implementations keep it in a one-entry _victim cache_ and stop accepting new items. A filter can't be resized because it doesn't store the original keys, so choose its size up front or rebuild it from the source data.
+:::
 
 ### Deletion
 
-Here’s where Cuckoo Filters shine compared to Bloom Filters — **deletion doesn’t add more memory overhead and is safe** (as long as the item was actually inserted):
+Here’s where Cuckoo Filters shine compared to Bloom Filters — *deletion doesn’t add more memory overhead and is safe* (as long as the item was actually inserted):
 
-1. Hash it to get its **fingerprint**.
+1. Hash it to get its *fingerprint*.
 2. Compute its two possible buckets.
 3. If the fingerprint is found in either, remove it.
 
-**Time complexity:** `O(1)` — same as for lookup, just two hash calculations and two bucket scans
+*Time complexity:* `O(1)` — same as for lookup, just two hash calculations and two bucket scans
 
 ```typescript
 const fp = fingerprint('apple');
@@ -248,47 +255,48 @@ const i2 = (i1 ^ hash(fp)) % bucketCount;
 return buckets[i1].delete(fp) || buckets[i2].delete(fp);
 ```
 
-> [!warning]
-> While deletions are supported, deleting an element that was **never inserted** may still remove a matching fingerprint from another item, just like in Counting Bloom Filters.
+:::warning
+While deletions are supported, deleting an element that was *never inserted* may still remove a matching fingerprint from another item, just like in Counting Bloom Filters.
+:::
 
 ## Load Factor in Cuckoo Filter
 
 In any [open-addressing](https://en.wikipedia.org/wiki/Open_addressing) hash table, you keep an eye on a simple but important ratio:
 
-$$
+```math
 \text{load factor } (\alpha) \;=\;
 \frac{\text{number of stored items }\,n}
      {\text{number of available slots }\,m}
-$$
+```
 
-The **load factor (α)** is the fraction of storage slots that are already in use. It first appeared in ordinary hash tables, where you measure how many key/value pairs are sitting in the array of buckets. A low α means plenty of free space, so lookups and inserts are cheap. As α creeps toward 1.0, collisions pile up, probes get longer, and you eventually have to resize the table.
+The *load factor (α)* is the fraction of storage slots that are already in use. It first appeared in ordinary hash tables, where you measure how many key/value pairs are sitting in the array of buckets. A low α means plenty of free space, so lookups and inserts are cheap. As α creeps toward 1.0, collisions pile up, probes get longer, and you eventually have to resize the table.
 
 Cuckoo Filters inherit the same idea, but each _bucket_ holds several short fingerprints. You count _all_ occupied fingerprint slots and divide by the total number of slots across every bucket:
 
-$$
+```math
 \alpha_{\text{CF}} \;=\;
 \frac{\text{occupied slots}}{\text{buckets} \times \text{slots per bucket}}
-$$
+```
 
 With 4-slot buckets, you can usually push α as high as ≈0.95 before inserts start to fail.
 
 ## What Are the Benefits?
 
-Cuckoo Filters come with several practical advantages, especially when you're aiming for **low false positive rates**.
+Cuckoo Filters come with several practical advantages, especially when you're aiming for *low false positive rates*.
 
-According to the original research by [Fan et al.](https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf), Cuckoo Filters outperform Bloom Filters in terms of space efficiency when the false positive rate is below **3%**. In other words, if you care about accuracy, they pack more data into less space.
+According to the original research by [Fan et al.](https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf), Cuckoo Filters outperform Bloom Filters in terms of space efficiency when the false positive rate is below *3%*. In other words, if you care about accuracy, they pack more data into less space.
 
 For example, this empirical analysis is provided by the authors (_all filters sized to 192 MiB_):
 
-- **Cuckoo Filter**: 12.60 bits per item, **0.19%** false positive rate
-- **Bloom Filter**: 13.00 bits per item, **0.19%** false positive rate
-- **Cuckoo Filter with semi-sorting**: 12.58 bits per item, **0.09%** false positive rate
+- *Cuckoo Filter*: 12.60 bits per item, *0.19%* false positive rate
+- *Bloom Filter*: 13.00 bits per item, *0.19%* false positive rate
+- *Cuckoo Filter with semi-sorting*: 12.58 bits per item, *0.09%* false positive rate
 
-So, not only do Cuckoo Filters match the false positive rate of Bloom Filters, but they often beat them by **using less memory**.
+So, not only do Cuckoo Filters match the false positive rate of Bloom Filters, but they often beat them by *using less memory*.
 
-What is semi-sorting? Take a bucket with **4 fingerprints of 4 bits each**, 16 bits in total. A lookup only checks whether a fingerprint is in the bucket, so the _order_ of the four values doesn't matter.
+What is semi-sorting? Take a bucket with *4 fingerprints of 4 bits each*, 16 bits in total. A lookup only checks whether a fingerprint is in the bucket, so the _order_ of the four values doesn't matter.
 
-If you sort the four values, only **3876 unique combinations** are possible, i.e. that's the number of ways to pick 4 values out of 16 when repeats are allowed. The raw 16 bits have 65536 patterns. So a bucket can store a **12-bit row number** in a pre-computed table of these combinations instead of the full 16 bits.
+If you sort the four values, only *3876 unique combinations* are possible, i.e. that's the number of ways to pick 4 values out of 16 when repeats are allowed. The raw 16 bits have 65536 patterns. So a bucket can store a *12-bit row number* in a pre-computed table of these combinations instead of the full 16 bits.
 
 <Scrollbox>
 
@@ -332,17 +340,18 @@ changed  stored: 0
 
 To read the bucket, the filter goes the other way. It takes row 990 from the table and gets `1 2 6 A` back.
 
-> [!warning]
-> Although as the authors note, real fingerprints are longer, like the 8-bit ones in this post, the filter in that case packs only the **4 highest bits** of each fingerprint this way and stores the other bits unchanged.
-> This saves **1 bit per element**. The cost is speed and general complexity of the implementation in case of bigger fingerprints. Every lookup, insert and delete has to decode the bucket first, so each of them gets slower.
+:::warning
+Although as the authors note, real fingerprints are longer, like the 8-bit ones in this post, the filter in that case packs only the *4 highest bits* of each fingerprint this way and stores the other bits unchanged.
+This saves *1 bit per element*. The cost is speed and general complexity of the implementation in case of bigger fingerprints. Every lookup, insert and delete has to decode the bucket first, so each of them gets slower.
+:::
 
-One of the biggest wins is that Cuckoo Filters support **native deletions**. To delete an element, you just locate its fingerprint in one of the two candidate buckets and remove it.
+One of the biggest wins is that Cuckoo Filters support *native deletions*. To delete an element, you just locate its fingerprint in one of the two candidate buckets and remove it.
 
-This makes them a clean replacement for **Counting Bloom Filters**, which simulate deletion by using small counters, but at the cost of 3–4× more memory.
+This makes them a clean replacement for *Counting Bloom Filters*, which simulate deletion by using small counters, but at the cost of 3–4× more memory.
 
-Cuckoo Filters also offer **predictable lookup performance**, regardless of how full they get. Every query checks exactly **2 buckets**. With Bloom Filters, you need to access **k** random positions in the bit array, and **k** grows as you try to lower the false positive rate.
+Cuckoo Filters also offer *predictable lookup performance*, regardless of how full they get. Every query checks exactly *2 buckets*. With Bloom Filters, you need to access *k* random positions in the bit array, and *k* grows as you try to lower the false positive rate.
 
-Finally, in practice, Cuckoo Filters tend to have **higher insertion and lookup throughput** than Bloom Filters, especially when implemented with CPU cache behavior in mind. However, insertion will eventually degrade.
+Finally, in practice, Cuckoo Filters tend to have *higher insertion and lookup throughput* than Bloom Filters, especially when implemented with CPU cache behavior in mind. However, insertion will eventually degrade.
 
 ## What Are the Drawbacks?
 
@@ -350,11 +359,11 @@ The previous section showed why Cuckoo Filters often beat Bloom Filters in terms
 
 ### Insertions can fail when the table is too full
 
-At roughly **95 % load,** an insertion may trigger hundreds of evictions (libraries usually cap this at ≈ 500). If no empty slot appears before the cap is reached, the operation returns “insert failed,” and the only remedy is to grow or rebuild the filter.
+At roughly *95 % load,* an insertion may trigger hundreds of evictions (libraries usually cap this at ≈ 500). If no empty slot appears before the cap is reached, the operation returns “insert failed,” and the only remedy is to grow or rebuild the filter.
 
 ### Eviction loops at high load
 
-Near the same threshold, the eviction chain can bounce the identical fingerprints between two buckets **FOREVER**. Implementations abort after the kick limit, but the outcome remains an insertion failure.
+Near the same threshold, the eviction chain can bounce the identical fingerprints between two buckets *FOREVER*. Implementations abort after the kick limit, but the outcome remains an insertion failure.
 
 ### More implementation work
 
@@ -367,27 +376,27 @@ Near the same threshold, the eviction chain can bounce the identical fingerprint
 
 The second bucket index is computed with a bitwise XOR trick:
 
-$$
+```math
 \begin{aligned}
 i_1 &= H(x) \bmod m \\
 i_2 &= \left( i_1 \oplus H\!\left(\operatorname{fp}(x)\right) \right) \bmod m
 \end{aligned}
-$$
+```
 
-The paper [_Birdwatching: False Negatives in Cuckoo Filters_](https://people.bu.edu/staro/cuckoo_filter_workshop_paper.pdf) shows that this rule is **provably safe only when the bucket count m equals 2ᵏ**. If m is not a power of two, the final `mod m` strips high-order bits from the XOR result, breaking the reversible link between `i1` and `i2`. During long eviction chains, a fingerprint can slide into a third, illegal bucket and later disappear from both legal locations, so we can get a false negative result. The authors measured up to a **10 % false-negative rate at 95 % load** in such filters.
+The paper [_Birdwatching: False Negatives in Cuckoo Filters_](https://people.bu.edu/staro/cuckoo_filter_workshop_paper.pdf) shows that this rule is *provably safe only when the bucket count m equals 2ᵏ*. If m is not a power of two, the final `mod m` strips high-order bits from the XOR result, breaking the reversible link between `i1` and `i2`. During long eviction chains, a fingerprint can slide into a third, illegal bucket and later disappear from both legal locations, so we can get a false negative result. The authors measured up to a *10 % false-negative rate at 95 % load* in such filters.
 
 Let’s see it in action. First, I’ll go through a good example when `m` is 16 (a power of two):
 
 <Scrollbox>
 
-| Step | Expression                | Decimal | Binary | Comment                                       |
-| ---- | ------------------------- | ------- | ------ | --------------------------------------------- |
-| 1    | `i1 = hash("apple") % 16` | 6       | 0110   | First bucket                                  |
-| 2    | `f  = hash(fp("apple"))`  | 9       | 1001   | Fingerprint hash                              |
-| 3    | `xor1 = i1 ^ f`           | 15      | 1111   | XOR before modulo                             |
-| 4    | `i2 = xor1 % 16`          | 15      | 1111   | Second bucket used at insert                  |
-| 5    | `xor2 = i2 ^ f`           | 6       | 0110   | Recompute _i1_ before modulo                  |
-| 6    | `i1' = xor2 % 16`         | 6       | 0110   | Returns to the original bucket, great success |
+| Step | Expression | Decimal | Binary | Comment |
+| --- | --- | --- | --- | --- |
+| 1 | `i1 = hash("apple") % 16` | 6 | 0110 | First bucket |
+| 2 | `f  = hash(fp("apple"))` | 9 | 1001 | Fingerprint hash |
+| 3 | `xor1 = i1 ^ f` | 15 | 1111 | XOR before modulo |
+| 4 | `i2 = xor1 % 16` | 15 | 1111 | Second bucket used at insert |
+| 5 | `xor2 = i2 ^ f` | 6 | 0110 | Recompute _i1_ before modulo |
+| 6 | `i1' = xor2 % 16` | 6 | 0110 | Returns to the original bucket, great success |
 
 </Scrollbox>
 
@@ -395,14 +404,14 @@ Now let’s see a bad example when `m` is 12 (not a power of two):
 
 <Scrollbox>
 
-| Step | Expression               | Decimal | Binary | Comment                          |
-| ---- | ------------------------ | ------- | ------ | -------------------------------- |
-| 1    | `i1 = hash("apple") % m` | 6       | 0110   | First bucket                     |
-| 2    | `f = hash(fp("apple"))`  | 9       | 1001   | Fingerprint hash                 |
-| 3    | `xor1 = i1 ^ f`          | 15      | 1111   | XOR before modulo                |
-| 4    | `i2 = xor1 % 12`         | 3       | 0011   | The second bucket used at insert |
-| 5    | `xor2 = i2 ^ f`          | 10      | 1010   | Recompute i1 before modulo       |
-| 6    | `i1' = xor2 % 12`        | **10**  | 1010   | Should return to 6, but does not |
+| Step | Expression | Decimal | Binary | Comment |
+| --- | --- | --- | --- | --- |
+| 1 | `i1 = hash("apple") % m` | 6 | 0110 | First bucket |
+| 2 | `f = hash(fp("apple"))` | 9 | 1001 | Fingerprint hash |
+| 3 | `xor1 = i1 ^ f` | 15 | 1111 | XOR before modulo |
+| 4 | `i2 = xor1 % 12` | 3 | 0011 | The second bucket used at insert |
+| 5 | `xor2 = i2 ^ f` | 10 | 1010 | Recompute i1 before modulo |
+| 6 | `i1' = xor2 % 12` | *10* | 1010 | Should return to 6, but does not |
 
 </Scrollbox>
 
@@ -412,37 +421,37 @@ Unlike a Bloom filter, a Cuckoo Filter’s fingerprint length is chosen almost s
 
 During a negative lookup, we compare the query fingerprint with the at most `2b` fingerprints that live in the two candidate buckets (`b` slots each).
 
-Each comparison matches by pure chance with probability $2^{-f}$, so after `2b` comparisons, as derived by Fan et al., the **upper bound** on the false-positive probability ε is
+Each comparison matches by pure chance with probability $`2^{-f}`$, so after `2b` comparisons, as derived by Fan et al., the *upper bound* on the false-positive probability ε is
 
-$$
+```math
 \epsilon \le 1 - \left(1 - 2^{-f}\right)^{2b} \;\approx\; \frac{2b}{2^{f}} \tag{1}
-$$
+```
 
 Where:
 
-- **`f`** is a fingerprint size in bits
-- **`ε`** is the desired false positive rate
-- **`b`** is bucket size (typically 4)
+- *`f`* is a fingerprint size in bits
+- *`ε`* is the desired false positive rate
+- *`b`* is bucket size (typically 4)
 
-Rearranging (1) gives the **fingerprint size lower bound**
+Rearranging (1) gives the *fingerprint size lower bound*
 
-$$
+```math
 \varepsilon \le \frac{2b}{2^{f}}\;\;\Longrightarrow\;\;f \ge \log_{2}\!\frac{2b}{\varepsilon} \;=\; \log_{2}\!\frac{1}{\varepsilon} + \log_{2}(2b) \tag{2}
-$$
+```
 
-And because _f_ must be an **integer number of bits**, we round up
+And because _f_ must be an *integer number of bits*, we round up
 
-$$
+```math
 f \ge \left\lceil \log_{2}\!\frac{1}{\epsilon} + \log_{2}(2b) \right\rceil \tag{3}
-$$
+```
 
-In practice, you can choose between **8 bits**, which are nicely aligned to 1 byte, or **12 bits,** as in the original paper. I also saw that some libraries are using **16 bits** per fingerprint. Those are sufficient when **`b = 4`.**
+In practice, you can choose between *8 bits*, which are nicely aligned to 1 byte, or *12 bits,* as in the original paper. I also saw that some libraries are using *16 bits* per fingerprint. Those are sufficient when *`b = 4`.*
 
-| fingerprint length (f) | $\varepsilon_{\text{bound}} = 8/2^{f}$  |
-| ---------------------- | --------------------------------------- |
-| **8 bits**             | $8/256 = 0.03125 \;(\;3.13\%\;)$        |
-| **12 bits**            | $8/4096 = 0.001953\;(\;0.195\%\;)$      |
-| **16 bits**            | $8/65 536 = 0.00012207\;(\;0.0122\%\;)$ |
+| fingerprint length (f) | $`\varepsilon_{\text{bound}} = 8/2^{f}`$ |
+| --- | --- |
+| *8 bits* | $`8/256 = 0.03125 \;(\;3.13\%\;)`$ |
+| *12 bits* | $`8/4096 = 0.001953\;(\;0.195\%\;)`$ |
+| *16 bits* | $`8/65 536 = 0.00012207\;(\;0.0122\%\;)`$ |
 
 ## Final Thoughts
 

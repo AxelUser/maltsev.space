@@ -102,7 +102,7 @@ async function generateAllOGImages() {
 	const outputDir = join(root, 'static', 'images', 'og');
 	if (!existsSync(outputDir)) mkdirSync(outputDir, { recursive: true });
 
-	const postFiles = await glob('src/posts/*/index.md', { cwd: root });
+	const postFiles = await glob('src/posts/*/index.svx', { cwd: root });
 	console.log(`📄 Found ${postFiles.length} blog posts`);
 
 	let browser;
@@ -124,7 +124,7 @@ async function generateAllOGImages() {
 					continue;
 				}
 
-				const slug = postFile.replace(/\\/g, '/').split('/').at(-2); // src/posts/<slug>/index.md
+				const slug = postFile.replace(/\\/g, '/').split('/').at(-2); // src/posts/<slug>/index.svx
 				const outputPath = join(outputDir, `${slug}.jpg`);
 
 				if (!forceRegenerate && existsSync(outputPath)) {

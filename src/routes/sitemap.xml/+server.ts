@@ -33,7 +33,7 @@ export async function GET() {
 			(post) => `
 	<url>
 		<loc>${baseUrl}/blog/${post.slug}</loc>
-		<lastmod>${getLastModified(`src/posts/${post.slug}/index.md`)}</lastmod>
+		<lastmod>${getLastModified(`src/posts/${post.slug}/index.svx`)}</lastmod>
 	</url>`
 		)
 		.join('')}

@@ -1,18 +1,5 @@
-import { mdsvex, escapeSvelte } from 'mdsvex';
-import { createHighlighter } from 'shiki';
-import autolinkHeadings from 'rehype-autolink-headings';
-import slug from 'rehype-slug';
-import remarkToc from 'remark-toc';
 import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-import rehypeKatexSvelte from 'rehype-katex-svelte';
-import remarkMath from 'remark-math';
-import { remarkSvgbobTones } from './src/lib/plugins/remark-svgbob-tones.js';
-import rehypeCallouts from 'rehype-callouts';
-import readingTime from 'mdsvex-reading-time';
-import { remarkLinksToReferences } from './src/lib/plugins/remark-links-to-references.js';
-import { remarkZombieMermaid } from './src/lib/plugins/remark-zombie-mermaid.js';
-import { config as siteConfig } from './src/lib/config.ts';
 import { loadEnv } from 'vite';
 
 // Analytics is optional, but $env/static/* only exports variables that exist. Default the
@@ -31,66 +18,18 @@ for (const key of OPTIONAL_ENV) {
 	if (!(key in knownEnv)) process.env[key] = '';
 }
 
-const lightTheme = 'github-light';
-const darkTheme = 'github-dark';
-
-const highlighter = await createHighlighter({
-	themes: [lightTheme, darkTheme],
-	langs: ['csharp', 'kotlin', 'javascript', 'typescript', 'json', 'diff']
-});
-
-/** @type {import('rehype-autolink-headings').Options} */
-const autolinkHeadingsOptions = {
-	behavior: 'prepend',
-	content: {
-		type: 'text',
-		value: '#'
-	},
-	properties: {
-		className: ['header-anchor'],
-		ariaHidden: 'true',
-		tabIndex: -1
-	}
-};
-
-/** @type {import('mdsvex').MdsvexOptions} */
-const mdsvexOptions = {
-	extensions: ['.md', '.svx'],
-	remarkPlugins: [
-		[remarkToc, { tight: true, maxDepth: 3 }],
-		remarkMath,
-		// ```svgbob fences → inline SVG with semantic tone classes (see src/svgbob.css).
-		remarkSvgbobTones,
-		// ```mermaid fences → inline SVG at build time; must run before `highlight`.
-		remarkZombieMermaid,
-		[remarkLinksToReferences, { site: siteConfig.websiteUrl }],
-		readingTime
-	],
-	rehypePlugins: [
-		slug,
-		[autolinkHeadings, autolinkHeadingsOptions],
-		rehypeKatexSvelte,
-		rehypeCallouts
-	],
-	highlight: {
-		highlighter: async (code, lang = 'text') => {
-			const html = escapeSvelte(
-				highlighter.codeToHtml(code, {
-					lang,
-					themes: {
-						light: lightTheme,
-						dark: darkTheme
-					}
-				})
-			);
-			return `{@html \`${html}\` }`;
-		}
-	}
-};
-
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-	preprocess: [vitePreprocess(), mdsvex(mdsvexOptions)],
+	// mdsvex runs as a Vite plugin in vite.config.ts. `.svx` in `extensions` makes Kit compile the
+	// Svelte code that mdsvex emits.
+	preprocess: [vitePreprocess()],
+	// Shiki gives each code block tabindex="0" so keyboard users can scroll it. mdsvex 0.x wrapped
+	// that markup in {@html}. mdsvex 1.x emits it as markup, and Svelte warns about it.
+	onwarn: (warning, handler) => {
+		if (warning.code === 'a11y_no_noninteractive_tabindex' && warning.filename?.endsWith('.svx'))
+			return;
+		handler(warning);
+	},
 	kit: {
 		adapter: adapter({
 			fallback: '404.html'
@@ -100,7 +39,7 @@ const config = {
 			handleMissingId: 'fail'
 		}
 	},
-	extensions: ['.svelte', '.svx', '.md']
+	extensions: ['.svelte', '.svx']
 };
 
 export default config;
