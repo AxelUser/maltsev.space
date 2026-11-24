@@ -6,7 +6,14 @@
 	import { Container } from '$lib/components/layout';
 	import { Tag } from '$lib/components/ui';
 	import { PostCover } from '$lib/components/cover';
-	import { PostIndex, PostPager, PostRows, SeriesParts, setPostRefs } from '$lib/components/posts';
+	import {
+		PostIndex,
+		PostPager,
+		PostRows,
+		PostToc,
+		SeriesParts,
+		setPostRefs
+	} from '$lib/components/posts';
 	import type { PageProps } from './$types';
 	import { getPostHeroImage } from '$lib/utils';
 	import { dev } from '$app/environment';
@@ -71,12 +78,23 @@
 	<div class="relative mx-auto max-w-article">
 		<aside
 			data-ph-capture-attribute-nav="index"
-			class="absolute inset-y-0 left-full ml-14 hidden w-[260px] 2xl:block print:hidden"
+			class="absolute inset-y-0 right-full mr-14 hidden w-[260px] 2xl:block print:hidden"
 		>
 			<div class="sticky top-[calc(var(--spacing-header)+32px)]">
 				<PostIndex posts={data.index} current={data.slug} />
 			</div>
 		</aside>
+
+		{#if data.headings.length > 0}
+			<aside
+				data-ph-capture-attribute-nav="toc"
+				class="absolute inset-y-0 left-full ml-14 hidden w-[260px] 2xl:block print:hidden"
+			>
+				<div class="sticky top-[calc(var(--spacing-header)+32px)]">
+					<PostToc headings={data.headings} />
+				</div>
+			</aside>
+		{/if}
 
 		{#if dev}
 			{#await import('$lib/components/dev/review') then review}

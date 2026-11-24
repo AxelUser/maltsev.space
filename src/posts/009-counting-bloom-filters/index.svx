@@ -29,10 +29,6 @@ But as we discussed in [deep dive into Bloom filters](/blog/008-bloom-filters-pt
 
 In this part of the series, we'll tackle that problem. We'll explore how we can extend Bloom filters to allow element removal — and what trade-offs come with that.
 
-## Contents <!-- no-toc -->
-
-::toc
-
 ## Why Deletion Is Hard
 
 To understand why deletion doesn't work in a classic Bloom filter, let's quickly revisit how it operates.

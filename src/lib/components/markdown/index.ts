@@ -8,3 +8,4 @@ export { default as question } from './callout.svelte';
 export { default as quote } from './callout.svelte';
 export { default as svgbob } from './fence-html.svelte';
 export { default as mermaid } from './fence-html.svelte';
+export { default as contents } from './contents.svelte';

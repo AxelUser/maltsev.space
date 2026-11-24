@@ -46,10 +46,6 @@ I wasn’t chasing ultra-low latency—after all, this is C#—but I couldn’t 
 
 Time to find out. 💪
 
-## Contents <!-- no-toc -->
-
-::toc
-
 ## A Flexible and Simple Implementation
 
 Here’s the naïve storage I began with. To keep the rest of the code clean, all table logic lives in its own class, whose heart is a pre-allocated byte array:

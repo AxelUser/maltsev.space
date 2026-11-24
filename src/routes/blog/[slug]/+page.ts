@@ -3,6 +3,7 @@ import type { PageLoad } from './$types';
 import { getPostLiveCover } from '$lib/utils';
 import { AI_COVER_KINDS, type AiCoverKind, type LiveCoverLoader } from '$lib/components/cover';
 import type { PostContext } from '$lib/analytics';
+import type { TocHeading } from '@mdsvex/plugin-toc';
 
 // Don't import $lib/posts: this load also runs in the client and would bundle every post.
 // Series, neighbours and referenced posts come from +page.server.ts.
@@ -48,6 +49,7 @@ export const load: PageLoad = async ({ params, data }) => {
 			coverCaption: post.metadata.coverCaption as string | undefined,
 			liveCover: liveCover(params.slug, !!post.metadata.liveCover),
 			seriesName,
+			headings: (post.plugin_data?.toc?.headings ?? []) as TocHeading[],
 			analytics: {
 				post_slug: params.slug,
 				post_tags: tags,
