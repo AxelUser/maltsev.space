@@ -5,7 +5,7 @@
  * the markdown in each comment to HTML with KaTeX and shiki, and saves status changes back to the file.
  *
  * GET  /__post-review/<slug>  → { reviewers, comments } or 404 when the post has no review files.
- *      A comment is `outdated` when its quote is no longer in `index.md`, i.e. the author edited the text.
+ *      A comment is `outdated` when its quote is no longer in `index.svx`, i.e. the author edited the text.
  * POST /__post-review/<slug>  { reviewer, id, status } → updates that comment's status
  *
  * `apply: 'serve'`, so nothing of this exists in a build.
@@ -115,7 +115,7 @@ export function postReview(postsDir = 'src/posts') {
 		const files = reviewFiles(slug);
 		if (!files?.length) return undefined;
 		const md = await renderer();
-		const postFile = path.join(root, slug, 'index.md');
+		const postFile = path.join(root, slug, 'index.svx');
 		const source = fs.existsSync(postFile) ? normalize(fs.readFileSync(postFile, 'utf8')) : '';
 		const reviewers = [];
 		const comments = [];
@@ -165,14 +165,14 @@ export function postReview(postsDir = 'src/posts') {
 		apply: 'serve',
 		configureServer(server) {
 			// Vite's own watcher misses these files on Windows, so watch the posts folder directly.
-			// Edits to `index.md` reload too, so `outdated` follows the text. The delay lets the post's
+			// Edits to `index.svx` reload too, so `outdated` follows the text. The delay lets the post's
 			// own HMR update land first, so anchors are looked up in the new page.
 			/** @type {Map<string, ReturnType<typeof setTimeout>>} */
 			const pending = new Map();
 			const watcher = fs.watch(root, { recursive: true }, (_event, name) => {
 				if (!name) return;
 				const base = path.basename(name);
-				if (!FILE.test(base) && base !== 'index.md') return;
+				if (!FILE.test(base) && base !== 'index.svx') return;
 				const slug = path.basename(path.dirname(path.join(root, name)));
 				if (!reviewFiles(slug)?.length) return;
 				clearTimeout(pending.get(slug));

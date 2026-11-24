@@ -16,9 +16,10 @@ Personal blog of Aleksey Maltsev. Static SvelteKit site with a "flight deck" spa
 ## Map
 
 - `src/routes`: pages (`/`, `/blog`, `/blog/[slug]`, `/about`, `/misc`)
-- `src/lib/components`: `ui`, `layout`, `posts`, `cover`, `visualization`, `home`, `about`, `art`
+- `src/lib/components`: `ui`, `layout`, `posts`, `cover`, `visualization`, `home`, `about`, `art`, `markdown`
+- `mdsvex.config.ts`: mdsvex options. `src/lib/plugins`: the custom mdsvex plugins for callouts, svgbob, mermaid and post references
 - `src/lib/content`: all copy and data (bio, career, art, tags). Pages only lay it out
-- `src/posts/NNN-slug/index.md`: posts, with colocated `steps.ts`, `live-cover.svelte`, `scene.ts`
+- `src/posts/NNN-slug/index.svx`: posts, with colocated `steps.ts`, `live-cover.svelte`, `scene.ts`
 - `perf/`: page performance suite · `scripts/`: OG image generator
 
 ## Commands

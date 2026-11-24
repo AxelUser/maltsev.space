@@ -44,7 +44,9 @@ If you’re unsure, here’s the funnier part: the XOR version [isn't even faste
 
 Still, you’ll run into this kind of code, especially in tight loops in libraries or low-level systems. In this short article, I’ll walk you through some real-world bitwise operations I’ve seen in the wild, the ones that make sense, and the ones I occasionally write myself.
 
-## Contents
+## Contents <!-- no-toc -->
+
+::toc
 
 ## Case 1: Multiplying and Dividing by Two
 
@@ -54,9 +56,9 @@ If you're not yet comfortable with binary math, here's the basic idea: binary nu
 
 For example, the binary number `1011` is interpreted like this:
 
-$$
+```math
 1⋅2^3+0⋅2^2+1⋅2^1+1⋅2^0=8+0+2+1=11
-$$
+```
 
 You can think of each left shift (`<<`) as multiplying by 2, and each right shift (`>>`) as dividing by 2 — just like moving the decimal point in base-10 multiplies or divides by 10.
 
@@ -72,8 +74,9 @@ For example, if `var x = 6`, then:
 
 This works because shifting left fills in zeros on the right (doubling the value), while shifting right drops the least significant bit, i.e., halving it.
 
-> [!warning]
-> This is a very specific case. In most real-world code, you should stick with the `*` and `/` operators instead—they're clearer and modern [compilers optimize them just fine](https://tech.michaelaltfield.net/2009/12/02/gcc-optimizations-for-arithmetic-operations-using-bit-shifts/). But this example shows how bitwise shifts directly affect the decimal representation of a value. So better to know this.
+:::warning
+This is a very specific case. In most real-world code, you should stick with the `*` and `/` operators instead—they're clearer and modern [compilers optimize them just fine](https://tech.michaelaltfield.net/2009/12/02/gcc-optimizations-for-arithmetic-operations-using-bit-shifts/). But this example shows how bitwise shifts directly affect the decimal representation of a value. So better to know this.
+:::
 
 ## Case 2: Extracting Parts of a Big Value
 
@@ -83,7 +86,7 @@ Go on with another widespread use case. Imagine you're working with a hashing fu
 
 So, how do we split that big 64-bit value into smaller chunks?
 
-Again, the answer is **bitwise shifts and binary masks:**
+Again, the answer is *bitwise shifts and binary masks:*
 
 ```csharp
 ulong hash = 0x1122334455667788;
@@ -111,7 +114,7 @@ var index = x % 8;
 
 Here, `x` is a large hashed integer (often 64 bits), and you want to map it into an array of 8 buckets. The modulo operation (`%`) is the obvious choice, but it’s not the fastest one.
 
-When the array size is a **power of two** — like 2, 4, 8, 16, and so on — you can use bitwise masking instead:
+When the array size is a *power of two* — like 2, 4, 8, 16, and so on — you can use bitwise masking instead:
 
 ```csharp
 var index = x & 7; // same as x % 8, but faster
@@ -179,7 +182,7 @@ Using bit flags is super compact; for example, one 64-bit integer can store 64 f
 
 I hope this article gave you a useful peek into some real-world bitwise operations and shared some of my experience using them in practice.
 
-Bitwise tricks can be powerful, fun, and sometimes even elegant — but like many low-level optimizations, they come with a trade-off in **readability**.
+Bitwise tricks can be powerful, fun, and sometimes even elegant — but like many low-level optimizations, they come with a trade-off in *readability*.
 
 In most cases, writing code that's easy to understand is far more valuable than squeezing out a few extra CPU cycles. Your future self or teammate will thank you when debugging that code six months later.
 

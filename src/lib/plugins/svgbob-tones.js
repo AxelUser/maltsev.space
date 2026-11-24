@@ -1,11 +1,11 @@
 import remarkSvgbob from 'remark-svgbob';
-import { visit } from 'unist-util-visit';
+import { escapeHtml, fenceHtml } from './fence-html.js';
 
 /**
  * Build-time svgbob → inline SVG, plus semantic colour ("tones") for cells and text.
  *
- * Wraps `remark-svgbob` (it renders, this post-processes) and replaces it in the
- * mdsvex pipeline. svgbob's own `{tag}` + `# Legend:` colouring only reaches
+ * An mdsvex bundle for ```svgbob fences. It renders each fence with `remark-svgbob`'s
+ * wasm renderer, then adds the tones to the SVG. svgbob's own `{tag}` + `# Legend:` colouring only reaches
  * isolated closed shapes, never a cell of a `+---+---+` grid, and its legend
  * bakes hex colours into an inline <style>. Here colours are classes that
  * src/svgbob.css maps onto the site's light-dark() tokens, using the same
@@ -65,36 +65,13 @@ const GLYPH_TONES = { '✓': 'ok', '✗': 'bad' };
  * @typedef {{ x: number, y: number, row: number, from: number, to: number, content: string, classes: Set<string> }} TextEl
  */
 
-export function remarkSvgbobTones() {
+/** @returns {import('mdsvex').Bundle} */
+export function svgbobTones() {
 	const render = createRenderer();
-
-	/**
-	 * @param {any} tree
-	 * @param {any} file
-	 */
-	return async (tree, file) => {
-		/** @type {{ node: any, index: number, parent: any }[]} */
-		const jobs = [];
-		visit(tree, 'code', (/** @type {any} */ node, index, /** @type {any} */ parent) => {
-			if (node.lang === 'svgbob' && parent && index !== undefined)
-				jobs.push({ node, index, parent });
-		});
-
-		for (const { node, index, parent } of jobs) {
-			const where = `${file?.filename ?? 'unknown file'}:${node.position?.start.line ?? '?'}`;
-			try {
-				const { ascii, rules } = splitTones(node.value);
-				const svg = await render(ascii);
-				const html = decorate(svg, ascii, rules, parseMeta(node.meta));
-				// One {@html} expression so Svelte never parses anything inside the SVG.
-				parent.children[index] = { type: 'html', value: `{@html ${JSON.stringify(html)}}` };
-			} catch (error) {
-				throw new Error(`[remark-svgbob-tones] ${where}: ${/** @type {Error} */ (error).message}`, {
-					cause: error
-				});
-			}
-		}
-	};
+	return fenceHtml('svgbob-tones', 'svgbob', async (code, meta) => {
+		const { ascii, rules } = splitTones(code);
+		return decorate(await render(ascii), ascii, rules, meta);
+	});
 }
 
 /** Reuses remark-svgbob's wasm renderer through its own transformer (the renderer isn't exported). */
@@ -350,29 +327,6 @@ function cellRects(cell, tone) {
 function strikeLine(text) {
 	const y = text.row * CHAR_H + CHAR_H / 2;
 	return `<line class="strike" x1="${text.from * CHAR_W}" y1="${y}" x2="${text.to * CHAR_W}" y2="${y}"></line>`;
-}
-
-/**
- * Parses `key="value"` / `key='value'` pairs from the fence meta string.
- * @param {string | null | undefined} meta
- * @returns {Record<string, string>}
- */
-function parseMeta(meta) {
-	/** @type {Record<string, string>} */
-	const result = {};
-	for (const match of (meta ?? '').matchAll(/(\w+)=(?:"([^"]*)"|'([^']*)')/g)) {
-		result[match[1]] = match[2] ?? match[3];
-	}
-	return result;
-}
-
-/** @param {string} value */
-function escapeHtml(value) {
-	return value
-		.replace(/&/g, '&amp;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;')
-		.replace(/"/g, '&quot;');
 }
 
 /** @param {string} value */

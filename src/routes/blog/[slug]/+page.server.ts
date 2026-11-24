@@ -20,15 +20,17 @@ async function referencedPosts(slugs: string[]): Promise<PostPreview[]> {
 // Post-list data is built here, not in +page.ts, to keep $lib/posts out of the client bundle.
 export const load: PageServerLoad = async ({ params }) => {
 	let metadata: Record<string, unknown>;
+	let slugs: string[];
 	try {
-		({ metadata } = await import(`../../../posts/${params.slug}/index.md`));
+		const post = await import(`../../../posts/${params.slug}/index.svx`);
+		metadata = post.metadata;
+		// Linked notes, collected by src/lib/plugins/post-references.js.
+		slugs = post.plugin_data?.references?.refs ?? [];
 	} catch (err) {
 		console.error(err);
 		throw error(404, `Could not find article ${params.slug}`);
 	}
 
-	// linked notes (see remark-links-to-references).
-	const slugs = (metadata.refs as string[] | undefined) ?? [];
 	const [placeholderUrl, views, ogImagePath, refs] = await Promise.all([
 		generatePostHeroThumbhash(params.slug, 100),
 		getArticleViews(params.slug),

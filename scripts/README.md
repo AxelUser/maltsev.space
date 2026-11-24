@@ -13,7 +13,7 @@ Output: `static/images/og/<slug>.jpg`. Pages fall back to the post's `hero.jpg` 
 
 ## How it works
 
-1. `generate-og-images.js` reads each `src/posts/<slug>/index.md` front matter (`title`, `preview`, `date`, `tags`, `draft`).
+1. `generate-og-images.js` reads each `src/posts/<slug>/index.svx` front matter (`title`, `preview`, `date`, `tags`, `draft`).
 2. Tag labels and colours come from `src/lib/content/tags.json`, the same file the site uses, so cards and pages always agree.
 3. One headless Chromium renders `og-template.html`, calls `window.setContent({...})`, waits for fonts and the cover, and screenshots the card.
 

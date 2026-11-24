@@ -22,7 +22,7 @@ liveCover: true
     import { hasZeroSteps, xorExample, existingZeroOther, existingZeroEmpty } from './steps';
 </script>
 
-While working on a [Cuckoo Filter](/blog/010-cuckoo-filters) implementation in C#, I created an array-like structure for the underlying hash table. I chose an 8-bit fingerprint: it aligns nicely on a byte boundary and still keeps the false-positive rate around **3 %**.
+While working on a [Cuckoo Filter](/blog/010-cuckoo-filters) implementation in C#, I created an array-like structure for the underlying hash table. I chose an 8-bit fingerprint: it aligns nicely on a byte boundary and still keeps the false-positive rate around *3 %*.
 
 <PostRef slug="010-cuckoo-filters" />
 
@@ -46,7 +46,9 @@ I wasn’t chasing ultra-low latency—after all, this is C#—but I couldn’t 
 
 Time to find out. 💪
 
-## Contents
+## Contents <!-- no-toc -->
+
+::toc
 
 ## A Flexible and Simple Implementation
 
@@ -140,44 +142,45 @@ public bool Contains(byte fingerprint, uint bucketIdx)
 
 Let's run some quick benchmarks via `BenchmarkDotNet`. Positive lookups is for the case when the fingerprint is in the bucket, negative lookups is for the case when the fingerprint is not in the bucket.
 
-**Positive lookups (fingerprint exists in the bucket):**
+*Positive lookups (fingerprint exists in the bucket):*
 
 <Scrollbox>
 
-| Method        | Operations  |               Mean |    Ratio |
-| ------------- | ----------- | -----------------: | -------: |
-| **ByteTable** | **128**     |       **237.7 ns** | **1.00** |
-| StructTable   | 128         |           175.9 ns |     0.74 |
-|               |             |                    |          |
-| **ByteTable** | **1024**    |     **1,870.7 ns** | **1.00** |
-| StructTable   | 1024        |         1,350.2 ns |     0.72 |
-|               |             |                    |          |
-| **ByteTable** | **1048576** | **1,906,960.6 ns** | **1.00** |
-| StructTable   | 1048576     |     1,757,943.9 ns |     0.92 |
+| Method | Operations | Mean | Ratio |
+| --- | --- | ---: | ---: |
+| *ByteTable* | *128* | *237.7 ns* | *1.00* |
+| StructTable | 128 | 175.9 ns | 0.74 |
+|  |  |  |  |
+| *ByteTable* | *1024* | *1,870.7 ns* | *1.00* |
+| StructTable | 1024 | 1,350.2 ns | 0.72 |
+|  |  |  |  |
+| *ByteTable* | *1048576* | *1,906,960.6 ns* | *1.00* |
+| StructTable | 1048576 | 1,757,943.9 ns | 0.92 |
 
 </Scrollbox>
 
-**Negative lookups (fingerprint does not exist in the bucket):**
+*Negative lookups (fingerprint does not exist in the bucket):*
 
 <Scrollbox>
 
-| Method        | Operations  |               Mean |    Ratio |
-| ------------- | ----------- | -----------------: | -------: |
-| **ByteTable** | **128**     |       **320.6 ns** | **1.00** |
-| StructTable   | 128         |           198.2 ns |     0.62 |
-|               |             |                    |          |
-| **ByteTable** | **1024**    |     **2,522.6 ns** | **1.00** |
-| StructTable   | 1024        |         1,533.6 ns |     0.61 |
-|               |             |                    |          |
-| **ByteTable** | **1048576** | **2,585,740.9 ns** | **1.00** |
-| StructTable   | 1048576     |     1,593,549.0 ns |     0.62 |
+| Method | Operations | Mean | Ratio |
+| --- | --- | ---: | ---: |
+| *ByteTable* | *128* | *320.6 ns* | *1.00* |
+| StructTable | 128 | 198.2 ns | 0.62 |
+|  |  |  |  |
+| *ByteTable* | *1024* | *2,522.6 ns* | *1.00* |
+| StructTable | 1024 | 1,533.6 ns | 0.61 |
+|  |  |  |  |
+| *ByteTable* | *1048576* | *2,585,740.9 ns* | *1.00* |
+| StructTable | 1048576 | 1,593,549.0 ns | 0.62 |
 
 </Scrollbox>
 
-The results are revealing. The 4-byte struct version gave a nice speed boost, about **10-30%** faster than the original byte-array loop for positive lookups and about **40%** faster for negative lookups. Results for positive lookups are a bit fluctuating, especially for biggest table size, but the trend is good.
+The results are revealing. The 4-byte struct version gave a nice speed boost, about *10-30%* faster than the original byte-array loop for positive lookups and about *40%* faster for negative lookups. Results for positive lookups are a bit fluctuating, especially for biggest table size, but the trend is good.
 
-> [!question] So what's next?
-> Even the struct version is quite performant, can we do better? Maybe we can not only eliminate the loop, but make that lookup with a single instruction, like a SIMD within a single 32-bit integer?
+:::question[So what's next?]
+Even the struct version is quite performant, can we do better? Maybe we can not only eliminate the loop, but make that lookup with a single instruction, like a SIMD within a single 32-bit integer?
+:::
 
 ## Finding a Byte with Masking
 
@@ -194,8 +197,8 @@ Admittedly opaque, so let’s unpack it.
 
 The core of the trick is `(v - 0x01010101U) & ~v`. This expression has a special property:
 
-- **For any non-zero byte b**, the most significant bit of `(b - 1) & ~b` will always be `0`.
-- **For a zero-byte b = 0x00**, the expression becomes `(0x00 - 1) & ~0x00`, which is `0xFF & 0xFF = 0xFF`. The most significant bit is `1`.
+- *For any non-zero byte b*, the most significant bit of `(b - 1) & ~b` will always be `0`.
+- *For a zero-byte b = 0x00*, the expression becomes `(0x00 - 1) & ~0x00`, which is `0xFF & 0xFF = 0xFF`. The most significant bit is `1`.
 
 So, this operation creates a "marker" bit (it sets the most significant bit to `1`) in any byte position that was originally `0x00`.
 
@@ -209,8 +212,9 @@ Great, now I can detect a zero byte without branches. All that remains is to _tu
 
 Let’s assume our integer, aka bucket, is `0x12345678` and I’m looking for byte `0x56`. Without shifts, this seems tough. Luckily, all we need to do is transform the `0x56` byte to `0x00`.
 
-> [!note]
-> What happens to the other bytes is irrelevant, because our `HasZero` trick only cares if _any_ byte is zero.
+:::note
+What happens to the other bytes is irrelevant, because our `HasZero` trick only cares if _any_ byte is zero.
+:::
 
 The XOR (`^`) operator has a useful property: `A ^ B = 0` if and only if `A == B`. So, if we XOR the entire bucket with a repeating mask of our target byte, only the matching byte will become zero. The result is exactly the `v` we fed to `HasZero` above:
 
@@ -218,9 +222,9 @@ The XOR (`^`) operator has a useful property: `A ^ B = 0` if and only if `A == B
 
 So the remaining part of this puzzle is to make a repetitive mask, which is pretty arithmetic: I should multiply target byte by `0x01010101U`:
 
-$$
+```math
 \text{mask} \;=\; \text{0x56} \times \text{0x01010101} \;=\; \text{0x56565656}
-$$
+```
 
 ## What About Existing Zeros?
 
@@ -303,47 +307,47 @@ public bool Contains(byte fingerprint, uint bucketIdx)
 
 Let's see how it looks in action. I will perform same positive and negative lookups as before to see if it outperforms the previous versions.
 
-**Positive lookups (fingerprint exists in the bucket):**
+*Positive lookups (fingerprint exists in the bucket):*
 
 <Scrollbox>
 
-| Method        | Operations  |               Mean |    Ratio |
-| ------------- | ----------- | -----------------: | -------: |
-| **ByteTable** | **128**     |       **248.1 ns** | **1.00** |
-| StructTable   | 128         |           178.6 ns |     0.72 |
-| IntTable      | 128         |           154.6 ns |     0.62 |
-|               |             |                    |          |
-| **ByteTable** | **1024**    |     **1,972.3 ns** | **1.00** |
-| StructTable   | 1024        |         1,415.4 ns |     0.72 |
-| IntTable      | 1024        |         1,199.0 ns |     0.61 |
-|               |             |                    |          |
-| **ByteTable** | **1048576** | **2,000,663.8 ns** | **1.00** |
-| StructTable   | 1048576     |     1,826,837.4 ns |     0.91 |
-| IntTable      | 1048576     |     1,214,772.3 ns |     0.61 |
+| Method | Operations | Mean | Ratio |
+| --- | --- | ---: | ---: |
+| *ByteTable* | *128* | *248.1 ns* | *1.00* |
+| StructTable | 128 | 178.6 ns | 0.72 |
+| IntTable | 128 | 154.6 ns | 0.62 |
+|  |  |  |  |
+| *ByteTable* | *1024* | *1,972.3 ns* | *1.00* |
+| StructTable | 1024 | 1,415.4 ns | 0.72 |
+| IntTable | 1024 | 1,199.0 ns | 0.61 |
+|  |  |  |  |
+| *ByteTable* | *1048576* | *2,000,663.8 ns* | *1.00* |
+| StructTable | 1048576 | 1,826,837.4 ns | 0.91 |
+| IntTable | 1048576 | 1,214,772.3 ns | 0.61 |
 
 </Scrollbox>
 
-**Negative lookups (fingerprint does not exist in the bucket):**
+*Negative lookups (fingerprint does not exist in the bucket):*
 
 <Scrollbox>
 
-| Method        | Operations  |               Mean |    Ratio |
-| ------------- | ----------- | -----------------: | -------: |
-| **ByteTable** | **128**     |       **323.0 ns** | **1.00** |
-| StructTable   | 128         |           200.0 ns |     0.62 |
-| IntTable      | 128         |           146.3 ns |     0.45 |
-|               |             |                    |          |
-| **ByteTable** | **1024**    |     **2,533.1 ns** | **1.00** |
-| StructTable   | 1024        |         1,542.7 ns |     0.61 |
-| IntTable      | 1024        |         1,149.2 ns |     0.45 |
-|               |             |                    |          |
-| **ByteTable** | **1048576** | **2,676,830.7 ns** | **1.00** |
-| StructTable   | 1048576     |     1,644,196.9 ns |     0.61 |
-| IntTable      | 1048576     |     1,213,374.7 ns |     0.45 |
+| Method | Operations | Mean | Ratio |
+| --- | --- | ---: | ---: |
+| *ByteTable* | *128* | *323.0 ns* | *1.00* |
+| StructTable | 128 | 200.0 ns | 0.62 |
+| IntTable | 128 | 146.3 ns | 0.45 |
+|  |  |  |  |
+| *ByteTable* | *1024* | *2,533.1 ns* | *1.00* |
+| StructTable | 1024 | 1,542.7 ns | 0.61 |
+| IntTable | 1024 | 1,149.2 ns | 0.45 |
+|  |  |  |  |
+| *ByteTable* | *1048576* | *2,676,830.7 ns* | *1.00* |
+| StructTable | 1048576 | 1,644,196.9 ns | 0.61 |
+| IntTable | 1048576 | 1,213,374.7 ns | 0.45 |
 
 </Scrollbox>
 
-The benchmarks confirmed this bit-twiddling exercise was well worth the effort. Positive lookups became over **40% faster**, while negative lookups became **more than twice as fast** compared to the original byte-array implementation. It's a significant leap even compared to the previous struct version. While readability of algorithm certainly took a hit, the raw performance gain is a trade-off I’m ok with.
+The benchmarks confirmed this bit-twiddling exercise was well worth the effort. Positive lookups became over *40% faster*, while negative lookups became *more than twice as fast* compared to the original byte-array implementation. It's a significant leap even compared to the previous struct version. While readability of algorithm certainly took a hit, the raw performance gain is a trade-off I’m ok with.
 
 ## Final Thoughts
 

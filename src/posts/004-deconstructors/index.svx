@@ -199,7 +199,7 @@ Task<int> Count(string[] dataSourcesUrls);
 
 What if service failed, while retrieving count; or even more complicated - it failed only for several sources. What will be the result of `Count`: partial count, `default(int)`, `-1`, `null` (if it will be `Nullable<int>`)? Or maybe `Count` will throw an exception?
 
-One approach is to use complex type as a result; often it is named as **Operation Result**. It usually consists of requested data and some information about errors, which have been occurred (or not). Below is the example:
+One approach is to use complex type as a result; often it is named as *Operation Result*. It usually consists of requested data and some information about errors, which have been occurred (or not). Below is the example:
 
 ```csharp
 // Our service

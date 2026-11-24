@@ -69,9 +69,11 @@ what this repo does its own way. When in doubt, copy the nearest existing compon
 
 - Copy and data live in `src/lib/content` (`bio.ts`, `career.ts`, `art.ts`, `tags.json`, …). Components take
   data through props.
-- A post is `src/posts/NNN-slug/index.md` (mdsvex) with front matter (`date`, `tags`, `keywords`, `title`,
+- A post is `src/posts/NNN-slug/index.svx` (mdsvex) with front matter (`date`, `tags`, `keywords`, `title`,
   `preview`, `draft`, optional `aiCover`, `coverCaption`, `liveCover`). Post-only data goes next to it
   (`steps.ts`, `live-cover.svelte`, `scene.ts`).
+- Posts use the mdsvex 1.x markdown dialect, not CommonMark. Write `*strong*` and `_em_`, callouts as
+  `:::info[Title]`, display math in a `math` fence, inline math as $`x`$, and `::toc` for a contents list.
 - Components used inside posts are imported in the post's `<script>` from `$lib/components` or a
   `$lib/components/visualization/<name>` barrel.
 - A new tag needs an entry in `src/lib/content/tags.json`, because it drives both the UI and OG images.

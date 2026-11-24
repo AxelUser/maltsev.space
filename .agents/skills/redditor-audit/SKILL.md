@@ -14,10 +14,10 @@ let a redditor get away with a comment that isn't true.
 ## Scope
 
 Use the post the caller names: a number (`012`), a slug, or a path. Otherwise use the
-`src/posts/*/index.md` changed against `main`, including the working tree. If several changed, ask which.
+`src/posts/*/index.svx` changed against `main`, including the working tree. If several changed, ask which.
 If none changed, ask.
 
-The scope is the post's `index.md` and its colocated files (`steps.ts`, `live-cover.svelte`, …). Readers
+The scope is the post's `index.svx` and its colocated files (`steps.ts`, `live-cover.svelte`, …). Readers
 see interactive components (`<Stepper>`, `<ByteLanes>`, `<PostRef>`) rendered on the page. The redditors
 read markdown, so tell them which components appear and what their props show (read the colocated
 `steps.ts`). A component is never "missing content".
@@ -38,7 +38,7 @@ read markdown, so tell them which components appear and what their props show (r
      list and the field.
    - Give both the discarded comments from step 1 as "The author rejected these. Don't repeat them."
 3. Audit each report before writing anything:
-   - Every comment quotes the post. Check that the quote appears verbatim in `index.md` (ignoring
+   - Every comment quotes the post. Check that the quote appears verbatim in `index.svx` (ignoring
      whitespace). Drop comments whose quote isn't there. Shorten quotes longer than one sentence to the
      part that matters.
    - Drop comments that invent facts about the post (a section that isn't there, a claim it doesn't make),

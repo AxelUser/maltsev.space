@@ -16,13 +16,13 @@ coverCaption: "It's generic. I can do whatever I want, right?"
 
 ## Disclaimer
 
-1. This article shows how to simulate dictionary behavior with generic static classes. However, **the way to this solution goes through other examples with lots of design details** to make you familiar with the situation. If you're interested only in "hacking" part, you may go directly to the section [Implementing a generic-based cached producer](#implementing-a-generic-based-cached-producer).
-2. In code examples I've used **Nullable Reference Types**, which is a new feature from **C# 8**. They don't affect the performance and definitely not a main point of the article. If you're curious, check the [documentation](https://docs.microsoft.com/en-us/dotnet/csharp/nullable-references).
+1. This article shows how to simulate dictionary behavior with generic static classes. However, *the way to this solution goes through other examples with lots of design details* to make you familiar with the situation. If you're interested only in "hacking" part, you may go directly to the section [Implementing a generic-based cached producer](#implementing-a-generic-based-cached-producer).
+2. In code examples I've used *Nullable Reference Types*, which is a new feature from *C# 8*. They don't affect the performance and definitely not a main point of the article. If you're curious, check the [documentation](https://docs.microsoft.com/en-us/dotnet/csharp/nullable-references).
 3. All code is available on [GitHub](https://github.com/AxelUser/examples/tree/master/DotNet/DictionaryOfTypes).
 
 ## Task: Create a Factory for REST Clients
 
-When you are integrating different services into each other, it's always a very time-consuming process to write clients for all of them. Luckily, if those RESTful services provide their API schema in **OpenAPI** (or previously named **Swagger**) format, chances are great that there's a generator of clients for this common type of schema format.
+When you are integrating different services into each other, it's always a very time-consuming process to write clients for all of them. Luckily, if those RESTful services provide their API schema in *OpenAPI* (or previously named *Swagger*) format, chances are great that there's a generator of clients for this common type of schema format.
 
 .Net has several packages for client generation, for example [NSwag](https://github.com/RicoSuter/NSwag). There are different opinions on how generated clients should be look like, but let's consider that their constructors receive _HttpClient_ instance for sending requests and classes themselves are derived from generated interfaces, containing all public methods for the API.
 
@@ -54,7 +54,7 @@ public partial class SomeResourceClient : ISomeResourceClient
 
 ## Automating Client Creation
 
-Although clients are implementing their own interfaces, it's still hard to test code, that creates clients via constructors. For a testable code it's required to have all those clients as dependencies or delegate their creation into a new dependency. It's possible to resolve clients via **Dependency Injection**, because _HttpClient_ can be effectively taken from reusable pool via [IHttpClientFactory](https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests), and most of the DI frameworks offer you a zero configuration for that feature.
+Although clients are implementing their own interfaces, it's still hard to test code, that creates clients via constructors. For a testable code it's required to have all those clients as dependencies or delegate their creation into a new dependency. It's possible to resolve clients via *Dependency Injection*, because _HttpClient_ can be effectively taken from reusable pool via [IHttpClientFactory](https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests), and most of the DI frameworks offer you a zero configuration for that feature.
 
 However sometimes it's necessary to control base url to your service or to dynamically pass some values into request's headers, like authorization tokens or distributed tracing ids. So it may be preferred to pass a valid _HttpClient_ manually and that's why for the sake of the article let's stick to this format.
 
@@ -82,7 +82,7 @@ public Wrapper(
 }
 ```
 
-The first variant of `concreteClientFactory` is much more transparent than `commonClientFactory`. **That's why this design will be applied to all further solutions it the article.**
+The first variant of `concreteClientFactory` is much more transparent than `commonClientFactory`. *That's why this design will be applied to all further solutions it the article.*
 
 As factory should create clients of specific types, there are some more questions to discuss:
 
@@ -93,9 +93,9 @@ Solution for the first question is quite trivial - invoking constructor via hand
 
 For the second problem another reflection-based mechanism should be involved. As I mentioned above, mocking frameworks for .Net work better, if they create mocks that implement base interfaces. Thus the factory method should expose client's interface in returned value. It can be easily achieved with the help of generic type parameter, but nevertheless factory method should create an object of the concrete class.
 
-So, factory should perform mapping between the interface and the implementation. Fortunately, all generated classes and interfaces are stored under dedicated namespace and are available during the start of an application. That's right - **mapping can be created by traversing though all classes in that namespace**.
+So, factory should perform mapping between the interface and the implementation. Fortunately, all generated classes and interfaces are stored under dedicated namespace and are available during the start of an application. That's right - *mapping can be created by traversing though all classes in that namespace*.
 
-To execute search only once, it's better to put mapping code into a **static constructor**. Reflection will traverse through the whole assembly, find all client's interfaces with their implementations and save that relationships into a simple dictionary. Also it'a a good idea to **encapsulate mapping into another dependency**, which has private static field with that dictionary and produces the factory for required clients. Encapsulation will protect internal mapping from unexpected mutations and make namespace cleaner.
+To execute search only once, it's better to put mapping code into a *static constructor*. Reflection will traverse through the whole assembly, find all client's interfaces with their implementations and save that relationships into a simple dictionary. Also it'a a good idea to *encapsulate mapping into another dependency*, which has private static field with that dictionary and produces the factory for required clients. Encapsulation will protect internal mapping from unexpected mutations and make namespace cleaner.
 
 The new dependency can be implemented as a factory provider, or in other words factory of factories. The interface is trivial:
 
@@ -161,7 +161,7 @@ public class ClientFactory<T>: IClientFactory<T> where T : class
 }
 ```
 
-Now it's time to ask, **what can be done to produce factories more efficiently**. If factory creation will be done very often, it's better to make some kind of caching for it, because it doesn't depend on a context of invocation.
+Now it's time to ask, *what can be done to produce factories more efficiently*. If factory creation will be done very often, it's better to make some kind of caching for it, because it doesn't depend on a context of invocation.
 
 I want to mention, that all modern DI frameworks has an ability to mark those client factories as singletons at configuration and that's OK to use it when you can.
 
@@ -169,9 +169,9 @@ Even so, what about making this mechanism by ourselves? If you're interested, I'
 
 ## Benchmarking
 
-Before we dig into optimizations, **it's HIGHLY recommended to track the performance of made solutions**. As we are dealing with isolated modules, micro-benchmarking will suit our needs.
+Before we dig into optimizations, *it's HIGHLY recommended to track the performance of made solutions*. As we are dealing with isolated modules, micro-benchmarking will suit our needs.
 
-The easiest way to create benchmarks of that kind is using a popular nuget package [BenchmarkDotNet](https://benchmarkdotnet.org/). I won't include in the article how to write good benchmarks for every situation, because this theme is quite vast. However, if you're not familiar with benchmarking or BenchmarkDotNet, you may follow the links to BenchmarkDotNet documentation at the section **References**.
+The easiest way to create benchmarks of that kind is using a popular nuget package [BenchmarkDotNet](https://benchmarkdotnet.org/). I won't include in the article how to write good benchmarks for every situation, because this theme is quite vast. However, if you're not familiar with benchmarking or BenchmarkDotNet, you may follow the links to BenchmarkDotNet documentation at the section *References*.
 
 Frankly speaking, I shall mention that maintainers of the BenchmarkDotNet did a great job in providing an easy API for creating benchmarks, which gives ability to include lots of useful indicators and will be clear to the most of .Net developers.
 
@@ -185,7 +185,7 @@ public class ClientFactoryProvidersBenchmark
 }
 ```
 
-Now it's time for benchmarks themselves. **Caching improves peeking of some value many times**, that's why benchmark should also perform several attempts of getting factories for each client.
+Now it's time for benchmarks themselves. *Caching improves peeking of some value many times*, that's why benchmark should also perform several attempts of getting factories for each client.
 
 To show how many attempts were performed, BenchmarkDotNet has an ability to use custom benchmark parameters via another attribute [`Params`](https://benchmarkdotnet.org/articles/features/parameterization.html). It receives values of that parameter for each benchmark run and displays that value at its own column in report. For this benchmark let's choose numbers _100_, _1000_ and _10000000_:
 
@@ -216,7 +216,7 @@ private void Execute(IReadOnlyList<Action> actions)
 }
 ```
 
-Well, that code is strange. It's because I've generated all actual invocations of factory provider using **T4** template file. Obviously that isn't necessary, but as soon as I generated all code for clients using the same T4 templates, I thought that it is more maintainable to generate invocations as well. I mentioned it before, but all code is available on GitHub, so you may have a look at [generated clients](https://github.com/AxelUser/examples/blob/master/DotNet/DictionaryOfTypes/Clients/StubbedClients.cs) and generated [provider invocations](https://github.com/AxelUser/examples/blob/master/DotNet/DictionaryOfTypes/Benchmarking/BenchmarkCallsCreator.cs).
+Well, that code is strange. It's because I've generated all actual invocations of factory provider using *T4* template file. Obviously that isn't necessary, but as soon as I generated all code for clients using the same T4 templates, I thought that it is more maintainable to generate invocations as well. I mentioned it before, but all code is available on GitHub, so you may have a look at [generated clients](https://github.com/AxelUser/examples/blob/master/DotNet/DictionaryOfTypes/Clients/StubbedClients.cs) and generated [provider invocations](https://github.com/AxelUser/examples/blob/master/DotNet/DictionaryOfTypes/Benchmarking/BenchmarkCallsCreator.cs).
 
 One more thing to know - because I don't want to include the creation of delegates with provider invocations, it's vital to move it into set-up, similar to the one that testing frameworks offer. BenchmarkDotNet has the same API for it, which means making set-up method and marking it with [`GlobalSetup`](https://benchmarkdotnet.org/articles/features/setup-and-cleanup.html) attribute:
 
@@ -242,7 +242,7 @@ Anyway, let's run our benchmark and see how things are doing:
 | SimpleFactory_SequentialAccess | 10000000 | 383,617.687 us | 3,106.0346 us | 2,905.3867 us |  1.00 | 38000.0000 |     - |     - | 234375 KB |
 ```
 
-We may see, that the provider performed quite fast (for now), but had allocated factory objects for each invocation of the factory provider. As I've said, for this issue there's a solution - **caching factories**.
+We may see, that the provider performed quite fast (for now), but had allocated factory objects for each invocation of the factory provider. As I've said, for this issue there's a solution - *caching factories*.
 
 ## Store Factories into Dictionary
 
@@ -282,7 +282,7 @@ public class CachedSimpleFactoryProvider: IClientsFactoryProvider
 }
 ```
 
-Well, this solution isn't so elegant, but **casting is mostly used to overcome the type system's limitation**.
+Well, this solution isn't so elegant, but *casting is mostly used to overcome the type system's limitation*.
 
 Now it's obvious that we've reduced memory consumption using pre-allocated factories, but what about speed?
 
@@ -301,9 +301,9 @@ Let's check the performance of this caching mechanism by writing a benchmark and
 | CachedFactory_SequentialAccess | 10000000 | 746,398.580 us | 3,361.2568 us | 3,144.1217 us |  2.04 |    0.02 |          - |     - |     - |           - |
 ```
 
-Hm, seems like it's **became SLOWER, than the original simple solution**, but we may guess what operation caused such performance penalty. _Did we write something wrong or inefficient?_
+Hm, seems like it's *became SLOWER, than the original simple solution*, but we may guess what operation caused such performance penalty. _Did we write something wrong or inefficient?_
 
-Earlier I've mentioned that "dumb" casting from object to generic factory type. **This simple cast is overkill for current situation** - it involves type checking, but we know exactly what generic type stored under each key in dictionary.
+Earlier I've mentioned that "dumb" casting from object to generic factory type. *This simple cast is overkill for current situation* - it involves type checking, but we know exactly what generic type stored under each key in dictionary.
 
 ```csharp
 public IClientFactory<T> GetClientFactory<T>() where T : class
@@ -334,7 +334,7 @@ Much better - the speed of invocation is a little bit less than the baseline and
 
 We may stay with this implementation, but if that was an option, I've never wrote such an obvious post 😅.
 
-So, is there a way to improve speed even more? Well, **that's when generics steal the show!**
+So, is there a way to improve speed even more? Well, *that's when generics steal the show!*
 
 ## Delegate Caching to JIT
 
@@ -342,7 +342,7 @@ This trick is mostly inspired by the way how [Array.Empty](https://docs.microsof
 
 Empty arrays are best candidates for caching, because their construction doesn't require any parameters, but only a generic type parameter.
 
-When you invoke `Array.Empty<MyClass>`, it internally invokes a static read-only field `Empty` of static generic class `EmptyArray<MyClass>`, which initializes and returns an empty array of type `MyClass` (have a look at [sources](https://github.com/dotnet/runtime/blob/3705185af806e273ccef98e44699400f0416c452/src/libraries/System.Private.CoreLib/src/System/Array.cs#L694-L704)). Static field is initialized during the time of a first access to the field of the class _EmptyArray_. This is guaranteed from the fact how generics and static classes work in **CLR** (Common Language Runtime). For your information, that's how you can implement a [simple thread-safe singleton](https://csharpindepth.com/articles/singleton) in .Net.
+When you invoke `Array.Empty<MyClass>`, it internally invokes a static read-only field `Empty` of static generic class `EmptyArray<MyClass>`, which initializes and returns an empty array of type `MyClass` (have a look at [sources](https://github.com/dotnet/runtime/blob/3705185af806e273ccef98e44699400f0416c452/src/libraries/System.Private.CoreLib/src/System/Array.cs#L694-L704)). Static field is initialized during the time of a first access to the field of the class _EmptyArray_. This is guaranteed from the fact how generics and static classes work in *CLR* (Common Language Runtime). For your information, that's how you can implement a [simple thread-safe singleton](https://csharpindepth.com/articles/singleton) in .Net.
 
 ## How CLR Compiles Generic Classes
 
@@ -355,7 +355,7 @@ After the type argument is passed into generic constructor (e.g. `List<MyClass>`
 
 Nice point is that JIT compiler will share all code for specific generics, which have only reference types as their type parameters. This optimization makes sense, because objects of reference types are passed into methods by fixed-sized reference to their content in the managed heap. All references to objects have common size, which equals to the machine word: 32 or 64 bits, depending on the architecture of an operating system and processor.
 
-It doesn't mean, that compiler vanishes all information about different closed generics, but instead of compiling the whole code for the class, it will save the information about concrete closed generic into **Method Table**.
+It doesn't mean, that compiler vanishes all information about different closed generics, but instead of compiling the whole code for the class, it will save the information about concrete closed generic into *Method Table*.
 
 It worth mentioning, that for value types, like structs and primitives, JIT will compile specialized code to handle each type parameters combination, which were passed during the construction of a closed generic.
 
@@ -389,9 +389,9 @@ public partial class GenericClientFactoryProvider
 }
 ```
 
-However, there is also a caveat - **when a type _T_ isn't stored in dictionary, the generic nevertheless will be compiled and stored at Method Table until the end of execution**. That's why the whole generics trick may be a bad idea, if the client interface is passed from user input.
+However, there is also a caveat - *when a type _T_ isn't stored in dictionary, the generic nevertheless will be compiled and stored at Method Table until the end of execution*. That's why the whole generics trick may be a bad idea, if the client interface is passed from user input.
 
-To make things a little bit fancier, **code with nested class may be extracted into own file**, if the factory provider will be marked as partial. It's up to you how to name that file, but I recommend you to write the name of the provider plus the name of cached factory, separated by the dot, like _GenericClientFactoryProvider.CachedFactory.cs_.
+To make things a little bit fancier, *code with nested class may be extracted into own file*, if the factory provider will be marked as partial. It's up to you how to name that file, but I recommend you to write the name of the provider plus the name of cached factory, separated by the dot, like _GenericClientFactoryProvider.CachedFactory.cs_.
 
 Provider will trigger client creation when accessing the field `Instance` of a closed generic `CachedFactory<T>` class for the first time:
 
@@ -458,7 +458,7 @@ Speed of invocation has been dramatically increased, compared to the previous di
 
 ## Conclusion
 
-All these solutions are powered by the knowledge of runtime internals, which may increase the difficulty of understanding how much benefits we receive. **When messing with such hacks don't hesitate to check the performance incrementally via benchmarking**. I hope that my examples proves you, that this process isn't much harder than writing a unit-tests, thanks to BenchmarkDotNet!
+All these solutions are powered by the knowledge of runtime internals, which may increase the difficulty of understanding how much benefits we receive. *When messing with such hacks don't hesitate to check the performance incrementally via benchmarking*. I hope that my examples proves you, that this process isn't much harder than writing a unit-tests, thanks to BenchmarkDotNet!
 
 All provided solutions are quite specialized for the task of caching values, which don't depend on dynamic parameters. In other words all values can be initialized during the application start-up. If that is your case, you may use provided solutions and I hope you will improve the overall performance of your program.
 

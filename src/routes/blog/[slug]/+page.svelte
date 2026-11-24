@@ -1,6 +1,7 @@
 <script lang="ts">
 	import '../../../svgbob.css';
 	import '../../../zombie-mermaid.css';
+	import 'temml/dist/Temml-Local.css';
 	import { SEO } from '$lib/components';
 	import { Container } from '$lib/components/layout';
 	import { Tag } from '$lib/components/ui';
@@ -30,15 +31,6 @@
 	{publishedTime}
 	keywords={allKeywords}
 />
-
-<svelte:head>
-	<link
-		rel="stylesheet"
-		href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css"
-		integrity="sha384-5TcZemv2l/9On385z///+d7MSYlvIEw9FuZTIdZ14vJLqWphw7e7ZPuOiCHJcFCP"
-		crossorigin="anonymous"
-	/>
-</svelte:head>
 
 <Container as="article" class="pb-24">
 	<header class="mx-auto max-w-[760px] pt-14 pb-8 sm:pt-[72px]">

@@ -19,7 +19,7 @@ export interface ReviewComment {
 	check?: string;
 	replyTo?: string;
 	status: ReviewStatus;
-	/** The quote is no longer in `index.md`: the author edited the text after the review. */
+	/** The quote is no longer in `index.svx`: the author edited the text after the review. */
 	outdated: boolean;
 	quoteHtml: string;
 	bodyHtml: string;

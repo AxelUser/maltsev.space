@@ -110,7 +110,7 @@ Process finished with exit code -532,462,766.
 
 We found a bug! (how surprisingly, ha-ha)
 
-Imaging that this will happen in production during the midnight while you're on-call. **Not so funny now, huh?**
+Imaging that this will happen in production during the midnight while you're on-call. *Not so funny now, huh?*
 
 ## Solution: Visitor Pattern
 

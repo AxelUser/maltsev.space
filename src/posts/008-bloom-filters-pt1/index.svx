@@ -31,17 +31,20 @@ Instead of storing the actual data, Bloom filters use a clever combo of hash fun
 
 This post is a deep dive — it's long, and we'll take our time walking through how Bloom filters work, how they're built, and how they behave. But if you're just here to see it in action, feel free to jump straight to the [interactive playground](#live-demo) and try it out yourself. Or, if you're ready to tune your own Bloom filter, head over to the [calculator](#play-with-the-numbers) to configure parameters for your use case.
 
-## Contents
+## Contents <!-- no-toc -->
+
+::toc
 
 ## What is a Bloom Filter?
 
 A Bloom filter is a space-efficient probabilistic data structure designed to test whether an element belongs to a set. The key insight behind Bloom filters is their fundamental trade-off: they can guarantee with absolute certainty that an element is _not_ in the set, but when they report that an element _is_ present, there's a small chance this may be a false positive. This asymmetry makes them especially useful as a first-line filter in systems where false positives are acceptable, but false negatives are not.
 
-> [!info]
-> If you're not familiar with the terms _false positive_ and _false negative_, here's a quick translation:
->
-> - A **false positive** means the system says "yes, it's here" when actually it's not.
-> - A **false negative** means the system says "no, it's not here" when actually it is.
+:::info
+If you're not familiar with the terms _false positive_ and _false negative_, here's a quick translation:
+
+- A *false positive* means the system says "yes, it's here" when actually it's not.
+- A *false negative* means the system says "no, it's not here" when actually it is.
+:::
 
 The core idea is simple yet powerful. Rather than storing the actual elements, a Bloom filter keeps only hashed representations of the elements inside a compact bit array. This sacrifices some precision but delivers outstanding space efficiency and fast query times. For example, a typical Bloom filter with a 1% error rate requires just about 9.6 bits per element—regardless of the size of the elements themselves. That's a significant improvement over traditional data structures like hash tables or hash sets, which must store the full data items.
 
@@ -51,12 +54,13 @@ Bloom filters may report false positives — claiming an element is present when
 
 The algorithm behind Bloom filters is elegantly built on three main components: a fixed-size bit array, multiple independent hash functions, and straightforward insertion and lookup operations. An empty Bloom filter starts as a bit array of `m` bits, all initialized to 0, and comes equipped with `k` different hash functions that map each element to exact `k` positions within the array. For optimal performance, these hash functions should ideally be independent and uniformly distributed.
 
-> [!info] Hash functions?
-> A hash function is a function that takes an input (like a string or number) and deterministically maps it to a number within a fixed range — in this case, some positions in the bit array.  
-> When we say that hash functions should be **independent**, we mean that knowing the output of one hash function doesn't help you guess or calculate the output of another — each one works on its own, like rolling different dice.  
-> And when we say they are **uniformly distributed**, we mean that they spread their results evenly across all possible positions, so no part of the resulting bit array gets overloaded with too many bits set.
->
-> Examples of commonly used hash functions include MurmurHash, xxHash, CityHash, or cryptographic ones like SHA-256 (though cryptographic hashes are usually overkill for Bloom filters).
+:::info[Hash functions?]
+A hash function is a function that takes an input (like a string or number) and deterministically maps it to a number within a fixed range — in this case, some positions in the bit array.\
+When we say that hash functions should be *independent*, we mean that knowing the output of one hash function doesn't help you guess or calculate the output of another — each one works on its own, like rolling different dice.\
+And when we say they are *uniformly distributed*, we mean that they spread their results evenly across all possible positions, so no part of the resulting bit array gets overloaded with too many bits set.
+
+Examples of commonly used hash functions include MurmurHash, xxHash, CityHash, or cryptographic ones like SHA-256 (though cryptographic hashes are usually overkill for Bloom filters).
+:::
 
 Inserting an element is fast and deterministic: the element is fed into each of the `k` hash functions, producing `k` unique array positions. The bits at all these positions are then set to 1. No matter how many elements have already been inserted, this operation always requires exactly `k` hash calculations and `k` bit updates. The beauty of this approach is its simplicity—there's no need for collision resolution or complex data structures.
 
@@ -74,30 +78,31 @@ The math behind this comes from the probabilistic nature of hash collisions. As 
 
 Let's get our hands dirty.
 
-In the interactive playground below, you can **insert any string values into the Bloom filter** and watch how it modifies the internal bit array. You can also **check if a value is present**, and see how Bloom filters may return `possibly present` even for things you never inserted — that's our famous false positives in action.
+In the interactive playground below, you can *insert any string values into the Bloom filter* and watch how it modifies the internal bit array. You can also *check if a value is present*, and see how Bloom filters may return `possibly present` even for things you never inserted — that's our famous false positives in action.
 
 A few technical notes about this demo:
 
-- It uses a **double hashing technique** (which we'll cover in more detail later). In short: instead of generating many completely separate hashes, it combines just two distinct hash functions to simulate any number of `k` hash functions. This approach is both efficient and widely used in real-world Bloom filters.
-- For simplicity and to keep things visual, the filter here uses a very compact bit array — only **16 bits** (`m = 16`) and sets `k = 4` bit positions for each element.
+- It uses a *double hashing technique* (which we'll cover in more detail later). In short: instead of generating many completely separate hashes, it combines just two distinct hash functions to simulate any number of `k` hash functions. This approach is both efficient and widely used in real-world Bloom filters.
+- For simplicity and to keep things visual, the filter here uses a very compact bit array — only *16 bits* (`m = 16`) and sets `k = 4` bit positions for each element.
 
 Here's what happens under the hood:
 
 - When you add a value: the filter applies the double hash to calculate `k` positions and flips the corresponding bits to `1`.
 - When you check a value: it verifies if all these bits are still set to `1`. If yes — it says "maybe"; if any of them is `0` — it's a definite "no".
 
-<SimpleBloomFilter />
+<SimpleBloomFilter/>
 
 ### Why Can't We Delete?
 
-As you may have already noticed, we have **INSERT** and **CHECK** operations in Bloom filters, but I never mentioned a **DELETE** operation. That's because — in the original design — we simply can't. At least, not without breaking some of the guarantees that make Bloom filters useful in the first place. (Though, as we'll see later in the series, there _are_ variations of Bloom filters that support deletion.)
+As you may have already noticed, we have *INSERT* and *CHECK* operations in Bloom filters, but I never mentioned a *DELETE* operation. That's because — in the original design — we simply can't. At least, not without breaking some of the guarantees that make Bloom filters useful in the first place. (Though, as we'll see later in the series, there _are_ variations of Bloom filters that support deletion.)
 
-The root of the problem is that multiple elements may hash to the same bit positions. When you attempt to delete an element by resetting its bits back to `0`, you risk clearing bits that may still be in use by other elements. Since Bloom filters are designed to avoid **false negatives**, any operation that might accidentally remove evidence of another element's presence would break this guarantee.
+The root of the problem is that multiple elements may hash to the same bit positions. When you attempt to delete an element by resetting its bits back to `0`, you risk clearing bits that may still be in use by other elements. Since Bloom filters are designed to avoid *false negatives*, any operation that might accidentally remove evidence of another element's presence would break this guarantee.
 
 As one researcher [puts it nicely:](https://www.math.umd.edu/~immortal/CMSC420/notes/bloomfilters.pdf)
 
-> [!quote]
-> "There is no deletion basically because the only reasonable way to delete would be to hash the key and then set those corresponding bits to 0, but this could cause false negatives for other keys."
+:::quote
+"There is no deletion basically because the only reasonable way to delete would be to hash the key and then set those corresponding bits to 0, but this could cause false negatives for other keys."
+:::
 
 Let's visualize this a little bit. For example we have a party. Carol is at the store, and Alice and Bob are at home texting her what to buy. Carol keeps one plain shopping list of items and doesn't write down who asked for what.
 Think of the list as the bit array, each person's order as an element, and each item in it as one of the element's bit positions.
@@ -151,9 +156,9 @@ accent  "Bob still needs this"
 
 </Scrollbox>
 
-Later Bob texts "do you have my stuff?" which are milk, ice cream and bananas. Carol checks her list, finds no milk and replies "your order isn't on my list", even though Bob never cancelled its order. 
+Later Bob texts "do you have my stuff?" which are milk, ice cream and bananas. Carol checks her list, finds no milk and replies "your order isn't on my list", even though Bob never cancelled its order.
 
-That's a **false negative**, and Bloom filters are designed specifically to prevent that.
+That's a *false negative*, and Bloom filters are designed specifically to prevent that.
 
 <PostImage
   src="/images/posts/008-bloom-filters-pt1/shop_comic_panels_3_4.jpg"
@@ -177,7 +182,7 @@ bad     shopping list: 1
 
 </Scrollbox>
 
-Of course, for a quick and dirty workaround, an engineer might introduce a second "blacklist" Bloom filter to track deletions. When checking membership, an element would only be considered present if it's in the main filter **and** not in the deletion filter. But sometimes this comes with its own trade-offs — and I'll cover better solutions later, like [Counting Bloom Filters](/blog/009-counting-bloom-filters) and [Cuckoo Filters](/blog/010-cuckoo-filters).
+Of course, for a quick and dirty workaround, an engineer might introduce a second "blacklist" Bloom filter to track deletions. When checking membership, an element would only be considered present if it's in the main filter *and* not in the deletion filter. But sometimes this comes with its own trade-offs — and I'll cover better solutions later, like [Counting Bloom Filters](/blog/009-counting-bloom-filters) and [Cuckoo Filters](/blog/010-cuckoo-filters).
 
 <PostRef slug="009-counting-bloom-filters" />
 
@@ -185,12 +190,12 @@ Of course, for a quick and dirty workaround, an engineer might introduce a secon
 
 ### Can It Scale?
 
-The second major limitation of standard Bloom filters is their **fixed size**. Once you create a Bloom filter, you can't resize it on the fly without breaking its mathematical guarantees.
+The second major limitation of standard Bloom filters is their *fixed size*. Once you create a Bloom filter, you can't resize it on the fly without breaking its mathematical guarantees.
 
-Traditional Bloom filters require you to **declare their size upfront** — it's a bit like booking an apartment based on how many guests you _think_ might show up. This creates the classic "Goldilocks problem":
+Traditional Bloom filters require you to *declare their size upfront* — it's a bit like booking an apartment based on how many guests you _think_ might show up. This creates the classic "Goldilocks problem":
 
-- **Underestimated capacity**: You planned for 1M elements but end up with 1.2M? The false positive rate can shoot up to 20% or even higher.
-- **Overestimated capacity**: You reserved space for 10M elements but only store 1M? You're wasting 90% of your allocated memory.
+- *Underestimated capacity*: You planned for 1M elements but end up with 1.2M? The false positive rate can shoot up to 20% or even higher.
+- *Overestimated capacity*: You reserved space for 10M elements but only store 1M? You're wasting 90% of your allocated memory.
 
 The [solution](https://gsd.di.uminho.pt/members/cbm/ps/dbloom.pdf) — or rather, the workaround — is fairly straightforward: monitor the Bloom filter's saturation. Once the false positive rate crosses an unacceptable threshold, you simply add another (larger) Bloom filter. To check membership, you query all filters in sequence until you get a match or exhaust them.
 
@@ -204,7 +209,7 @@ Designing good hash functions isn't something most engineers do every day. Creat
 
 As you probably noticed in your day-to-day work, we rarely write our own math-heavy algorithms from scratch. Instead, we lean on solid, battle-tested abstractions: hashing libraries, built-in data structures, utility modules, etc. Even if you're adventurous enough to roll out your own Bloom filter implementation, you probably don't want to spend weeks designing hash functions from scratch — but you still want decent performance.
 
-On top of that, hash computation itself can get expensive, especially if you're using cryptographic hashes like SHA-256. These functions are overkill for Bloom filters and introduce unnecessary overhead. Faster non-cryptographic hash functions like **MurmurHash** or **xxHash** are much better suited for this use case — but even then, if you naively calculate _k_ separate hashes per element, the cost adds up.
+On top of that, hash computation itself can get expensive, especially if you're using cryptographic hashes like SHA-256. These functions are overkill for Bloom filters and introduce unnecessary overhead. Faster non-cryptographic hash functions like *MurmurHash* or *xxHash* are much better suited for this use case — but even then, if you naively calculate _k_ separate hashes per element, the cost adds up.
 
 Let's take a look at a simple, naive approach just to set the baseline:
 
@@ -221,15 +226,15 @@ While this approach might be acceptable for use-cases where performance isn't im
 
 ### Double Hashing Approach
 
-Luckily, there's a well-known trick to avoid computing _k_ independent hash functions while still achieving almost the same statistical behavior. This method is often called **double hashing** or **Kirsch-Mitzenmacher optimization**, after the authors who [formally analyzed it](https://www.eecs.harvard.edu/~michaelm/postscripts/rsa2008.pdf).
+Luckily, there's a well-known trick to avoid computing _k_ independent hash functions while still achieving almost the same statistical behavior. This method is often called *double hashing* or *Kirsch-Mitzenmacher optimization*, after the authors who [formally analyzed it](https://www.eecs.harvard.edu/~michaelm/postscripts/rsa2008.pdf).
 
 The idea is surprisingly simple: instead of calculating _k_ totally independent hashes, you calculate just two independent hash functions, and then combine them to generate the rest.
 
 The formula goes like this:
 
-$$
+```math
 \text{position}_i(x) = (h_1(x) + i \cdot h_2(x)) \bmod m
-$$
+```
 
 Where:
 
@@ -251,7 +256,7 @@ for (i in 0 until k) {
 
 This approach has several nice properties:
 
-- You only calculate **two** hash functions per inserted element, no matter how many hash functions _k_ you want.
+- You only calculate *two* hash functions per inserted element, no matter how many hash functions _k_ you want.
 - You get a whole sequence of hash values that are nicely spread across your bit array.
 - The results are nearly as good as having fully independent hashes, at least for practical Bloom filter usage.
 
@@ -274,8 +279,9 @@ accent   "+3 →"
 
 </Scrollbox>
 
-> [!info]
-> In other words, double hashing starts at bit `h1` and jumps forward by `h2` another `k − 1` times, wrapping around the end of the array (that's the `mod m`).
+:::info
+In other words, double hashing starts at bit `h1` and jumps forward by `h2` another `k − 1` times, wrapping around the end of the array (that's the `mod m`).
+:::
 
 #### Why does Double-Hashing Work?
 
@@ -287,15 +293,15 @@ This optimization is commonly used in real-world Bloom filter implementations �
 
 Yeah... You may have already noticed a potential issue in our formula:
 
-$$
+```math
 \text{position}_i(x) = (h_1(x) + i \cdot h_2(x)) \bmod m
-$$
+```
 
 If `h2(x)` happens to be zero, all your hashes collapse into the same value:
 
-$$
+```math
 \text{position}_i(x) = (h_1(x) + i \cdot 0) \bmod m = h_1(x) \bmod m
-$$
+```
 
 How likely is that? Well, it depends, but not impossible.
 
@@ -313,18 +319,19 @@ This guarantees forward progress: even in the worst case you still generate `k` 
 
 There's one more sneaky issue that's often overlooked when using the double hashing formula:
 
-$$
+```math
 \text{position}_i(x) = (h_1(x) + i \cdot h_2(x)) \bmod m
-$$
+```
 
-Everything seems fine... until one day your Bloom filter quietly becomes _less random than you expect_. This happens when `h2(x)` and `m` (the Bloom filter size) are not **coprime**.
+Everything seems fine... until one day your Bloom filter quietly becomes _less random than you expect_. This happens when `h2(x)` and `m` (the Bloom filter size) are not *coprime*.
 
-> [!info] What does "coprime" mean?
-> Two numbers are coprime if they don't share any common divisors except 1.
-> For example:
->
-> - `9` and `16` are coprime.
-> - `6` and `18` are **not** coprime (since they share divisor `6`).
+:::info[What does "coprime" mean?]
+Two numbers are coprime if they don't share any common divisors except 1.
+For example:
+
+- `9` and `16` are coprime.
+- `6` and `18` are *not* coprime (since they share divisor `6`).
+:::
 
 If `h2(x)` and `m` share a common divisor, the sequence of hashes generated
 
@@ -332,7 +339,7 @@ If `h2(x)` and `m` share a common divisor, the sequence of hashes generated
 h1(x), h1(x) + h2(x), h1(x) + 2*h2(x), ...
 ```
 
-will only cover part of the bit array. In other words: **you won't reach all possible bit positions**.
+will only cover part of the bit array. In other words: *you won't reach all possible bit positions*.
 
 This leads to: fewer unique bits set → more collisions → higher false-positive rates → sad stakeholders.
 
@@ -355,7 +362,7 @@ Now calculate the hashes:
 
 You never touch bit positions `1, 3, 5, 7, 9` — half of your bit array is completely unused!
 
-Ideally, choose `m` to be a **prime number** — then any `h2(x)` is automatically coprime with `m` (except if `h2(x) = 0` which we already handled earlier).
+Ideally, choose `m` to be a *prime number* — then any `h2(x)` is automatically coprime with `m` (except if `h2(x) = 0` which we already handled earlier).
 
 Or, when `m` is not prime, ensure that your hash function produces `h2(x)` values that are statistically unlikely to share factors with `m`. A simple safety net is to force `h2(x)` to always be odd:
 
@@ -394,7 +401,7 @@ Full cycle, no repeats — the bit array is fully covered.
 
 There's another technique that sometimes gets used, especially in high-performance Bloom filters - wide hash split. A good example is [Google Guava](https://github.com/google/guava/blob/master/guava/src/com/google/common/hash/BloomFilterStrategies.java), where it works nicely alongside the double hashing approach.
 
-The core idea is also simple - instead of generating multiple completely separate hash values, you generate **one wide hash output** (e.g. 128 or 256 bits), and then split it into multiple pieces to simulate multiple hash functions.
+The core idea is also simple - instead of generating multiple completely separate hash values, you generate *one wide hash output* (e.g. 128 or 256 bits), and then split it into multiple pieces to simulate multiple hash functions.
 
 ```kotlin
 val wideHash = hash128(data)
@@ -407,20 +414,20 @@ val h4 = (wideHash shr 48) % m
 
 #### Why does hash split work?
 
-Good hash functions like **MurmurHash3 128-bit**, **CityHash128**, or **xxHash3 128-bit** are designed to spread randomness across all bits, i.e. have avalanche effect, when small input changes drastically alter all output bits. So, the upper bits are just as random as the lower bits.
+Good hash functions like *MurmurHash3 128-bit*, *CityHash128*, or *xxHash3 128-bit* are designed to spread randomness across all bits, i.e. have avalanche effect, when small input changes drastically alter all output bits. So, the upper bits are just as random as the lower bits.
 
 Of course, like everything in Bloom filters — no free lunch:
 
-- The resulting hashes are **not truly independent**, just decorrelated, i.e. different enough. This may theoretically increase false positives slightly if your input data is highly correlated and the hash function doesn't have good avalanche effect.
+- The resulting hashes are *not truly independent*, just decorrelated, i.e. different enough. This may theoretically increase false positives slightly if your input data is highly correlated and the hash function doesn't have good avalanche effect.
 - You're limited by how many slices you can get — e.g., 128-bit hash gives you at most 4×32-bit slices (or more if you slice into smaller chunks).
 
 ### Recap
 
-| Method          | # of Hash Calls | Speed       | Independence |
-| --------------- | --------------- | ----------- | ------------ |
-| k hashes        | k               | Slow        | True         |
-| Double hashing  | 2               | Fast        | Almost       |
-| Wide hash split | 1               | Even faster | Almost       |
+| Method | # of Hash Calls | Speed | Independence |
+| --- | --- | --- | --- |
+| k hashes | k | Slow | True |
+| Double hashing | 2 | Fast | Almost |
+| Wide hash split | 1 | Even faster | Almost |
 
 ## How to Calculate Parameters
 
@@ -428,10 +435,10 @@ Strictly speaking, this section should be at the very beginning — but I didn't
 
 Some of the parameters you've already met, but let's quickly recap:
 
-1. **m** — the size of the bit array (in bits)
-2. **n** — the expected number of inserted elements
-3. **k** — the number of hash functions and bit positions to set
-4. **p** — the false positive probability (also called **FPP**)
+1. *m* — the size of the bit array (in bits)
+2. *n* — the expected number of inserted elements
+3. *k* — the number of hash functions and bit positions to set
+4. *p* — the false positive probability (also called *FPP*)
 
 These parameters are tightly interconnected — changing one affects the others, leading to trade-offs between memory usage, query speed, and accuracy.
 
@@ -439,9 +446,9 @@ These parameters are tightly interconnected — changing one affects the others,
 
 The false positive rate is arguably the most important characteristic of a Bloom filter. It represents the probability that the filter incorrectly reports an element as present when it actually isn't. The theoretical false positive probability can be approximated by:
 
-$$
+```math
 p = \left(1 - e^{-kn/m}\right)^k
-$$
+```
 
 Where once again:
 
@@ -450,8 +457,9 @@ Where once again:
 - `n` is the number of inserted elements
 - `m` is the size of the bit array
 
-> [!warning]
-> It's worth noting that this formula is an approximation. According to [detailed mathematical analysis](https://cglab.ca/~morin/publications/ds/bloom-submitted.pdf), the actual false positive rate is strictly larger than this approximation for any k ≥ 2.
+:::warning
+It's worth noting that this formula is an approximation. According to [detailed mathematical analysis](https://cglab.ca/~morin/publications/ds/bloom-submitted.pdf), the actual false positive rate is strictly larger than this approximation for any k ≥ 2.
+:::
 
 ### How Parameters Affect Performance
 
@@ -461,11 +469,11 @@ The memory usage of a Bloom filter is directly proportional to `m`. This is one 
 
 For [example](https://valkey.io/blog/introducing-bloom-filters/), let's say you want to maintain 500 Bloom filters, each capable of holding 5 million elements. The total memory depends heavily on your target false positive rate:
 
-| False Positive Rate    | Total Memory | Memory Savings vs SET |
-| ---------------------- | ------------ | --------------------- |
-| 0.01 (1 in 100)        | 2.9 GB       | 98.08% saved          |
-| 0.001 (1 in 1,000)     | 4.9 GB       | 96.80% saved          |
-| 0.00001 (1 in 100,000) | 7.8 GB       | 94.88% saved          |
+| False Positive Rate | Total Memory | Memory Savings vs SET |
+| --- | --- | --- |
+| 0.01 (1 in 100) | 2.9 GB | 98.08% saved |
+| 0.001 (1 in 1,000) | 4.9 GB | 96.80% saved |
+| 0.00001 (1 in 100,000) | 7.8 GB | 94.88% saved |
 
 #### Query Performance
 
@@ -477,29 +485,29 @@ Both insertions and lookups require computing `k` hash functions and updating or
 
 If you know the expected number of elements (`n`) and your target false positive probability (`p`), you can compute the optimal size of the bit array as:
 
-$$
+```math
 m = -\frac{n \ln(p)}{(\ln(2))^2}
-$$
+```
 
 Or approximately:
 
-$$
+```math
 m \approx -n \ln(p) \cdot 2.08
-$$
+```
 
 #### Optimal Number of Hash Functions (k)
 
 Once you have `m`, you can compute the optimal number of hash functions:
 
-$$
+```math
 k = \frac{m}{n} \ln(2)
-$$
+```
 
 Or approximately:
 
-$$
+```math
 k \approx \frac{m}{n} \cdot 0.693
-$$
+```
 
 Choosing this optimal `k` minimizes the false positive rate for your selected `m` and `n`.
 
@@ -548,15 +556,15 @@ p = (1 - e^(-k * n / m))^k
   ≈ 0.0118
 ```
 
-So the false positive rate is approximately **1.18%**.
+So the false positive rate is approximately *1.18%*.
 
 ### Play With The Numbers
 
 If you're getting bored (or dizzy) with all these formulas — don't worry. Instead of torturing your brain, let's just throw your numbers into the calculator below and let it crunch everything for you.
 
-After all, you're sitting right next to one of the most advanced calculators humanity ever built — **for Christ's sake, let it do the math.**
+After all, you're sitting right next to one of the most advanced calculators humanity ever built — *for Christ's sake, let it do the math.*
 
-<ParameterCalculator />
+<ParameterCalculator/>
 
 ## Wrapping Up
 

@@ -1,7 +1,7 @@
 import type { ReviewAnchor } from './types';
 
 const BLOCKS =
-	'p, li, blockquote, pre, tr, table, h2, h3, h4, .katex-display, figcaption, figure, details';
+	'p, li, blockquote, pre, tr, table, h2, h3, h4, .math-display, figcaption, figure, details';
 /** Long quotes often span inline markup that renders differently; matching their start is enough. */
 const PREFIX = 60;
 
