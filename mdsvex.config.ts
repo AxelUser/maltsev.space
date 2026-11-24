@@ -5,6 +5,7 @@ import { page_data } from '@mdsvex/plugin-page-data';
 import { toc } from '@mdsvex/plugin-toc';
 import { createHighlighter } from 'shiki';
 import { callouts } from './src/lib/plugins/callouts.js';
+import { contents } from './src/lib/plugins/contents.js';
 import { postReferences, rewriteNoteLinks } from './src/lib/plugins/post-references.js';
 import { svgbobTones } from './src/lib/plugins/svgbob-tones.js';
 import { zombieMermaid } from './src/lib/plugins/zombie-mermaid.js';
@@ -36,8 +37,10 @@ export const mdsvexOptions: MdsvexOptions = {
 		// Renders ```mermaid fences as inline SVG, styled by src/zombie-mermaid.css.
 		zombieMermaid(),
 		callouts(),
-		// `::toc` lists the h2 and h3 headings.
+		// Collects the h2 and h3 headings into `plugin_data.toc.headings` for the TOC sidebar and `::contents`.
 		toc({ min_depth: 2, max_depth: 3 }),
+		// `::contents`, the inline TOC that `autoContents()` in vite.config.ts places before the first h2.
+		contents(),
 		anchors({ position: 'prepend', attrs: { class: 'header-anchor' } }),
 		page_data({ excerpt: false, title: false })
 	]

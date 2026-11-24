@@ -44,10 +44,6 @@ If you’re unsure, here’s the funnier part: the XOR version [isn't even faste
 
 Still, you’ll run into this kind of code, especially in tight loops in libraries or low-level systems. In this short article, I’ll walk you through some real-world bitwise operations I’ve seen in the wild, the ones that make sense, and the ones I occasionally write myself.
 
-## Contents <!-- no-toc -->
-
-::toc
-
 ## Case 1: Multiplying and Dividing by Two
 
 Let’s start with a simple micro-optimization—replacing multiplication and division by powers of two with bitwise shifts.

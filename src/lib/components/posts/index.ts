@@ -12,3 +12,4 @@ export { default as PostRef } from './post-ref.svelte';
 export { setPostRefs } from './post-refs-context';
 export { default as PostIndex } from './post-index.svelte';
 export * from './note-link';
+export { default as PostToc } from './post-toc.svelte';

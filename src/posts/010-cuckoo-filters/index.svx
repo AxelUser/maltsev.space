@@ -29,10 +29,6 @@ Counting Bloom Filters (CBF) and d-left Counting Bloom Filters are supposed to s
 
 In this article, I’ll describe a memory-efficient and deletion-friendly solution. Meet the Cuckoo Filters!
 
-## Contents <!-- no-toc -->
-
-::toc
-
 ## What are Cuckoo Filters?
 
 Cuckoo Filters are a clever step forward in the world of probabilistic data structures. [Introduced by Fan et al. in 2014](https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf), they were designed to overcome some of the major limitations of [classic Bloom Filters](/blog/008-bloom-filters-pt1), especially around memory efficiency and the lack of support for deletions.

@@ -31,10 +31,6 @@ Instead of storing the actual data, Bloom filters use a clever combo of hash fun
 
 This post is a deep dive — it's long, and we'll take our time walking through how Bloom filters work, how they're built, and how they behave. But if you're just here to see it in action, feel free to jump straight to the [interactive playground](#live-demo) and try it out yourself. Or, if you're ready to tune your own Bloom filter, head over to the [calculator](#play-with-the-numbers) to configure parameters for your use case.
 
-## Contents <!-- no-toc -->
-
-::toc
-
 ## What is a Bloom Filter?
 
 A Bloom filter is a space-efficient probabilistic data structure designed to test whether an element belongs to a set. The key insight behind Bloom filters is their fundamental trade-off: they can guarantee with absolute certainty that an element is _not_ in the set, but when they report that an element _is_ present, there's a small chance this may be a false positive. This asymmetry makes them especially useful as a first-line filter in systems where false positives are acceptable, but false negatives are not.
