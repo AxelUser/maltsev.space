@@ -8,6 +8,8 @@ export interface LiveCoverProps {
 	onready?: () => void;
 	/** Call if the scene can't start; the still image stays. */
 	onerror?: (err: unknown) => void;
+	/** Call when the reader really engages with the scene; `action` names how, e.g. 'hover', 'click'. */
+	oninteract?: (action: string) => void;
 }
 
 export type LiveCoverComponent = Component<LiveCoverProps>;

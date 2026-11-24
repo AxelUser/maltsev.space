@@ -30,8 +30,10 @@
 {#if featured}
 	<Container as="section" class="pt-10 pb-[72px]">
 		<SectionHeading title="Latest note" aside="All {data.total} notes →" href="/blog" />
-		<PostFeature post={featured} />
-		<PostRows posts={recent} class="mt-10" />
+		<div class="contents" data-ph-capture-attribute-nav="home-latest">
+			<PostFeature post={featured} />
+			<PostRows posts={recent} class="mt-10" />
+		</div>
 	</Container>
 {/if}
 

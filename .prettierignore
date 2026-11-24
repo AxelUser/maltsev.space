@@ -10,3 +10,5 @@ src/posts/
 
 # Static assets
 static/
+
+*.md

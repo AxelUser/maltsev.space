@@ -1,32 +1,22 @@
 <script lang="ts">
 	import { SiteHeader, SiteFooter, Starfield } from '$lib/components/layout';
-	import { browser, dev } from '$app/environment';
 	import { onMount } from 'svelte';
 	import '$lib/stores/theme';
 	import '../app.css';
-	import posthog from 'posthog-js';
-	import { PUBLIC_POSTHOG_API_KEY, PUBLIC_POSTHOG_HOST } from '$env/static/public';
+	import { page } from '$app/state';
 	import { beforeNavigate, afterNavigate } from '$app/navigation';
+	import { analyticsEnabled, initAnalytics, trackPageleave, trackPageview } from '$lib/analytics';
 
 	const { children } = $props();
 
-	const analyticsEnabled =
-		browser && !dev && !!PUBLIC_POSTHOG_API_KEY && window.location.hostname !== 'localhost';
-
-	onMount(() => {
-		if (analyticsEnabled) {
-			posthog.init(PUBLIC_POSTHOG_API_KEY, {
-				api_host: PUBLIC_POSTHOG_HOST,
-				person_profiles: 'always',
-				capture_pageview: false,
-				capture_pageleave: false
-			});
-		}
-	});
+	onMount(initAnalytics);
 
 	if (analyticsEnabled) {
-		beforeNavigate(() => posthog.capture('$pageleave'));
-		afterNavigate(() => posthog.capture('$pageview'));
+		// PostHog's unload handler sends $pageleave when the visitor leaves the site
+		beforeNavigate(({ type }) => {
+			if (type !== 'leave') trackPageleave();
+		});
+		afterNavigate(() => trackPageview(page.data.analytics));
 	}
 </script>
 

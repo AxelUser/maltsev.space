@@ -37,3 +37,6 @@ storybook-static
 
 # Local post reviews (redditor-audit); never leave this machine
 src/posts/*/review.*.json
+
+# AI Agents
+.claude/settings.local.json

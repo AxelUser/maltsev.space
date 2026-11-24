@@ -8,6 +8,7 @@ With JS one step shows at a time with Prev / Next buttons, step dots and ←/→
 <script lang="ts" generics="S = ArrayState">
 	import { onMount, type Snippet } from 'svelte';
 	import { cn } from '$lib/utils';
+	import { trackOnce, trackVizShown } from '$lib/analytics';
 	import ArrayView from './array-view.svelte';
 	import type { ArrayState, Step } from './types';
 
@@ -37,6 +38,7 @@ With JS one step shows at a time with Prev / Next buttons, step dots and ←/→
 	function go(to: number) {
 		active = Math.max(0, Math.min(last, to));
 		interacted = true;
+		trackOnce(`stepper:${title}`, 'viz_interacted', { viz: 'stepper', title, action: 'step' });
 	}
 
 	function onkeydown(event: KeyboardEvent) {
@@ -58,6 +60,7 @@ With JS one step shows at a time with Prev / Next buttons, step dots and ←/→
 	class:show-all={showAll}
 	aria-label={title}
 	{onkeydown}
+	use:trackVizShown={{ viz: 'stepper', title }}
 >
 	<div class="steps">
 		{#each steps as step, i (i)}
@@ -124,7 +127,14 @@ With JS one step shows at a time with Prev / Next buttons, step dots and ←/→
 		<button
 			type="button"
 			class={cn(controlClass, 'ml-auto border-transparent bg-transparent text-ink-2')}
-			onclick={() => (showAll = !showAll)}
+			onclick={() => {
+				showAll = !showAll;
+				trackOnce(`stepper:${title}`, 'viz_interacted', {
+					viz: 'stepper',
+					title,
+					action: 'show_all'
+				});
+			}}
 			aria-pressed={showAll}
 		>
 			{showAll ? 'Step through' : 'Show all steps'}

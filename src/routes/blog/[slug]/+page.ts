@@ -2,6 +2,7 @@ import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import { getPostLiveCover } from '$lib/utils';
 import { AI_COVER_KINDS, type AiCoverKind, type LiveCoverLoader } from '$lib/components/cover';
+import type { PostContext } from '$lib/analytics';
 
 // Don't import $lib/posts: this load also runs in the client and would bundle every post.
 // Series, neighbours and referenced posts come from +page.server.ts.
@@ -29,21 +30,30 @@ function liveCover(slug: string, enabled: boolean): LiveCoverLoader | undefined 
 export const load: PageLoad = async ({ params, data }) => {
 	try {
 		const post = await import(`../../../posts/${params.slug}/index.svx`);
+		const tags = (post.metadata?.tags as string[] | undefined) ?? [];
+		const readingTimeMinutes = post.plugin_data?.page?.minutes as number | undefined;
+		const seriesName = post.metadata.series as string | undefined;
 		return {
 			content: post.default,
 			title: post.metadata.title as string,
 			date: post.metadata.date as string,
 			preview: post.metadata?.preview as string,
 			keywords: post.metadata?.keywords as string[] | undefined,
-			tags: (post.metadata?.tags as string[] | undefined) ?? [],
+			tags,
 			draft: !!post.metadata?.draft,
-			readingTimeMinutes: post.plugin_data?.page?.minutes as number | undefined,
+			readingTimeMinutes,
 			slug: params.slug,
 			number: params.slug.split('-')[0],
 			aiCover: aiCover(params.slug, post.metadata.aiCover),
 			coverCaption: post.metadata.coverCaption as string | undefined,
 			liveCover: liveCover(params.slug, !!post.metadata.liveCover),
-			seriesName: post.metadata.series as string | undefined,
+			seriesName,
+			analytics: {
+				post_slug: params.slug,
+				post_tags: tags,
+				post_series: seriesName,
+				reading_time_minutes: readingTimeMinutes
+			} satisfies PostContext,
 			...data
 		};
 	} catch (err) {
