@@ -16,13 +16,17 @@
 </script>
 
 {#if older && newer}
-	<nav class="mt-14 grid gap-4 sm:grid-cols-2" aria-label="More notes">
+	<nav
+		class="mt-14 grid gap-4 sm:grid-cols-2"
+		aria-label="More notes"
+		data-ph-capture-attribute-nav="pager"
+	>
 		<PostRow post={older} eyebrow="Previous" meta={false} boxed compact dir="back" />
 		<PostRow post={newer} eyebrow="Next" meta={false} boxed compact />
 	</nav>
 {:else if older || newer}
 	{@const post = (older ?? newer)!}
-	<nav class="mt-14" aria-label="More notes">
+	<nav class="mt-14" aria-label="More notes" data-ph-capture-attribute-nav="pager">
 		<PostRow
 			{post}
 			eyebrow={older ? 'Previous' : 'Next'}

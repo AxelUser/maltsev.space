@@ -10,6 +10,7 @@
 	import type { PageProps } from './$types';
 	import { getPostHeroImage } from '$lib/utils';
 	import { dev } from '$app/environment';
+	import { trackReading } from '$lib/analytics';
 
 	const { data }: PageProps = $props();
 
@@ -68,7 +69,10 @@
 	/>
 
 	<div class="relative mx-auto max-w-article">
-		<aside class="absolute inset-y-0 left-full ml-14 hidden w-[260px] 2xl:block print:hidden">
+		<aside
+			data-ph-capture-attribute-nav="index"
+			class="absolute inset-y-0 left-full ml-14 hidden w-[260px] 2xl:block print:hidden"
+		>
 			<div class="sticky top-[calc(var(--spacing-header)+32px)]">
 				<PostIndex posts={data.index} current={data.slug} />
 			</div>
@@ -84,12 +88,12 @@
 			<SeriesParts name={data.seriesName} posts={data.series} current={data.slug} />
 		{/if}
 
-		<div class="prose">
+		<div class="prose" use:trackReading={data.slug}>
 			{@render data.content()}
 		</div>
 
 		{#if data.referencedPosts.length > 0}
-			<section class="mt-14" aria-labelledby="linked-notes">
+			<section class="mt-14" aria-labelledby="linked-notes" data-ph-capture-attribute-nav="linked">
 				<h2 id="linked-notes" class="eyebrow mb-4">Notes linked from this one</h2>
 				<PostRows posts={data.referencedPosts} />
 			</section>

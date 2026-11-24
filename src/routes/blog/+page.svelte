@@ -36,7 +36,7 @@
 	/>
 
 	{#each series as { name, parts } (name)}
-		<div class="mt-2 mb-9">
+		<div class="mt-2 mb-9" data-ph-capture-attribute-nav="series-card">
 			<SeriesCard {name} posts={parts} />
 		</div>
 	{/each}

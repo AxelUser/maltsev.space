@@ -12,7 +12,11 @@
 </script>
 
 {#if posts.length > 1}
-	<nav class="hud my-10 p-5 sm:p-6" aria-label="Series: {name}">
+	<nav
+		class="hud my-10 p-5 sm:p-6"
+		aria-label="Series: {name}"
+		data-ph-capture-attribute-nav="series"
+	>
 		<span class="eyebrow">Series · {name}</span>
 		<ol class="m-0 mt-3 list-none p-0">
 			{#each posts as post, i (post.slug)}

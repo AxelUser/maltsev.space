@@ -5,23 +5,39 @@
 	the corner and plays out the bumping. The scene is in ./scene.ts.
 -->
 <script lang="ts">
+	import { onDestroy } from 'svelte';
 	import { SceneCanvas, type LiveCoverProps } from '$lib/components/cover';
 	import { createStationScene, W, H } from './scene';
 
-	const { isRunning, onready, onerror }: LiveCoverProps = $props();
+	const { isRunning, onready, onerror, oninteract }: LiveCoverProps = $props();
+
+	const HOVER_INTERACTION_MS = 1500;
 
 	let hovered = false;
+	let hoverInteraction: ReturnType<typeof setTimeout> | undefined;
 	let clicks = 0;
 	const create = (canvas: HTMLCanvasElement) =>
 		createStationScene(canvas, { hovered: () => hovered, clicks: () => clicks });
+
+	onDestroy(() => clearTimeout(hoverInteraction));
 </script>
 
 <div
-	class="size-full cursor-pointer select-none"
+	class="ph-no-capture size-full cursor-pointer select-none"
 	role="presentation"
-	onpointerenter={() => (hovered = true)}
-	onpointerleave={() => (hovered = false)}
-	onpointerdown={(e) => e.button === 0 && clicks++}
+	onpointerenter={() => {
+		hovered = true;
+		hoverInteraction = setTimeout(() => oninteract?.('hover'), HOVER_INTERACTION_MS);
+	}}
+	onpointerleave={() => {
+		hovered = false;
+		clearTimeout(hoverInteraction);
+	}}
+	onpointerdown={(e) => {
+		if (e.button !== 0) return;
+		clicks++;
+		oninteract?.('click');
+	}}
 >
 	<SceneCanvas
 		{create}

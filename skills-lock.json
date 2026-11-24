@@ -1,33 +1,33 @@
 {
-  "version": 2,
-  "skills": {
-    "no-comments": {
-      "source": "backnotprop/pstack",
-      "commit": "c3464c11c60b1352d5e8f5f0428a3a6943837568",
-      "sourceType": "github",
-      "skillPath": "skills/no-comments/SKILL.md",
-      "computedHash": "1593b08429d49665bdf53339a64f4e72c50a6963be4fc43b2db4bf22194e11c7"
-    },
-    "svelte-code-writer": {
-      "source": "sveltejs/ai-tools",
-      "commit": "f9d22f2f7f7cd5e4596eef5d108a69ac8f0dd48d",
-      "sourceType": "github",
-      "skillPath": "tools/skills/svelte-code-writer/SKILL.md",
-      "computedHash": "8eccb2e23091d482aeaca1c95db6c5aa34d055ac2d0c9797efbbecbe5a8e4fd0"
-    },
-    "svelte-core-bestpractices": {
-      "source": "sveltejs/ai-tools",
-      "commit": "f9d22f2f7f7cd5e4596eef5d108a69ac8f0dd48d",
-      "sourceType": "github",
-      "skillPath": "tools/skills/svelte-core-bestpractices/SKILL.md",
-      "computedHash": "32070b91f54f92dba3f6e1739d82bf944c14e7a4a75cfe609a59bf1117c34338"
-    },
-    "unslop": {
-      "source": "backnotprop/pstack",
-      "commit": "c3464c11c60b1352d5e8f5f0428a3a6943837568",
-      "sourceType": "github",
-      "skillPath": "skills/unslop/SKILL.md",
-      "computedHash": "4bbcb6719a8f0f6f7fb46752e1c360791d7758a837708e300a06fc7d6907938c"
-    }
-  }
+	"version": 2,
+	"skills": {
+		"no-comments": {
+			"source": "backnotprop/pstack",
+			"commit": "c3464c11c60b1352d5e8f5f0428a3a6943837568",
+			"sourceType": "github",
+			"skillPath": "skills/no-comments/SKILL.md",
+			"computedHash": "1593b08429d49665bdf53339a64f4e72c50a6963be4fc43b2db4bf22194e11c7"
+		},
+		"svelte-code-writer": {
+			"source": "sveltejs/ai-tools",
+			"commit": "f9d22f2f7f7cd5e4596eef5d108a69ac8f0dd48d",
+			"sourceType": "github",
+			"skillPath": "tools/skills/svelte-code-writer/SKILL.md",
+			"computedHash": "8eccb2e23091d482aeaca1c95db6c5aa34d055ac2d0c9797efbbecbe5a8e4fd0"
+		},
+		"svelte-core-bestpractices": {
+			"source": "sveltejs/ai-tools",
+			"commit": "f9d22f2f7f7cd5e4596eef5d108a69ac8f0dd48d",
+			"sourceType": "github",
+			"skillPath": "tools/skills/svelte-core-bestpractices/SKILL.md",
+			"computedHash": "32070b91f54f92dba3f6e1739d82bf944c14e7a4a75cfe609a59bf1117c34338"
+		},
+		"unslop": {
+			"source": "backnotprop/pstack",
+			"commit": "c3464c11c60b1352d5e8f5f0428a3a6943837568",
+			"sourceType": "github",
+			"skillPath": "skills/unslop/SKILL.md",
+			"computedHash": "4bbcb6719a8f0f6f7fb46752e1c360791d7758a837708e300a06fc7d6907938c"
+		}
+	}
 }

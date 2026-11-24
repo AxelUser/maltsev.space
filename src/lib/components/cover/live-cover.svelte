@@ -10,6 +10,7 @@
 	import { useIntersectionObserver } from 'runed';
 	import { cn } from '$lib/utils';
 	import { LoadingOverlay } from '$lib/components/ui';
+	import { trackOnce } from '$lib/analytics';
 	import type { LiveCoverComponent, LiveCoverLoader } from './types';
 
 	interface Props {
@@ -63,6 +64,14 @@
 		},
 		{ threshold: VISIBLE }
 	);
+
+	$effect(() => {
+		if (ready && mostlyVisible) trackOnce('live-cover:shown', 'live_cover_shown', {});
+	});
+
+	function interact(action: string) {
+		trackOnce(`live-cover:${action}`, 'live_cover_interacted', { action });
+	}
 </script>
 
 <!-- data-live-cover: read by the perf tests (perf/pages.ts) to time when the scene shows. -->
@@ -74,7 +83,7 @@
 				ready ? 'opacity-100' : 'opacity-0'
 			)}
 		>
-			<Scene isRunning={mostlyVisible} onready={markReady} onerror={fail} />
+			<Scene isRunning={mostlyVisible} onready={markReady} onerror={fail} oninteract={interact} />
 		</div>
 	{/if}
 	<LoadingOverlay visible={!ready && !failed} label="Scene is loading" />

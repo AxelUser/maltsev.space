@@ -5,10 +5,16 @@
 	import { PostRows } from '$lib/components/posts';
 	import type { PostPreview } from '$lib/types';
 	import { onMount } from 'svelte';
+	import { track } from '$lib/analytics';
 
 	let recommendedPosts = $state<PostPreview[]>([]);
 
 	onMount(async () => {
+		track('page_error', {
+			status: page.status,
+			path: page.url.pathname,
+			referrer: document.referrer
+		});
 		const res = await fetch('/recent-posts.json');
 		if (res.ok) recommendedPosts = await res.json();
 	});
@@ -40,7 +46,7 @@
 	</section>
 
 	{#if recommendedPosts.length > 0}
-		<section class="pb-24">
+		<section class="pb-24" data-ph-capture-attribute-nav="error-recs">
 			<SectionHeading title="While you're here" aside="All notes →" href="/blog" />
 			<PostRows posts={recommendedPosts} />
 		</section>

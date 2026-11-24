@@ -35,7 +35,7 @@
 </script>
 
 {#if post}
-	<div class="my-8">
+	<div class="my-8" data-ph-capture-attribute-nav="post-ref">
 		<PostRow
 			{post}
 			href="/blog/{slug}{hash ? `#${hash}` : ''}"

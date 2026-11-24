@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui';
 	import { DisplayCard, LabeledInput, ParameterGroup } from '../common';
+	import { trackOnce, trackVizShown } from '$lib/analytics';
 
 	const ELEMENT_BITS = 32;
 
@@ -42,6 +43,10 @@
 		return m / expectedElements;
 	});
 
+	function trackUse(action: 'input' | 'preset') {
+		trackOnce('bloom-calculator', 'viz_interacted', { viz: 'bloom-calculator', action });
+	}
+
 	function formatNumber(num: number, decimals = 2): string {
 		if (num === 0) return '0';
 		if (num < 0.01 && num > 0) return num.toExponential(2);
@@ -59,7 +64,11 @@
 	}
 </script>
 
-<div class="mx-auto border border-line bg-surface p-5 font-sans">
+<div
+	class="mx-auto border border-line bg-surface p-5 font-sans"
+	oninput={() => trackUse('input')}
+	use:trackVizShown={{ viz: 'bloom-calculator' }}
+>
 	<h2 class="m-0 mb-12 text-center text-2xl leading-tight font-bold text-ink">
 		Bloom Filter Parameter Calculator
 	</h2>
@@ -208,6 +217,7 @@
 						onclick={() => {
 							expectedElements = 1000;
 							falsePositiveRate = 0.01;
+							trackUse('preset');
 							calculationMode = 'optimal';
 						}}
 					>
@@ -219,6 +229,7 @@
 						onclick={() => {
 							expectedElements = 100000;
 							falsePositiveRate = 0.01;
+							trackUse('preset');
 							calculationMode = 'optimal';
 						}}
 					>
@@ -230,6 +241,7 @@
 						onclick={() => {
 							expectedElements = 1000000;
 							falsePositiveRate = 0.001;
+							trackUse('preset');
 							calculationMode = 'optimal';
 						}}
 					>

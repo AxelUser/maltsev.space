@@ -9,6 +9,7 @@
 	} from './types';
 	import { Button } from '$lib/components/ui';
 	import { DisplayCard, LabeledInput, ParameterGroup } from '../common';
+	import { trackOnce, trackVizShown } from '$lib/analytics';
 
 	interface Props {
 		size?: number;
@@ -59,6 +60,7 @@
 
 	async function executeOperation(operation: BloomFilterOperation, value: string) {
 		if (isAnimating || !value.trim()) return;
+		trackOnce('bloom-filter', 'viz_interacted', { viz: 'bloom-filter', action: operation });
 
 		isAnimating = true;
 		lastOperation = operation;
@@ -167,7 +169,10 @@
 	);
 </script>
 
-<div class="mx-auto border border-line bg-surface p-5 font-sans">
+<div
+	class="mx-auto border border-line bg-surface p-5 font-sans"
+	use:trackVizShown={{ viz: 'bloom-filter' }}
+>
 	<div class="grid grid-cols-1 items-start gap-5 md:grid-cols-[1fr_250px] md:gap-12">
 		<div class="min-w-0">
 			<div class="mb-5 grid grid-cols-[repeat(auto-fit,minmax(50px,1fr))] gap-5">
