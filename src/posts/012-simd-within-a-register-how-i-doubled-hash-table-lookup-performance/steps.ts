@@ -1,4 +1,4 @@
-import type { Step } from '$lib/components/visualization/array-steps';
+import type { Step } from '#lib/components/visualization/array-steps/index.ts';
 import {
 	and,
 	hex32,
@@ -7,7 +7,7 @@ import {
 	u32,
 	xor,
 	type ByteLanesState
-} from '$lib/components/visualization/byte-lanes';
+} from '#lib/components/visualization/byte-lanes/index.ts';
 
 // HasZero(v) = ((v - 0x01010101) & ~v & 0x80808080) != 0, on the XOR result from later in the post.
 const v = 0x4462002e;

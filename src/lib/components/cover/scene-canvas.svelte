@@ -9,7 +9,7 @@
 	import { onMount } from 'svelte';
 	import { AnimationFrames } from 'runed';
 	import type { ClassValue } from 'clsx';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils/index.ts';
 	import type { CanvasScene, CanvasSceneFactory } from './types';
 
 	interface Props {

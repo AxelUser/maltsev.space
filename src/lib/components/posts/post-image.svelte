@@ -5,14 +5,14 @@
 	to name the tool, e.g. `ai="Stable Diffusion"`.
 
 	<script>
-		import { PostImage } from '$lib/components';
+		import { PostImage } from '#lib/components/index.ts';
 	</script>
 
 	<PostImage src="/images/posts/<slug>/diagram.png" alt="…" caption="…" ai />
 -->
 <script lang="ts">
-	import { getPostImage } from '$lib/utils/post-image';
-	import { AiFlag, Figure, Picture } from '$lib/components/ui';
+	import { getPostImage } from '#lib/utils/post-image.ts';
+	import { AiFlag, Figure, Picture } from '#lib/components/ui/index.ts';
 
 	interface Props {
 		src: string;

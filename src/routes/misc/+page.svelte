@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { SEO } from '$lib/components';
-	import { Container } from '$lib/components/layout';
-	import { PageHeader } from '$lib/components/ui';
-	import { CollectionBay } from '$lib/components/art';
+	import { SEO } from '#lib/components/index.ts';
+	import { Container } from '#lib/components/layout/index.ts';
+	import { PageHeader } from '#lib/components/ui/index.ts';
+	import { CollectionBay } from '#lib/components/art/index.ts';
 
 	const { data } = $props();
 </script>

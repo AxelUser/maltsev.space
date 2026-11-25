@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 	import { SimpleBloomFilter } from './simple-bloom-filter';
 	import BitSegment from './bit-segment.svelte';
 	import {
@@ -7,9 +8,9 @@
 		DEFAULT_SIZE,
 		DEFAULT_NUM_HASH_FUNCTIONS
 	} from './types';
-	import { Button } from '$lib/components/ui';
+	import { Button } from '#lib/components/ui/index.ts';
 	import { DisplayCard, LabeledInput, ParameterGroup } from '../common';
-	import { trackOnce, trackVizShown } from '$lib/analytics';
+	import { trackOnce, trackVizShown } from '#lib/analytics/index.ts';
 
 	interface Props {
 		size?: number;
@@ -36,15 +37,11 @@
 	let hash1Value = $state<number | null>(null);
 	let hash2Value = $state<number | null>(null);
 	let binaryValue = $state<string>('');
-	let highlightedBits = $state<Set<number>>(new Set());
-	let bitColors = $state<Map<number, 'blue' | 'red'>>(new Map());
+	const highlightedBits = new SvelteSet<number>();
+	const bitColors = new SvelteMap<number, 'blue' | 'red'>();
 
 	let bloomFilter = $derived(new SimpleBloomFilter(size, numHashFunctions));
-	let bitArray = $state<boolean[]>([]);
-
-	$effect(() => {
-		bitArray = bloomFilter.getBitArray();
-	});
+	let bitArray = $derived(bloomFilter.getBitArray());
 
 	const k = $derived(numHashFunctions);
 	const m = $derived(size);
@@ -95,8 +92,6 @@
 					} else {
 						bitColors.set(step.index, step.wasSet ? 'blue' : 'red');
 					}
-					highlightedBits = new Set(highlightedBits);
-					bitColors = new Map(bitColors);
 					bitArray = [...bitArray];
 					break;
 			}
@@ -119,8 +114,6 @@
 			setTimeout(() => {
 				highlightedBits.clear();
 				bitColors.clear();
-				highlightedBits = new Set();
-				bitColors = new Map();
 			}, stepDuration);
 		}
 
@@ -220,9 +213,9 @@
 
 			{#if result !== null && lastOperation}
 				<div class="mb-5 border border-line bg-canvas p-5 text-center">
-					<span class="mr-2 font-semibold text-ink-2"
-						>{lastOperation === 'insert' ? 'Inserted' : 'Check'}:</span
-					>
+					<span class="mr-2 font-semibold text-ink-2">
+						{lastOperation === 'insert' ? 'Inserted' : 'Check'}:
+					</span>
 					<span class={result ? 'text-livery-4' : 'text-ink-2'}>
 						{lastOperation === 'insert'
 							? 'Element added'

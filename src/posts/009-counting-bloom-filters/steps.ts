@@ -1,4 +1,4 @@
-import { bits, counters, marksAt, toneAt, type Step } from '$lib/components/visualization/array-steps';
+import { bits, counters, marksAt, toneAt, type Step } from '#lib/components/visualization/array-steps/index.ts';
 
 // Classic filter, m = 10. A → 0, 5, 8; B → 5, 7, 9.
 export const naiveDeletion: Step[] = [

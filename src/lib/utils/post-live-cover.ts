@@ -1,4 +1,4 @@
-import type { LiveCoverLoader } from '$lib/components/cover/types';
+import type { LiveCoverLoader } from '#lib/components/cover/types.ts';
 
 // Not eager, so each cover and its dependencies (e.g. three.js) get their own chunk.
 const liveCovers = import.meta.glob('/src/posts/*/live-cover.svelte') as Record<

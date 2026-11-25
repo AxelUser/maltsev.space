@@ -5,7 +5,7 @@
 -->
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { SceneCanvas, type LiveCoverProps } from '$lib/components/cover';
+	import { SceneCanvas, type LiveCoverProps } from '#lib/components/cover/index.ts';
 	import { createHarborScene, W, H } from './scene';
 
 	const { isRunning, onready, onerror, oninteract }: LiveCoverProps = $props();

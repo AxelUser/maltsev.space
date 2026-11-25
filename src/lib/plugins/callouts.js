@@ -35,5 +35,5 @@ export function callouts() {
 			text: (args, label) => (label === '' ? args.title : label)
 		};
 	}
-	return { name: 'callouts', module: '$lib/components/markdown', directives };
+	return { name: 'callouts', module: '#lib/components/markdown/index.ts', directives };
 }

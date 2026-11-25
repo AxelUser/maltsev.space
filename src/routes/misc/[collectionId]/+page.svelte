@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { SEO } from '$lib/components';
-	import { Container } from '$lib/components/layout';
-	import { PageHeader } from '$lib/components/ui';
-	import { Gallery, TrackList } from '$lib/components/art';
-	import { getArtImage } from '$lib/utils/art-image';
+	import { SEO } from '#lib/components/index.ts';
+	import { Container } from '#lib/components/layout/index.ts';
+	import { PageHeader } from '#lib/components/ui/index.ts';
+	import { Gallery, TrackList } from '#lib/components/art/index.ts';
+	import { getArtImage } from '#lib/utils/art-image.ts';
 
 	const { data } = $props();
 

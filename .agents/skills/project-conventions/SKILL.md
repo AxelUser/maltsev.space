@@ -14,8 +14,8 @@ what this repo does its own way. When in doubt, copy the nearest existing compon
 - Every component folder has an `index.ts` that re-exports PascalCase names:
   `export { default as PostCard } from './post-card.svelte';`. Add new components there.
 - Compound components export a namespace: `export * as Figure from './figure'`, used as `<Figure.Root>`.
-- Import from barrels (`$lib/components/ui`, `$lib/utils`). The exception is per-page heavy maps
-  (`$lib/utils/art-image`, `$lib/utils/post-image`), which are imported directly to keep other pages light.
+- Import from barrels (`#lib/components/ui/index.ts`, `#lib/utils/index.ts`). The exception is per-page heavy maps
+  (`#lib/utils/art-image.ts`, `#lib/utils/post-image.ts`), which are imported directly to keep other pages light.
 
 ## Components
 
@@ -29,7 +29,7 @@ what this repo does its own way. When in doubt, copy the nearest existing compon
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { cva, type VariantProps } from 'class-variance-authority';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils/index.ts';
 
 	const thing = cva('base utilities', {
 		variants: { variant: { primary: '…', ghost: '…' } }
@@ -58,7 +58,7 @@ what this repo does its own way. When in doubt, copy the nearest existing compon
   `visualization/*/helpers.ts` or a post's `steps.ts`, so it is easy to read and test.
 - Shared reactive state lives in `src/lib/stores/*.svelte.ts` as an exported `$state` object
   (`live-cover.svelte.ts`). Mutate its properties; don't reassign the export.
-- Browser-only code is guarded with `browser` from `$app/environment` (see `utils/device.ts`), or runs in
+- Browser-only code is guarded with `browser` from `$app/env` (see `utils/device.ts`), or runs in
   `onMount`. The site is prerendered, so module top level runs on the server.
 - Prefer `runed` helpers (`useIntersectionObserver`, …) and `svelte/reactivity` `MediaQuery` over manual
   listeners.
@@ -74,8 +74,8 @@ what this repo does its own way. When in doubt, copy the nearest existing compon
   (`steps.ts`, `live-cover.svelte`, `scene.ts`).
 - Posts use the mdsvex 1.x markdown dialect, not CommonMark. Write `*strong*` and `_em_`, callouts as
   `:::info[Title]`, display math in a `math` fence, inline math as $`x`$, and `::toc` for a contents list.
-- Components used inside posts are imported in the post's `<script>` from `$lib/components` or a
-  `$lib/components/visualization/<name>` barrel.
+- Components used inside posts are imported in the post's `<script>` from `#lib/components/index.ts` or a
+  `#lib/components/visualization/<name>/index.ts` barrel.
 - A new tag needs an entry in `src/lib/content/tags.json`, because it drives both the UI and OG images.
 
 ## Stories

@@ -1,7 +1,7 @@
-import { getPosts } from '$lib/posts';
-import { generatePostHeroThumbhash } from '$lib/server/images';
+import { getPosts } from '#lib/posts.ts';
+import { generatePostHeroThumbhash } from '#lib/server/images.ts';
 import type { PageServerLoad } from './$types';
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 
 export const load: PageServerLoad = async () => {
 	const posts = getPosts(null, dev ? 'all' : 'published');

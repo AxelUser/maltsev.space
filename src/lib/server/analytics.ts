@@ -1,5 +1,5 @@
-import { POSTHOG_ANALYTICS_PROJECT_ID, POSTHOG_ANALYTICS_API_KEY } from '$env/static/private';
-import type { ArticleAnalytics } from '$lib/types';
+import { POSTHOG_ANALYTICS_PROJECT_ID, POSTHOG_ANALYTICS_API_KEY } from '$app/env/private';
+import type { ArticleAnalytics } from '#lib/types.ts';
 
 const CACHE_TTL_MS = 5 * 60 * 1000;
 interface CacheEntry {

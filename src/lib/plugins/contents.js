@@ -2,7 +2,7 @@
 export function contents() {
 	return {
 		name: 'contents',
-		module: '$lib/components/markdown',
+		module: '#lib/components/markdown/index.ts',
 		directives: {
 			contents: {
 				parse(node, ctx) {

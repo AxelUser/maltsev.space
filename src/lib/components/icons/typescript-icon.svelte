@@ -16,6 +16,8 @@
 		font-family="Arial, sans-serif"
 		font-weight="700"
 		font-size="13"
-		fill="#fff">TS</text
+		fill="#fff"
 	>
+		TS
+	</text>
 </svg>

@@ -1,4 +1,4 @@
-import { config } from '$lib/config';
+import { config } from '#lib/config.ts';
 
 export const prerender = true;
 

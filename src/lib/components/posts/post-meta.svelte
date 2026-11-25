@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { PostPreview } from '$lib/types';
-	import { Tag } from '$lib/components/ui';
+	import type { PostPreview } from '#lib/types.ts';
+	import { Tag } from '#lib/components/ui/index.ts';
 
 	interface Props {
 		post: Pick<PostPreview, 'tags' | 'date'>;

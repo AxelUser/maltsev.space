@@ -1,9 +1,7 @@
-import { json } from '@sveltejs/kit';
-import { getPosts } from '$lib/posts';
+import { getPosts } from '#lib/posts.ts';
 
 export const prerender = true;
 
-/** Latest three posts, for the error page. */
 export function GET() {
-	return json(getPosts(3));
+	return Response.json(getPosts(3));
 }

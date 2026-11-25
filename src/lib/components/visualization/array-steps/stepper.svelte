@@ -7,8 +7,8 @@ With JS one step shows at a time with Prev / Next buttons, step dots and ←/→
 -->
 <script lang="ts" generics="S = ArrayState">
 	import { onMount, type Snippet } from 'svelte';
-	import { cn } from '$lib/utils';
-	import { trackOnce, trackVizShown } from '$lib/analytics';
+	import { cn } from '#lib/utils/index.ts';
+	import { trackOnce, trackVizShown } from '#lib/analytics/index.ts';
 	import ArrayView from './array-view.svelte';
 	import type { ArrayState, Step } from './types';
 
@@ -100,8 +100,10 @@ With JS one step shows at a time with Prev / Next buttons, step dots and ←/→
 				class={controlClass}
 				onclick={() => go(active - 1)}
 				disabled={active === 0}
-				aria-label="Previous step">← Prev</button
+				aria-label="Previous step"
 			>
+				← Prev
+			</button>
 			<div class="flex items-center gap-1.5 px-1">
 				{#each steps.keys() as i (i)}
 					<button
@@ -121,8 +123,10 @@ With JS one step shows at a time with Prev / Next buttons, step dots and ←/→
 				class={controlClass}
 				onclick={() => go(active + 1)}
 				disabled={active === last}
-				aria-label="Next step">Next →</button
+				aria-label="Next step"
 			>
+				Next →
+			</button>
 		{/if}
 		<button
 			type="button"

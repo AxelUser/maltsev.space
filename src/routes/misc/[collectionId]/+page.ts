@@ -1,4 +1,4 @@
-import { getCollection } from '$lib/content';
+import { getCollection } from '#lib/content/index.ts';
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 

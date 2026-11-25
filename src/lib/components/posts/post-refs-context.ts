@@ -1,5 +1,5 @@
 import { getContext, setContext } from 'svelte';
-import type { PostPreview } from '$lib/types';
+import type { PostPreview } from '#lib/types.ts';
 
 // The post page provides the notes it references, so `PostRef` can render them without importing $lib/posts into the client bundle.
 const key = Symbol('post-refs');

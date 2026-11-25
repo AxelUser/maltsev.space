@@ -5,9 +5,9 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
 	import { MediaQuery } from 'svelte/reactivity';
-	import { isMobileDevice, type EnhancedImageSrc } from '$lib/utils';
-	import { AiFlag, Figure, Picture } from '$lib/components/ui';
-	import { liveCoverPrefs } from '$lib/stores/live-cover.svelte';
+	import { isMobileDevice, type EnhancedImageSrc } from '#lib/utils/index.ts';
+	import { AiFlag, Figure, Picture } from '#lib/components/ui/index.ts';
+	import { liveCoverPrefs } from '#lib/stores/live-cover.svelte.ts';
 	import LiveCover from './live-cover.svelte';
 	import LiveCoverToggle from './live-cover-toggle.svelte';
 	import type { AiCoverKind, LiveCoverLoader } from './types';

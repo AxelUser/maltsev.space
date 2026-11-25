@@ -35,7 +35,7 @@ markup. Do not add `<style>` blocks.
    (three.js scenes, mermaid, interactive steppers) load lazily and enhance it progressively. Mobile and
    coarse pointers keep the still version when the effect is expensive. After adding a visual, run the
    `perf-check` skill.
-8. **Reuse before inventing.** Check `$lib/components` first (catalogue in
+8. **Reuse before inventing.** Check `#lib/components` first (catalogue in
    [references/components.md](references/components.md)). A repeated visual idea becomes an `@utility` in
    `app.css` or a `ui/` component, not a copy-pasted string of arbitrary values.
 

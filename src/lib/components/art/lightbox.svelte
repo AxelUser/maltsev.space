@@ -3,7 +3,7 @@
 	Opens when `index` is set; resets it to `null` on close.
 -->
 <script lang="ts">
-	import type { EnhancedImageSrc } from '$lib/utils';
+	import type { EnhancedImageSrc } from '#lib/utils/index.ts';
 
 	interface Props {
 		images: EnhancedImageSrc[];

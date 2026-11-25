@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { SEO } from '$lib/components';
-	import { Container } from '$lib/components/layout';
-	import { PillLinks, SectionHeading } from '$lib/components/ui';
+	import { SEO } from '#lib/components/index.ts';
+	import { Container } from '#lib/components/layout/index.ts';
+	import { PillLinks, SectionHeading } from '#lib/components/ui/index.ts';
 	import {
 		CareerTimeline,
 		ChallengeList,
@@ -9,7 +9,7 @@
 		Portrait,
 		ProjectCard,
 		StackList
-	} from '$lib/components/about';
+	} from '#lib/components/about/index.ts';
 	import {
 		bio,
 		career,
@@ -18,7 +18,7 @@
 		challengesIntro,
 		hobbies,
 		projects
-	} from '$lib/content';
+	} from '#lib/content/index.ts';
 	import avatar from '/static/images/ava.jpg?enhanced';
 
 	const contacts = [

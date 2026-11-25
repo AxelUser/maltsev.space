@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { cva, type VariantProps } from 'class-variance-authority';
 	import type { Snippet } from 'svelte';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils/index.ts';
 
 	const button = cva(
 		'inline-flex items-center gap-2.5 border-0 py-3 font-display text-[15px] font-semibold font-stretch-[110%] no-underline transition-transform hover:translate-x-[3px] disabled:pointer-events-none disabled:opacity-50',

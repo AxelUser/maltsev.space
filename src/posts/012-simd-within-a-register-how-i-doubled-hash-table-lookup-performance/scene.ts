@@ -38,7 +38,7 @@ import {
 	type M3,
 	type Part,
 	type V3
-} from '$lib/components/visualization/ps1';
+} from '#lib/components/visualization/ps1/index.ts';
 
 /** Render resolution (PS1-ish 3:2). */
 export const W = 384;

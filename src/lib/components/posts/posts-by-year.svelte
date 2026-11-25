@@ -3,7 +3,7 @@
 	Expects posts sorted newest first.
 -->
 <script lang="ts">
-	import type { PostPreview } from '$lib/types';
+	import type { PostPreview } from '#lib/types.ts';
 	import PostCard from './post-card.svelte';
 
 	const { posts }: { posts: PostPreview[] } = $props();

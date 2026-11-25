@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { config } from '$lib/config';
-	import { bio } from '$lib/content';
+	import { config } from '#lib/config.ts';
+	import { bio } from '#lib/content/index.ts';
 
 	interface Props {
 		title?: string;

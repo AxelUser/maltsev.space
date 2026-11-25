@@ -17,9 +17,9 @@ coverCaption: "Have you seen this before? Probably."
 ---
 
 <script>
-  import { PostImage, PostRef, Scrollbox } from '$lib/components';
-  import { SimpleBloomFilter, ParameterCalculator } from '$lib/components/visualization/bloom-filters';
-  import { Stepper } from '$lib/components/visualization/array-steps';
+  import { PostImage, PostRef, Scrollbox } from '#lib/components/index.ts';
+  import { SimpleBloomFilter, ParameterCalculator } from '#lib/components/visualization/bloom-filters/index.ts';
+  import { Stepper } from '#lib/components/visualization/array-steps/index.ts';
   import { insertAndQuery } from './steps';
 </script>
 

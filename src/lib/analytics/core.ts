@@ -1,6 +1,6 @@
 import posthog from 'posthog-js';
-import { browser, dev } from '$app/environment';
-import { PUBLIC_POSTHOG_API_KEY, PUBLIC_POSTHOG_HOST } from '$env/static/public';
+import { browser, dev } from '$app/env';
+import { PUBLIC_POSTHOG_API_KEY, PUBLIC_POSTHOG_HOST } from '$app/env/public';
 
 export const analyticsEnabled =
 	browser && !dev && !!PUBLIC_POSTHOG_API_KEY && window.location.hostname !== 'localhost';

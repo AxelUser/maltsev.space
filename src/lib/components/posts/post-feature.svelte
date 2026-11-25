@@ -3,7 +3,7 @@
 	The featured note on the home page: large framed image beside the title, preview and all tags.
 -->
 <script lang="ts">
-	import type { PostPreview } from '$lib/types';
+	import type { PostPreview } from '#lib/types.ts';
 	import { NoteArrow, NoteLink, NoteThumb, NoteTitle } from './note-link';
 	import PostMeta from './post-meta.svelte';
 

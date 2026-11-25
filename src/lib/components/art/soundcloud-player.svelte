@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Track } from '$lib/content';
+	import type { Track } from '#lib/content/index.ts';
 
 	const { track }: { track: Track } = $props();
 

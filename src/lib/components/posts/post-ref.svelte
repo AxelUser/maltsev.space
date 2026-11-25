@@ -1,15 +1,5 @@
-<!--
-	@component
-	Inline card for another note, placed in a markdown post.
-
-	<script>
-		import { PostRef } from '$lib/components';
-	</script>
-
-	<PostRef slug="009-counting-bloom-filters" hash="d-left-counting-bloom-filter" />
--->
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import PostRow from './post-row.svelte';
 	import { usePostRefs } from './post-refs-context';
 
@@ -33,6 +23,17 @@
 			`PostRef: no published note "${slug}" (check the slug, or that it isn't a draft)`
 		);
 </script>
+
+<!--
+	@component
+	Inline card for another note, placed in a markdown post.
+
+	<script>
+		import { PostRef } from '#lib/components/index.ts';
+	</script>
+
+	<PostRef slug="009-counting-bloom-filters" hash="d-left-counting-bloom-filter" />
+-->
 
 {#if post}
 	<div class="my-8" data-ph-capture-attribute-nav="post-ref">

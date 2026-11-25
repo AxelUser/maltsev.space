@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tagStyle } from '$lib/content';
+	import { tagStyle } from '#lib/content/index.ts';
 
 	const { tag }: { tag: string } = $props();
 

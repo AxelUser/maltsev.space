@@ -1,8 +1,12 @@
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
-import { getPostLiveCover } from '$lib/utils';
-import { AI_COVER_KINDS, type AiCoverKind, type LiveCoverLoader } from '$lib/components/cover';
-import type { PostContext } from '$lib/analytics';
+import { getPostLiveCover } from '#lib/utils/index.ts';
+import {
+	AI_COVER_KINDS,
+	type AiCoverKind,
+	type LiveCoverLoader
+} from '#lib/components/cover/index.ts';
+import type { PostContext } from '#lib/analytics/index.ts';
 import type { TocHeading } from '@mdsvex/plugin-toc';
 
 // Don't import $lib/posts: this load also runs in the client and would bundle every post.

@@ -4,7 +4,7 @@
 	newest or first note, the one neighbour gets the full width with its preview text.
 -->
 <script lang="ts">
-	import type { PostPreview } from '$lib/types';
+	import type { PostPreview } from '#lib/types.ts';
 	import PostRow from './post-row.svelte';
 
 	interface Props {

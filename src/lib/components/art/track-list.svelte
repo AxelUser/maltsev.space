@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { MusicCollection } from '$lib/content';
+	import type { MusicCollection } from '#lib/content/index.ts';
 	import SoundCloudPlayer from './soundcloud-player.svelte';
 
 	const { collection }: { collection: MusicCollection } = $props();

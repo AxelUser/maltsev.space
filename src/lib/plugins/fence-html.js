@@ -16,7 +16,7 @@ import { fence_meta } from 'mdsvex/compile';
 export function fenceHtml(name, lang, render) {
 	return {
 		name,
-		module: '$lib/components/markdown',
+		module: '#lib/components/markdown/index.ts',
 		directives: { [lang]: { text: () => '' } },
 		fences: [lang],
 		parse: {

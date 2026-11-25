@@ -1,4 +1,4 @@
-import type { PostContext } from '$lib/analytics';
+import type { PostContext } from '#lib/analytics/index.ts';
 
 declare global {
 	namespace App {

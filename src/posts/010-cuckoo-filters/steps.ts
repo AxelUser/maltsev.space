@@ -1,4 +1,4 @@
-import type { Step } from '$lib/components/visualization/array-steps';
+import type { Step } from '#lib/components/visualization/array-steps/index.ts';
 
 // Classic cuckoo hashing, 8 buckets of one slot.
 // lime → 1 or 5; kiwi → 1 or 6; plum → 6 or 3.

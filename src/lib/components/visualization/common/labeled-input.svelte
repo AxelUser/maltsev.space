@@ -27,9 +27,9 @@
 	class="mb-5 flex flex-col gap-2 border border-line bg-canvas p-5 transition-all duration-200 ease-[ease]"
 >
 	{#if label}
-		<label for={inputId} class="m-0 text-base font-semibold text-ink-2"
-			>{label}{required ? '*' : ''}</label
-		>
+		<label for={inputId} class="m-0 text-base font-semibold text-ink-2">
+			{label}{required ? '*' : ''}
+		</label>
 	{/if}
 	<input
 		id={inputId}

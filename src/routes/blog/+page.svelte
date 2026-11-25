@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { SEO } from '$lib/components';
-	import { Container } from '$lib/components/layout';
-	import { Button, Chip, PageHeader } from '$lib/components/ui';
-	import { PostsByYear, SeriesCard } from '$lib/components/posts';
-	import { bio, tagStyle } from '$lib/content';
+	import { SEO } from '#lib/components/index.ts';
+	import { Container } from '#lib/components/layout/index.ts';
+	import { Button, Chip, PageHeader } from '#lib/components/ui/index.ts';
+	import { PostsByYear, SeriesCard } from '#lib/components/posts/index.ts';
+	import { bio, tagStyle } from '#lib/content/index.ts';
 
 	const { data } = $props();
 

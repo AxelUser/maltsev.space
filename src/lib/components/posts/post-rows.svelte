@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { PostPreview } from '$lib/types';
-	import { cn } from '$lib/utils';
+	import type { PostPreview } from '#lib/types.ts';
+	import { cn } from '#lib/utils/index.ts';
 	import PostRow from './post-row.svelte';
 
 	const { posts, class: className }: { posts: PostPreview[]; class?: string } = $props();

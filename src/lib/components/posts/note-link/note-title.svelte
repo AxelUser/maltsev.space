@@ -6,7 +6,7 @@
 	import type { Snippet } from 'svelte';
 	import type { ClassValue } from 'clsx';
 	import { cva, type VariantProps } from 'class-variance-authority';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils/index.ts';
 
 	const title = cva(
 		'm-0 block font-display font-medium font-stretch-[104%] transition-colors group-hover:text-link',

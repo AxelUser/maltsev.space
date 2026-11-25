@@ -3,8 +3,8 @@
 	A series card, showing the series name, description and a link to the first note.
 -->
 <script lang="ts">
-	import type { PostPreview } from '$lib/types';
-	import { seriesDescription } from '$lib/content';
+	import type { PostPreview } from '#lib/types.ts';
+	import { seriesDescription } from '#lib/content/index.ts';
 	import { NoteArrow, NoteLink, NoteThumb, NoteTitle } from './note-link';
 
 	interface Props {

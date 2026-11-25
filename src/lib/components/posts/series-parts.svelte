@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PostPreview } from '$lib/types';
+	import type { PostPreview } from '#lib/types.ts';
 	import { NoteArrow, NoteLink, NoteTitle } from './note-link';
 
 	interface Props {

@@ -1,4 +1,4 @@
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { writable } from 'svelte/store';
 
 /** `system` = Auto: follow the OS. The pre-paint script in app.html reads the same key. */

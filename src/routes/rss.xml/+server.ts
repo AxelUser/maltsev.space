@@ -1,6 +1,6 @@
-import { bio } from '$lib/content';
-import { config } from '$lib/config';
-import { getPosts } from '$lib/posts';
+import { bio } from '#lib/content/index.ts';
+import { config } from '#lib/config.ts';
+import { getPosts } from '#lib/posts.ts';
 
 export const prerender = true;
 

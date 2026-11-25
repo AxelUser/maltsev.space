@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { Container } from '$lib/components/layout';
-	import { Button, SectionHeading } from '$lib/components/ui';
-	import { PostRows } from '$lib/components/posts';
-	import type { PostPreview } from '$lib/types';
+	import { Container } from '#lib/components/layout/index.ts';
+	import { Button, SectionHeading } from '#lib/components/ui/index.ts';
+	import { PostRows } from '#lib/components/posts/index.ts';
+	import type { PostPreview } from '#lib/types.ts';
 	import { onMount } from 'svelte';
-	import { track } from '$lib/analytics';
+	import { track } from '#lib/analytics/index.ts';
 
 	let recommendedPosts = $state<PostPreview[]>([]);
 
@@ -32,9 +32,9 @@
 			class="m-0 text-[clamp(42px,6.4vw,88px)]/[0.98] font-light tracking-[-0.02em] font-stretch-[115%]"
 		>
 			<span class="block text-ink-3">Signal lost.</span>
-			<span class="block font-semibold"
-				>Error {page.status}<span class="text-livery-1">.</span></span
-			>
+			<span class="block font-semibold">
+				Error {page.status}<span class="text-livery-1">.</span>
+			</span>
 		</h1>
 		<p class="mt-9 mb-0 max-w-[31em] text-[18px] text-ink-2">
 			Oops! We've drifted into unknown space coordinates!

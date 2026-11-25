@@ -4,7 +4,7 @@
 	`relative` box; fades in and out with `visible`.
 -->
 <script lang="ts">
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils/index.ts';
 
 	interface Props {
 		visible: boolean;

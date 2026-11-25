@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { SEO } from '$lib/components';
-	import { Container } from '$lib/components/layout';
-	import { SectionHeading } from '$lib/components/ui';
-	import { Hero, DestinationCard } from '$lib/components/home';
-	import { PostFeature, PostRows } from '$lib/components/posts';
-	import { bio, getAllCollections } from '$lib/content';
-	import { getArtImage } from '$lib/utils/art-image';
+	import { SEO } from '#lib/components/index.ts';
+	import { Container } from '#lib/components/layout/index.ts';
+	import { SectionHeading } from '#lib/components/ui/index.ts';
+	import { Hero, DestinationCard } from '#lib/components/home/index.ts';
+	import { PostFeature, PostRows } from '#lib/components/posts/index.ts';
+	import { bio, getAllCollections } from '#lib/content/index.ts';
+	import { getArtImage } from '#lib/utils/art-image.ts';
 	import avatar from '/static/images/ava.jpg?enhanced';
 
 	const { data } = $props();

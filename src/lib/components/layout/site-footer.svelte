@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { bio } from '$lib/content';
+	import { bio } from '#lib/content/index.ts';
 	import Container from './container.svelte';
 
 	const links = [

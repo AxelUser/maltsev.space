@@ -1,18 +1,9 @@
-<!--
-	@component
-	Dev-only review overlay for a post. Loads `src/posts/<slug>/review.*.json` through the dev server
-	(`src/lib/plugins/vite-post-review.js`) and shows each comment next to the block it quotes, in the left
-	margin on wide screens (past the notes index from 2xl) or in a left drawer otherwise. Renders nothing when the post has no
-	review files. Place it inside the positioned wrapper that holds `.prose`.
-
-	{#if dev}{#await import('$lib/components/dev/review') then m}<m.ReviewOverlay slug={data.slug} />{/await}{/if}
--->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { MediaQuery, SvelteMap } from 'svelte/reactivity';
-	import { Chip } from '$lib/components/ui';
-	import { cn } from '$lib/utils';
+	import { Chip } from '#lib/components/ui/index.ts';
+	import { cn } from '#lib/utils/index.ts';
 	import { findAnchor } from './anchors';
 	import ReviewCard from './review-card.svelte';
 	import {
@@ -198,6 +189,16 @@
 		load();
 	});
 </script>
+
+<!--
+	@component
+	Dev-only review overlay for a post. Loads `src/posts/<slug>/review.*.json` through the dev server
+	(`src/lib/plugins/vite-post-review.js`) and shows each comment next to the block it quotes, in the left
+	margin on wide screens (past the notes index from 2xl) or in a left drawer otherwise. Renders nothing when the post has no
+	review files. Place it inside the positioned wrapper that holds `.prose`.
+
+	{#if dev}{#await import('#lib/components/dev/review/index.ts') then m}<m.ReviewOverlay slug={data.slug} />{/await}{/if}
+-->
 
 <div bind:this={host} class="contents" data-review-overlay>
 	{#if data}

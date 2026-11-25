@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { theme, type Theme } from '$lib/stores/theme';
+	import { theme, type Theme } from '#lib/stores/theme.ts';
 
 	const options: { value: Theme; label: string; title: string }[] = [
 		{ value: 'light', label: 'Day', title: 'Day theme' },

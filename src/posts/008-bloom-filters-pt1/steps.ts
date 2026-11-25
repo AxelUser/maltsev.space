@@ -1,4 +1,4 @@
-import { bits, toneAt, type Step } from '$lib/components/visualization/array-steps';
+import { bits, toneAt, type Step } from '#lib/components/visualization/array-steps/index.ts';
 
 // m = 16, k = 3. apple → 3, 8, 14; grape → 1, 7, 11; banana → 3, 5, 14; cherry → 3, 7, 11.
 const afterApple = bits(16, [3, 8, 14]);

@@ -40,6 +40,6 @@ Personal blog of Aleksey Maltsev. Static SvelteKit site with a "flight deck" spa
 ## Hard rules
 
 - Style with Tailwind utilities and `app.css` tokens. No `<style>` blocks, no raw hex colours, no border radius.
-- Reuse `$lib/components` before writing new markup.
-- Copy and data go in `$lib/content`, not in pages.
+- Reuse `#lib/components` before writing new markup.
+- Copy and data go in `#lib/content`, not in pages.
 - Before calling a task done, run `pnpm check` and `pnpm lint`.

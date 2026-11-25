@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils/index.ts';
 
 	interface Props {
 		bits: (boolean | string)[];
@@ -39,9 +39,9 @@
 	<div class="flex justify-center gap-1">
 		{#each bits.keys() as bitIndex (bitIndex)}
 			{@const absoluteIndex = startIndex + bitIndex}
-			<span class="w-5 text-center font-mono text-xs text-ink-2 min-[601px]:w-6"
-				>{absoluteIndex}</span
-			>
+			<span class="w-5 text-center font-mono text-xs text-ink-2 min-[601px]:w-6">
+				{absoluteIndex}
+			</span>
 		{/each}
 	</div>
 </div>

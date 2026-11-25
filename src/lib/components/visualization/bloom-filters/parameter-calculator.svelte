@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui';
+	import { Button } from '#lib/components/ui/index.ts';
 	import { DisplayCard, LabeledInput, ParameterGroup } from '../common';
-	import { trackOnce, trackVizShown } from '$lib/analytics';
+	import { trackOnce, trackVizShown } from '#lib/analytics/index.ts';
 
 	const ELEMENT_BITS = 32;
 

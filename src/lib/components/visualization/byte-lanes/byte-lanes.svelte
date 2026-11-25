@@ -5,7 +5,7 @@ Each lane shows its 8 bits with the byte's hex below; lanes are headed by bit ra
 Static and SSR-safe; every row shares one column template, so lanes always line up.
 -->
 <script lang="ts">
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils/index.ts';
 	import { hex32 } from './helpers';
 	import type { ByteLanesState, ByteOp, Lane, LaneTone } from './types';
 
@@ -81,12 +81,14 @@ Static and SSR-safe; every row shares one column template, so lanes always line 
 					>
 						<span class="text-xs sm:text-base md:text-lg">
 							{#each bitsOf(byte) as bit, b (b)}<span
-									class={cn(state.msb && r === last && b > 0 && 'opacity-35')}>{bit}</span
-								>{/each}
+									class={cn(state.msb && r === last && b > 0 && 'opacity-35')}
+								>
+									{bit}
+								</span>{/each}
 						</span>
-						<span class="text-[11px] leading-tight opacity-70 sm:text-xs md:text-sm"
-							>{hex8(byte)}</span
-						>
+						<span class="text-[11px] leading-tight opacity-70 sm:text-xs md:text-sm">
+							{hex8(byte)}
+						</span>
 					</div>
 				{/each}
 				<div class="hidden pt-0.5 pl-1 text-xs text-ink-2 sm:block sm:text-sm md:pt-1 md:text-base">

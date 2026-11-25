@@ -4,7 +4,7 @@ One state of a bit / counter array: marks above, cells, index row, owners and no
 Static and SSR-safe; every row shares one column template, so marks always line up with cells.
 -->
 <script lang="ts">
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils/index.ts';
 	import type { ArrayState, Tone } from './types';
 
 	interface Props {

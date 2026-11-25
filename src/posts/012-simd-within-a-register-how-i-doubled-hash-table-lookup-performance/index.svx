@@ -17,8 +17,8 @@ liveCover: true
 ---
 
 <script>
-    import { PostRef, Scrollbox } from '$lib/components';
-    import { ByteLanes, ByteLanesStepper } from '$lib/components/visualization/byte-lanes';
+    import { PostRef, Scrollbox } from '#lib/components/index.ts';
+    import { ByteLanes, ByteLanesStepper } from '#lib/components/visualization/byte-lanes/index.ts';
     import { hasZeroSteps, xorExample, existingZeroOther, existingZeroEmpty } from './steps';
 </script>
 
