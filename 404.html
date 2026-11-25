@@ -25,31 +25,35 @@
 				if (t === 'light' || t === 'dark') document.documentElement.setAttribute('color-scheme', t);
 			} catch (e) {}
 		</script>
+		<link href="/_app/immutable/entry/start.DcWu_8Wa.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/payload.DSmR2FwN.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DclECHGd.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/Z7unDyFu.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DxVhJGaH.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/hT4FF579.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/2C0BYcDp.js" rel="modulepreload">
+		<link href="/_app/immutable/entry/app.DHXufpHs.js" rel="modulepreload">
+		<link href="/_app/immutable/nodes/0.BDWju7UF.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/DK3Fl9T5.js" rel="modulepreload">
+		<link href="/_app/immutable/chunks/BKcf2Cs3.js" rel="modulepreload">
 		
-		<link rel="modulepreload" href="/_app/immutable/entry/start.CVpKHtlB.js">
-		<link rel="modulepreload" href="/_app/immutable/chunks/ClQ7fnb6.js">
-		<link rel="modulepreload" href="/_app/immutable/chunks/C10t3tSs.js">
-		<link rel="modulepreload" href="/_app/immutable/entry/app.Bs9z2qyO.js">
-		<link rel="modulepreload" href="/_app/immutable/chunks/Dp1pzeXC.js">
-		<link rel="modulepreload" href="/_app/immutable/chunks/6VijlURb.js">
-		<link rel="modulepreload" href="/_app/immutable/chunks/Rh48Nhdc.js">
-		<link rel="modulepreload" href="/_app/immutable/chunks/ACyd8ggM.js">
+		<link href="/_app/immutable/assets/0.BmOOY831.css" rel="stylesheet">
 	</head>
 
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">
 			<script>
 				{
-					__sveltekit_179q2go = {
-						base: ""
+					__sveltekit_oh5r4s = {
+						base: "",
+						version: "1795642488043"
 					};
 
 					const element = document.currentScript.parentElement;
 
-					Promise.all([
-						import("/_app/immutable/entry/start.CVpKHtlB.js"),
-						import("/_app/immutable/entry/app.Bs9z2qyO.js")
-					]).then(([kit, app]) => {
+					import("/_app/immutable/entry/start.DcWu_8Wa.js").then(async (kit) => {
+						kit.init(__sveltekit_oh5r4s);
+						const app = await import("/_app/immutable/entry/app.DHXufpHs.js");
 						kit.start(app, element);
 					});
 				}

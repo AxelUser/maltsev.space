@@ -1,1 +1,0 @@
-const o=(t,s)=>Array.from({length:t},(r,n)=>s.includes(n)?1:0),e=(t,s)=>Array.from({length:t},(r,n)=>s[n]??0),a=(t,s)=>Object.fromEntries(t.map(r=>[r,s])),c=(t,s)=>Object.fromEntries(t.map(r=>[r,s]));export{o as b,e as c,a as m,c as t};

@@ -1,0 +1,1 @@
+var e=(e,t)=>Array.from({length:e},(e,n)=>+!!t.includes(n)),t=(e,t)=>Array.from({length:e},(e,n)=>t[n]??0),n=(e,t)=>Object.fromEntries(e.map(e=>[e,t])),r=(e,t)=>Object.fromEntries(e.map(e=>[e,t]));export{r as i,t as n,n as r,e as t};
