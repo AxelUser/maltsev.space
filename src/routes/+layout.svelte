@@ -1,11 +1,16 @@
 <script lang="ts">
-	import { SiteHeader, SiteFooter, Starfield } from '$lib/components/layout';
+	import { SiteHeader, SiteFooter, Starfield } from '#lib/components/layout/index.ts';
 	import { onMount } from 'svelte';
-	import '$lib/stores/theme';
+	import '#lib/stores/theme.ts';
 	import '../app.css';
 	import { page } from '$app/state';
 	import { beforeNavigate, afterNavigate } from '$app/navigation';
-	import { analyticsEnabled, initAnalytics, trackPageleave, trackPageview } from '$lib/analytics';
+	import {
+		analyticsEnabled,
+		initAnalytics,
+		trackPageleave,
+		trackPageview
+	} from '#lib/analytics/index.ts';
 
 	const { children } = $props();
 
@@ -13,10 +18,16 @@
 
 	if (analyticsEnabled) {
 		// PostHog's unload handler sends $pageleave when the visitor leaves the site
-		beforeNavigate(({ type }) => {
+		beforeNavigate(({ type, shallow }) => {
+			if (shallow && type === 'goto') return;
 			if (type !== 'leave') trackPageleave();
 		});
-		afterNavigate(() => trackPageview(page.data.analytics));
+
+		afterNavigate(({ shallow, type }) => {
+			if (shallow && type === 'goto') return;
+
+			return trackPageview(page.data.analytics);
+		});
 	}
 </script>
 

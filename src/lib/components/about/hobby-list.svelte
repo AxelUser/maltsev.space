@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Hobby } from '$lib/content';
-	import { HobbyIcon } from '$lib/components/icons';
+	import type { Hobby } from '#lib/content/index.ts';
+	import { HobbyIcon } from '#lib/components/icons/index.ts';
 
 	const { hobbies }: { hobbies: Hobby[] } = $props();
 </script>

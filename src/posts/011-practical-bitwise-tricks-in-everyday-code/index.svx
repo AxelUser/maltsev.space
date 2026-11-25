@@ -13,7 +13,7 @@ coverCaption: "0x2A: the answer, in hex."
 ---
 
 <script>
-    import { PostRef } from '$lib/components';
+    import { PostRef } from '#lib/components/index.ts';
 </script>
 
 I’m not exactly a big fan of writing bitwise operations everywhere. Don’t get me wrong, I still enjoy this kind of “brain gymnastics”, but sometimes it gets out of hand.

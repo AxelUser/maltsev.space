@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Challenge } from '$lib/content';
-	import { PillLinks } from '$lib/components/ui';
+	import type { Challenge } from '#lib/content/index.ts';
+	import { PillLinks } from '#lib/components/ui/index.ts';
 
 	const { challenges }: { challenges: Challenge[] } = $props();
 </script>

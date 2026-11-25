@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { EnhancedImageSrc } from '$lib/utils';
+	import type { EnhancedImageSrc } from '#lib/utils/index.ts';
 
 	interface Props {
 		images: EnhancedImageSrc[];

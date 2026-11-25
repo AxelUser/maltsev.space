@@ -3,8 +3,8 @@
 	A note card as a row.
 -->
 <script lang="ts">
-	import type { PostPreview } from '$lib/types';
-	import { cn } from '$lib/utils';
+	import type { PostPreview } from '#lib/types.ts';
+	import { cn } from '#lib/utils/index.ts';
 	import { NoteArrow, NoteLink, NoteThumb, NoteTitle } from './note-link';
 	import PostMeta from './post-meta.svelte';
 

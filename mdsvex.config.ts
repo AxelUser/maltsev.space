@@ -9,7 +9,7 @@ import { contents } from './src/lib/plugins/contents.js';
 import { postReferences, rewriteNoteLinks } from './src/lib/plugins/post-references.js';
 import { svgbobTones } from './src/lib/plugins/svgbob-tones.js';
 import { zombieMermaid } from './src/lib/plugins/zombie-mermaid.js';
-import { config as siteConfig } from './src/lib/config';
+import { config as siteConfig } from './src/lib/config.ts';
 
 const themes = { light: 'github-light', dark: 'github-dark' };
 

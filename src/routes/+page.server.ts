@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types';
-import { getPosts } from '$lib/posts';
+import { getPosts } from '#lib/posts.ts';
 
 // Server load, not +page.ts: $lib/posts imports every post and must stay out of the client bundle.
 export const load: PageServerLoad = async () => {

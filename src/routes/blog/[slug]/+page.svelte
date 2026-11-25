@@ -2,10 +2,10 @@
 	import '../../../svgbob.css';
 	import '../../../zombie-mermaid.css';
 	import 'temml/dist/Temml-Local.css';
-	import { SEO } from '$lib/components';
-	import { Container } from '$lib/components/layout';
-	import { Tag } from '$lib/components/ui';
-	import { PostCover } from '$lib/components/cover';
+	import { SEO } from '#lib/components/index.ts';
+	import { Container } from '#lib/components/layout/index.ts';
+	import { Tag } from '#lib/components/ui/index.ts';
+	import { PostCover } from '#lib/components/cover/index.ts';
 	import {
 		PostIndex,
 		PostPager,
@@ -13,11 +13,11 @@
 		PostToc,
 		SeriesParts,
 		setPostRefs
-	} from '$lib/components/posts';
+	} from '#lib/components/posts/index.ts';
 	import type { PageProps } from './$types';
-	import { getPostHeroImage } from '$lib/utils';
-	import { dev } from '$app/environment';
-	import { trackReading } from '$lib/analytics';
+	import { getPostHeroImage } from '#lib/utils/index.ts';
+	import { dev } from '$app/env';
+	import { trackReading } from '#lib/analytics/index.ts';
 
 	const { data }: PageProps = $props();
 
@@ -97,7 +97,7 @@
 		{/if}
 
 		{#if dev}
-			{#await import('$lib/components/dev/review') then review}
+			{#await import('#lib/components/dev/review/index.ts') then review}
 				<review.ReviewOverlay slug={data.slug} />
 			{/await}
 		{/if}

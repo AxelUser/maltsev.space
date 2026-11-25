@@ -4,7 +4,7 @@
 -->
 <script lang="ts">
 	import type { ClassValue } from 'clsx';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils/index.ts';
 
 	interface Props {
 		dir?: 'forward' | 'back';
@@ -24,8 +24,10 @@
 			'inline-block transition-transform',
 			back ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'
 		]}
-		aria-hidden="true">{back ? '←' : '→'}</span
+		aria-hidden="true"
 	>
+		{back ? '←' : '→'}
+	</span>
 {/snippet}
 
 <span

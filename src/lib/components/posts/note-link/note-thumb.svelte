@@ -4,8 +4,8 @@
 -->
 <script lang="ts">
 	import type { ClassValue } from 'clsx';
-	import { cn, getPostHeroImage } from '$lib/utils';
-	import { Frame, HoverZoom, Picture } from '$lib/components/ui';
+	import { cn, getPostHeroImage } from '#lib/utils/index.ts';
+	import { Frame, HoverZoom, Picture } from '#lib/components/ui/index.ts';
 
 	interface Props {
 		slug: string;

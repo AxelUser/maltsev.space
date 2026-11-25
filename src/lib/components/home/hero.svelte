@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { bio } from '$lib/content';
-	import { Button } from '$lib/components/ui';
-	import { Container } from '$lib/components/layout';
+	import { bio } from '#lib/content/index.ts';
+	import { Button } from '#lib/components/ui/index.ts';
+	import { Container } from '#lib/components/layout/index.ts';
 	import OrbitFigure from './orbit-figure.svelte';
 </script>
 

@@ -1,7 +1,7 @@
-import { config } from '$lib/config';
-import { getPosts } from '$lib/posts';
-import { getAllCollections } from '$lib/content';
-import { getLastModified } from '$lib/server/git';
+import { config } from '#lib/config.ts';
+import { getPosts } from '#lib/posts.ts';
+import { getAllCollections } from '#lib/content/index.ts';
+import { getLastModified } from '#lib/server/git.ts';
 
 export const prerender = true;
 

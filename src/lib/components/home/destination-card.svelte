@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { EnhancedImageSrc } from '$lib/utils';
-	import { HudBox } from '$lib/components/ui';
+	import type { EnhancedImageSrc } from '#lib/utils/index.ts';
+	import { HudBox } from '#lib/components/ui/index.ts';
 
 	interface Props {
 		href: string;

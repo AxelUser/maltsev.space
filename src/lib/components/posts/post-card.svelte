@@ -3,7 +3,7 @@
 	A note in the blog grid.
 -->
 <script lang="ts">
-	import type { PostPreview } from '$lib/types';
+	import type { PostPreview } from '#lib/types.ts';
 	import { NoteArrow, NoteLink, NoteThumb, NoteTitle } from './note-link';
 	import PostMeta from './post-meta.svelte';
 

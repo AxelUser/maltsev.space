@@ -1,9 +1,9 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getNeighbours, getPosts, getSeries } from '$lib/posts';
-import { generatePostHeroThumbhash, getOGImagePath } from '$lib/server/images';
-import { getArticleViews } from '$lib/server/analytics';
-import type { PostIndexEntry, PostPreview } from '$lib/types';
+import { getNeighbours, getPosts, getSeries } from '#lib/posts.ts';
+import { generatePostHeroThumbhash, getOGImagePath } from '#lib/server/images.ts';
+import { getArticleViews } from '#lib/server/analytics.ts';
+import type { PostIndexEntry, PostPreview } from '#lib/types.ts';
 
 /** Published posts by slug, each with its hero placeholder. */
 async function referencedPosts(slugs: string[]): Promise<PostPreview[]> {

@@ -5,7 +5,7 @@
 	stays visible, with its old quote struck through.
 -->
 <script lang="ts">
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils/index.ts';
 	import {
 		SEVERITY,
 		isResolved,
@@ -49,19 +49,25 @@
 			<button
 				type="button"
 				class="text-ink-2 hover:text-link"
-				onclick={() => onstatus(comment, 'open')}>Reopen</button
+				onclick={() => onstatus(comment, 'open')}
 			>
+				Reopen
+			</button>
 		{:else}
 			<button
 				type="button"
 				class="text-ink-2 hover:text-link"
-				onclick={() => onstatus(comment, 'done')}>✓ Done</button
+				onclick={() => onstatus(comment, 'done')}
 			>
+				✓ Done
+			</button>
 			<button
 				type="button"
 				class="text-ink-2 hover:text-link"
-				onclick={() => onstatus(comment, 'discarded')}>✕ Discard</button
+				onclick={() => onstatus(comment, 'discarded')}
 			>
+				✕ Discard
+			</button>
 		{/if}
 	</div>
 {/snippet}
@@ -76,8 +82,10 @@
 					'border px-1.5 normal-case',
 					comment.check.startsWith('checked') ? 'border-livery-4 text-ink-2' : 'border-line-2'
 				)}
-				title={comment.check}>{comment.check.startsWith('checked') ? 'checked' : 'hunch'}</span
+				title={comment.check}
 			>
+				{comment.check.startsWith('checked') ? 'checked' : 'hunch'}
+			</span>
 		{/if}
 	</p>
 {/snippet}
@@ -121,13 +129,19 @@
 					type="button"
 					class="eyebrow hover:text-link"
 					onclick={onlocate}
-					aria-label="Scroll to the quoted text">Show ↗</button
+					aria-label="Scroll to the quoted text"
 				>
+					Show ↗
+				</button>
 			{/if}
 			{#if resolved}
-				<button type="button" class="eyebrow hover:text-link" onclick={() => (expanded = !expanded)}
-					>{expanded ? 'Hide' : 'Open'}</button
+				<button
+					type="button"
+					class="eyebrow hover:text-link"
+					onclick={() => (expanded = !expanded)}
 				>
+					{expanded ? 'Hide' : 'Open'}
+				</button>
 			{/if}
 		</span>
 	</header>

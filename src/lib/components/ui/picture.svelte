@@ -4,7 +4,7 @@
 -->
 <script lang="ts">
 	import type { ClassValue } from 'clsx';
-	import { cn, type EnhancedImageSrc } from '$lib/utils';
+	import { cn, type EnhancedImageSrc } from '#lib/utils/index.ts';
 
 	interface Props {
 		src?: EnhancedImageSrc;

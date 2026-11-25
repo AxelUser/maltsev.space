@@ -5,7 +5,7 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { stack, type StackKey } from '$lib/components/icons';
+	import { stack, type StackKey } from '#lib/components/icons/index.ts';
 
 	interface Props {
 		items: readonly StackKey[];

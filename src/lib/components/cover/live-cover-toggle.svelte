@@ -3,7 +3,7 @@
 	On/off switch for the live cover.
 -->
 <script lang="ts">
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils/index.ts';
 
 	let { enabled = $bindable() }: { enabled: boolean } = $props();
 </script>

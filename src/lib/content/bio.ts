@@ -21,7 +21,7 @@ export const bio = {
 		'Microservices',
 		'NoSQL'
 	],
-	/** Keys of the `stack` registry in `$lib/components/icons`. */
+	/** Keys of the `stack` registry in `#lib/components/icons/index.ts`. */
 	stack: ['csharp', 'kotlin', 'typescript', 'go', 'svelte'] as const,
 	social: {
 		email: 'aleksey@maltsev.space',

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Project } from '$lib/content';
-	import { HudBox, TechList } from '$lib/components/ui';
+	import type { Project } from '#lib/content/index.ts';
+	import { HudBox, TechList } from '#lib/components/ui/index.ts';
 
 	const { project }: { project: Project } = $props();
 </script>

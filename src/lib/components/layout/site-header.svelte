@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { sections } from '$lib/config';
+	import { sections } from '#lib/config.ts';
 	import ReadingProgress from './reading-progress.svelte';
 	import ThemeSwitch from './theme-switch.svelte';
 	import Container from './container.svelte';

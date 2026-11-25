@@ -22,6 +22,8 @@
 		font-weight="900"
 		font-style="italic"
 		font-size="14.5"
-		fill="#00ADD8">GO</text
+		fill="#00ADD8"
 	>
+		GO
+	</text>
 </svg>

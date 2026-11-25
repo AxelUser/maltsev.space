@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { collectionKinds, collectionSize, type ArtCollection } from '$lib/content';
-	import { getArtImage } from '$lib/utils/art-image';
-	import { Button } from '$lib/components/ui';
+	import { collectionKinds, collectionSize, type ArtCollection } from '#lib/content/index.ts';
+	import { getArtImage } from '#lib/utils/art-image.ts';
+	import { Button } from '#lib/components/ui/index.ts';
 	import ImageStrip from './image-strip.svelte';
 	import SoundCloudPlayer from './soundcloud-player.svelte';
 

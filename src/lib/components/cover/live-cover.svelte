@@ -8,9 +8,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { useIntersectionObserver } from 'runed';
-	import { cn } from '$lib/utils';
-	import { LoadingOverlay } from '$lib/components/ui';
-	import { trackOnce } from '$lib/analytics';
+	import { cn } from '#lib/utils/index.ts';
+	import { LoadingOverlay } from '#lib/components/ui/index.ts';
+	import { trackOnce } from '#lib/analytics/index.ts';
 	import type { LiveCoverComponent, LiveCoverLoader } from './types';
 
 	interface Props {

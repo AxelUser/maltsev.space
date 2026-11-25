@@ -1,6 +1,6 @@
 # Component catalogue
 
-Import from the folder barrels, e.g. `import { Button, Figure } from '$lib/components/ui'`. Read a
+Import from the folder barrels, e.g. `import { Button, Figure } from '#lib/components/ui/index.ts'`. Read a
 component's props before using it. Don't guess them.
 
 ## `ui/`: primitives
@@ -68,11 +68,11 @@ Build new explainers from `common` so controls look the same.
 ## `home/`, `about/`, `art/`
 
 Page sections composed from the above (`Hero`, `OrbitFigure`, `DestinationCard`, `CareerTimeline`,
-`Gallery`, `Lightbox`, `TrackList`, …). Their data comes from `$lib/content`.
+`Gallery`, `Lightbox`, `TrackList`, …). Their data comes from `#lib/content`.
 
 ## Images
 
 - Use `Picture` (or `<enhanced:img>`) with `getPostHeroImage()`, `getArtImage()` or `getPostImage()`.
 - Always pass a realistic `sizes` for the layout slot (e.g. `(min-width: 768px) 560px, 100vw`, see `art/gallery.svelte`).
-- `art-image` and `post-image` are imported directly from `$lib/utils/art-image` / `$lib/utils/post-image`,
+- `art-image` and `post-image` are imported directly from `#lib/utils/art-image.ts` / `#lib/utils/post-image.ts`,
   not from the barrel, so only the pages using them ship their image maps.

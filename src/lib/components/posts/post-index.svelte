@@ -3,7 +3,7 @@
 	All notes as a rail grouped by year, with `current` highlighted. Expects posts sorted newest first.
 -->
 <script lang="ts">
-	import type { PostIndexEntry } from '$lib/types';
+	import type { PostIndexEntry } from '#lib/types.ts';
 
 	interface Props {
 		posts: PostIndexEntry[];

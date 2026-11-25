@@ -16,8 +16,8 @@ liveCover: true
 ---
 
 <script>
-    import { PostRef, Scrollbox } from '$lib/components';
-    import { Stepper } from '$lib/components/visualization/array-steps';
+    import { PostRef, Scrollbox } from '#lib/components/index.ts';
+    import { Stepper } from '#lib/components/visualization/array-steps/index.ts';
     import { cuckooKickout } from './steps';
 </script>
 

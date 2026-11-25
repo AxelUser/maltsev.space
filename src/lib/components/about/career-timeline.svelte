@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Job } from '$lib/content';
-	import { TechList } from '$lib/components/ui';
+	import type { Job } from '#lib/content/index.ts';
+	import { TechList } from '#lib/components/ui/index.ts';
 
 	const { jobs }: { jobs: Job[] } = $props();
 

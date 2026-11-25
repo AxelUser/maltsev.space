@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { stack, type StackKey } from '$lib/components/icons';
+	import { stack, type StackKey } from '#lib/components/icons/index.ts';
 
 	const { items }: { items: readonly StackKey[] } = $props();
 </script>

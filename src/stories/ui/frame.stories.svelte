@@ -1,10 +1,10 @@
 <script module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import Frame from '$lib/components/ui/frame.svelte';
-	import Picture from '$lib/components/ui/picture.svelte';
-	import AiFlag from '$lib/components/ui/ai-flag.svelte';
-	import * as HoverZoom from '$lib/components/ui/hover-zoom';
-	import * as Figure from '$lib/components/ui/figure';
+	import Frame from '#lib/components/ui/frame.svelte';
+	import Picture from '#lib/components/ui/picture.svelte';
+	import AiFlag from '#lib/components/ui/ai-flag.svelte';
+	import * as HoverZoom from '#lib/components/ui/hover-zoom/index.ts';
+	import * as Figure from '#lib/components/ui/figure/index.ts';
 	import '../../app.css';
 	import heroImage from './hero.jpg?enhanced';
 

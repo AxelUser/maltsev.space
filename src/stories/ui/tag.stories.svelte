@@ -1,6 +1,6 @@
 <script module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import Tag from '$lib/components/ui/tag.svelte';
+	import Tag from '#lib/components/ui/tag.svelte';
 	import '../../app.css';
 
 	const { Story } = defineMeta({

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { HobbyIcon } from '$lib/content';
+	import type { HobbyIcon } from '#lib/content/index.ts';
 
 	interface Props {
 		name: HobbyIcon;

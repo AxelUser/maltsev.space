@@ -1,5 +1,5 @@
 /**
- * Dev-only API for the review overlay on post pages (see `$lib/components/dev/review`).
+ * Dev-only API for the review overlay on post pages (see `#lib/components/dev/review/index.ts`).
  *
  * Reads `src/posts/<slug>/review.*.json` (written by the `redditor-audit` skill, gitignored), renders
  * the markdown in each comment to HTML with KaTeX and shiki, and saves status changes back to the file.
@@ -27,7 +27,7 @@ const STATUSES = ['open', 'done', 'discarded'];
 
 /**
  * Text with markdown markers, link targets, curly quotes and extra whitespace removed, so a quote still
- * matches after formatting-only edits. Keep in sync with `normalize` in `$lib/components/dev/review/anchors.ts`.
+ * matches after formatting-only edits. Keep in sync with `normalize` in `#lib/components/dev/review/anchors.ts`.
  * @param {string} text
  */
 const normalize = (text) =>
